@@ -74,7 +74,7 @@
   }
 
   /* ---------- nav + footer ---------- */
-  const LINKS = [["/", "Overview", "home"], ["/features/", "Features", "features"], ["/console/", "Console", "console"], ["/monitor/", "Monitor", "monitor"],
+  const LINKS = [["/", "Overview", "home"], ["/features/", "Features", "features"], ["/console/", "Console", "console"], ["/monitor/", "Monitor", "monitor"], ["/archive/", "Archive", "archive"],
     ["/report-issue/", "Report an issue", "report"], ["/desk/", "Officer desk", "desk"]];
 
   function initBar(extra = []) {

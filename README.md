@@ -9,4 +9,5 @@ extracts colour and body type, and matches a registry with a ranked, explained s
 - **Everything about the project, its current state and the next steps: [HANDOFF.md](HANDOFF.md)**
 - Models, licences, hashes and measured limits: [MODELS.md](MODELS.md)
 - Run the app: HANDOFF.md section 5
+- Every analysed video is stored and downloadable as one case file (ZIP): HANDOFF.md section 8
 - Train the plate recogniser: [training/README.md](training/README.md)

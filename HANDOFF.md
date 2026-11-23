@@ -83,7 +83,7 @@ video -> sample frames (6 fps) -> detect + track vehicles -> detect plate per ve
 backend/
   app/            main.py (API + static), fusion.py, matcher.py, config.py, departments.yaml, registry.py,
                   calibration.py, schemas.py, report.py, brains.py, vision/ (pipeline, detectors, ocr,
-                  plate_text, attributes, clip_brain, video, stitch), static/ (6 pages: ui.css/ui.js shared, per-page js), complaints.py, monitor.py
+                  plate_text, attributes, clip_brain, video, stitch), static/ (7 pages: ui.css/ui.js shared, per-page js), export.py (case file), crosscheck.py, complaints.py, monitor.py
   scripts/        make_registry.py, calibrate.py, download_models.py
   tests/          122 tests (fusion, matcher, API, stitching, pipeline, calibration, reports, brains, complaints, monitor, pages)
   models/         yolov8n.pt, plate_s.pt (committed); clip-vit-b32/ (download, see below)
@@ -93,7 +93,7 @@ training/         plate recogniser training kit (section 7); see training/README
 ```
 
 API: `/api/health`, `/api/departments`, `/api/match`, `/api/analyze`, `/api/brains`, `/api/registry/sample`,
-`/api/jobs/{id}`, `/api/jobs/{id}/report`, `/api/jobs/{id}/crops/{name}`, `/api/monitor`, and the citizen/officer set: `/api/complaints/categories`, `POST /api/complaints/preview` (photo to plate read, files nothing), `POST /api/complaints`, `/api/complaints/{id}/status` (public, no registry data), and `/api/desk/complaints[/{id}[/photo|/plate]]` (officer only, header `X-Officer-Key`). There is no built-in key: set `NETRA_OFFICER_KEY` before starting the server, or a random key is generated per run and printed once in the server log as "Officer key for this run".
+`GET /api/jobs` (every stored analysis; `?plate=` finds a whole or partial plate across videos, ? matches any character), `/api/jobs/{id}`, `/api/jobs/{id}/report`, `/api/jobs/{id}/crops/{name}` (plate, vehicle and evidence images), `/api/jobs/{id}/download` (the whole case as a ZIP; `?include_video=false` leaves the video out), `/api/monitor`, and the citizen/officer set: `/api/complaints/categories`, `POST /api/complaints/preview` (photo to plate read, files nothing), `POST /api/complaints`, `/api/complaints/{id}/status` (public, no registry data), and `/api/desk/complaints[/{id}[/photo|/plate]]` (officer only, header `X-Officer-Key`). There is no built-in key: set `NETRA_OFFICER_KEY` before starting the server, or a random key is generated per run and printed once in the server log as "Officer key for this run".
 
 ## 5. Run it
 
@@ -173,14 +173,27 @@ the readers trained on that generator. Exact match per plate, single crop (no mu
 - **Agreement between two readers is a strong signal.** PP-OCR and Awiros agree on the whole plate for 78% (mid) and
   57% (hard) of synthetic plates, and **when they agree they are right 99.6% and 98.8% of the time**. When they disagree,
   one of them is right 85% and 61% of the time. On the 10 real crops: agree on 7, all 7 right. This suggests using a
-  second reader as a cross-check (agree: trust; disagree: mark for verification), not as a replacement. It is **not
-  built**, and Paddle would have to be added to the backend environment.
+  second reader as a cross-check (agree: trust; disagree: mark for verification), not as a replacement. **This is now built (see
+  7a-2)**, using fast-plate-ocr rather than Awiros, because Awiros needs PaddlePaddle in the backend.
 - A 9-character plate (`DL1LR2711`, one series letter) appeared in the real clip. Both new readers read it; our
   10-slot grammar (`LLDALLDDDD`) cannot represent it and produced `DL1L??2711`. Real plates can have 1 to 3 series letters.
 - Not measured: speed of each reader on CPU, and body-type or colour models. Candidates found by search only (not
   downloaded or tested): `yigechundong/car-body-classifier` (EfficientNetV2-S, 8 body types; its card says outputs need
   temperature calibration and it is for prototypes) and `dima806/vehicle_10_types_image_detection` (ViT, Apache-2.0)
   for body type, which could replace the weak CLIP step. No documented pretrained colour model was found.
+
+### 7a-2. Second-reader cross-check (built 2026-11-24)
+
+`app/vision/second.py` runs fast-plate-ocr's `cct-s-v2-global-model` (MIT, 5 MB ONNX, files in `backend/models/fast-plate-ocr/`) on each
+vehicle's sharpest plate crops, takes the most common reading, fits it to the same ten slots (`align_to_slots`), and `app/crosscheck.py`
+compares it with the fused plate: **agrees** (no clash, at least 4 known characters confirmed), **disagrees** (any clash), or
+**inconclusive**. It never changes the plate and never fills in a `?`. If the package or files are missing the feature switches off and
+nothing else changes. Evidence for choosing it: fast-plate-ocr agreed with PP-OCR on 7 of 10 real crops (6 of those right) and was right
+about 98% of the time when they agreed on 300 synthetic plates (small real sample; synthetic plates use unrealistic fonts). On the real
+Indian clip it agreed on all five readable vehicles. Awiros agreed more often and was right on all 7 real agreements, but needs PaddlePaddle.
+Each frame read also keeps its `raw` whole-plate string; the console shows the most common ones, which reveals that the 9-character plate
+`DL1LR2711` was read whole by the first reader and only the ten-slot fitting dropped its `R`. The 9-character grammar is deliberately unchanged
+(a test locks it in): a one-letter series does not fit the ten-slot model cleanly, and placing it could create false mismatches.
 
 ### 7b. Parked: our own training kit
 
@@ -277,6 +290,16 @@ were added. Everything below runs against the real backend.
   officer notes; every `/api/desk` route needs the key; a draft can be submitted once; consent is required; per-client
   rate limits (20 previews and 5 reports per hour, in memory); photos limited to 10 MB; a typed plate that does not fit the
   registry is refused, not forced.
+- **Everything stored per video (`backend/data/jobs/<id>/`):** the original video (`source.<ext>`, moved there after analysis), `result.json`
+  (the complete analysis incl. video properties, processing time, body-type method and second reader), the sharpest plate crops, the best crop
+  of every vehicle (`track<N>_vehicle.jpg`) and an evidence frame per plate read (`track<N>_evidence.jpg`: the frame it was read from, vehicle
+  outlined white, plate red). About 40 MB for a 15 s 1080p clip. Nothing deletes stored videos yet.
+- **Full case file `GET /api/jobs/{id}/download`:** one ZIP with `report.html` (self-contained, also prints to PDF), `result.json`,
+  `manifest.json`, `data/tracks.csv`, `data/frame_reads.csv`, `data/candidates.csv` (UTF-8 with BOM for Excel), `media/plates|vehicles|evidence/`
+  and `source/` (the original video). The manifest records each file's SHA-256, the models and their licences, software versions, the agency
+  settings used, and the caveats; tests check every hash against the bytes. Older jobs without a stored video or new fields still export.
+- **Archive `/archive/`:** lists every stored analysis (file, time, agency, vehicles, plates, resolution, size) with Open, Report and ZIP, and
+  searches by whole or partial plate across all videos (an 8 or 9 character query is fitted to the ten slots first).
 - **Storage:** SQLite `backend/data/netra.db` and photos in `backend/data/complaints/` (both gitignored).
 
 Not built, by design or time: real officer accounts and citizen OTP sign-in (single shared key for the demo), face blurring,

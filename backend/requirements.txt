@@ -9,6 +9,7 @@ pillow
 opencv-python
 onnxruntime
 rapidocr-onnxruntime       # PP-OCRv4 plate recogniser (used by app/vision/ocr.py)
+fast-plate-ocr[onnx]       # independent second plate reader used as a cross-check (app/vision/second.py)
 ultralytics>=8.3           # YOLOv8n vehicles + ByteTrack, YOLO11 plate detector
 torch>=2.5                 # on an NVIDIA GPU, install the CUDA build from pytorch.org first
 transformers>=4.50         # CLIP body-type brain (optional; falls back to the COCO prior)

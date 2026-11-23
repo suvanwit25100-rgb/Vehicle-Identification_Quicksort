@@ -4,7 +4,7 @@
 The work is in how the models' uncertainty is carried through: per-character confidences, multi-frame fusion, and a
 refusal gate. (`training/` contains an unused from-scratch experiment; it is not part of the system.)
 
-Frozen on 2026-11-24 for submission. Versions: ultralytics 8.4.216, rapidocr-onnxruntime 1.4.4, onnxruntime 1.32.0,
+Frozen on 2026-11-24 for submission, with one late addition the same day: a lightweight second plate reader used only as a cross-check (see the table). Versions: ultralytics 8.4.216, rapidocr-onnxruntime 1.4.4, onnxruntime 1.32.0,
 transformers 5.24.0, torch 2.15.0, Python 3.11.
 
 ## The models
@@ -14,6 +14,7 @@ transformers 5.24.0, torch 2.15.0, Python 3.11.
 | Find and follow vehicles | YOLOv8n (COCO) with ByteTrack | Ultralytics | AGPL-3.0 | 6,549,796 B | yes, `backend/models/yolov8n.pt` |
 | Find the plate | YOLO11 "s" plate detector | `morsetechlab/yolov11-license-plate-detection` on Hugging Face | AGPL-3.0 (stated on its page) | 19,173,715 B | yes, `backend/models/plate_s.pt` |
 | Read the characters | PP-OCRv4 recogniser | bundled in the `rapidocr-onnxruntime` package | Apache-2.0 | 10,857,958 B | no, comes with the pip package |
+| Cross-check the plate | fast-plate-ocr `cct-s-v2-global-model` | `ankandrew/fast-plate-ocr` (GitHub releases) | MIT | 5,262,230 B | yes, `backend/models/fast-plate-ocr/` |
 | Body type (optional) | CLIP ViT-B/32 | `openai/clip-vit-base-patch32` on Hugging Face | **no licence is stated on its Hugging Face page** | 605,247,071 B | no, downloaded by `python backend/scripts/download_models.py` |
 | Colour | none (pixel and hue analysis) | our code | n/a | n/a | n/a |
 
@@ -23,6 +24,7 @@ SHA-256 of the files we ran:
 f59b3d833e2ff32e194b5bb8e08d211dc7c5bdf144b90d2c8412c47ccfc83b36  yolov8n.pt
 95e50c25ab7066dd0ca5aec18fa80349676db08697780d1149576461174d2381  plate_s.pt
 48fc40f24f6d2a207a2b1091d3437eb3cc3eb6b676dc3ef9c37384005483683b  ch_PP-OCRv4_rec_infer.onnx
+384bbbd2cea3ef54761d3df70822ef3a349ee1a112aeafddbe0e3ba06bc6e47b  cct_s_v2_global.onnx
 a63082132ba4f97a80bea76823f544493bffa8082296d62d71581a4feff1576f  clip-vit-b32/pytorch_model.bin
 ```
 
@@ -38,6 +40,10 @@ The CLIP file is checked by its exact size, so a truncated download is never tre
   small instead of being read.
 - **PP-OCRv4.** Only the recognition model is used. Its CTC output is limited to A-Z and 0-9, and each character's
   confidence is the raw probability the model gave it. That per-character confidence is what multi-frame fusion votes on.
+- **fast-plate-ocr (second reader).** Reads the same sharpest plate crops as an independent check. Its text is fitted to the same ten
+  positions, then compared with the fused plate: agrees (no clash and at least 4 known characters confirmed), disagrees (any clash), or
+  inconclusive. It never changes the fused plate and never fills in an unknown position. Used unchanged; it is optional, and everything
+  else works without it.
 - **CLIP.** Zero-shot: the vehicle crop is compared with text prompts such as "a photo of a hatchback", and the result is
   blended with the detector's class. If the file is absent the system falls back to the detector's class alone.
 - **Colour.** Hue and saturation analysis of the vehicle crop, kept as a distribution, not a single label.
@@ -69,9 +75,11 @@ None was clearly better alone, so none replaced the current reader. The real set
 synthetic plates use fonts unlike real ones. Awiros's own 98% figure was measured on its data and was not reproduced on ours.
 Awiros and fast-plate-ocr also report near-100% confidence when wrong, which would weaken confidence-weighted fusion. When
 PP-OCR and Awiros agreed, they were right about 99% of the time on synthetic plates, so a second-reader cross-check is a
-promising next step. It is not built.
+promising next step, and it is now built using fast-plate-ocr, which is much lighter than Awiros (a 5 MB ONNX model, no new runtime).
+On real crops fast-plate-ocr agreed with the current reader on 7 of 10 and was right in 6 of those 7; on synthetic plates it was right
+about 98% of the time when they agreed. The sample is small. On the real Indian clip it agreed on all five readable vehicles.
 
-Not tested: pretrained body-type classifiers from Hugging Face (`yigechundong/car-body-classifier`,
+Not used: Awiros ANPR-OCR (it agreed more often, but needs PaddlePaddle, a heavy runtime). Not tested: pretrained body-type classifiers from Hugging Face (`yigechundong/car-body-classifier`,
 `dima806/vehicle_10_types_image_detection`), which could replace the weak CLIP step.
 
 ## Licence note

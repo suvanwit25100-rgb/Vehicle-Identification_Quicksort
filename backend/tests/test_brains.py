@@ -9,7 +9,7 @@ from app.vision.attributes import BODY_PROMPTS, COCO_TO_BODY, fuse_body
 
 def test_brain_status_lists_every_brain_and_required_ones_are_ready():
     status = {b["id"]: b for b in brain_status()}
-    assert set(status) == {"vehicle_detector", "plate_detector", "plate_ocr", "clip"}
+    assert set(status) == {"vehicle_detector", "plate_detector", "plate_ocr", "second_reader", "clip"}
     assert all(b["ready"] for b in status.values() if b["required"])
 
 

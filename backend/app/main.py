@@ -11,6 +11,7 @@ from pathlib import Path
 import cv2
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
+from starlette.background import BackgroundTask
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -19,8 +20,9 @@ from .brains import brain_status
 from .config import get_department, load_departments
 from .fusion import fuse_frames
 from .matcher import match_registry
-from .monitor import calibration_summary, job_summary
+from .monitor import calibration_summary, job_summary, list_jobs
 from .registry import load_registry
+from .export import build_case_zip
 from .report import render_report
 from .schemas import AnalysisResult, Evidence, FusedPlate, MatchResult
 
@@ -28,7 +30,7 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 ALLOWED_EXT = {".mp4", ".avi", ".mov", ".mkv"}
 JOB_ID_RE = re.compile(r"[0-9a-f]{12}")
-CROP_RE = re.compile(r"track\d+_plate\d+\.jpg")
+CROP_RE = re.compile(r"track\d+_(?:plate\d+|vehicle|evidence)\.jpg")
 
 app = FastAPI(title="Netra API")
 
@@ -43,6 +45,14 @@ def _models():
 
         clip = ClipBrain()
     return VehicleTracker(), PlateDetector(), clip
+
+
+@lru_cache
+def _second_reader():
+    """The independent second reader, or None if its package or model files are missing (everything else still works)."""
+    from .vision.second import SecondReader, available
+
+    return SecondReader() if available() else None
 
 
 @app.get("/api/registry/sample")
@@ -75,8 +85,11 @@ def analyze(file: UploadFile = File(...), department: str = Form("police")):
         shutil.copyfileobj(file.file, fh)
 
     tracker, plate_detector, clip = _models()
-    result = analyze_video(dest, department, tracker, plate_detector, out_dir=DATA_DIR / "jobs", body_classifier=clip)
+    result = analyze_video(dest, department, tracker, plate_detector, out_dir=DATA_DIR / "jobs", body_classifier=clip,
+                           source_name=file.filename, second_reader=_second_reader())
     save_job(result)
+    # keep the original video with the rest of the case, so one folder holds everything about this analysis
+    shutil.move(str(dest), str(DATA_DIR / "jobs" / result.job_id / f"source{ext}"))
     return result
 
 
@@ -93,6 +106,21 @@ def _job_dir(job_id: str) -> Path:
     if not (d / "result.json").exists():
         raise HTTPException(status_code=404, detail="job not found")
     return d
+
+
+@app.get("/api/jobs")
+def jobs(plate: str | None = None, limit: int = 200):
+    """Every stored analysis, newest first. `plate` may be partial: ? matches any character."""
+    return list_jobs(DATA_DIR, plate=plate, limit=max(1, min(limit, 500)))
+
+
+@app.get("/api/jobs/{job_id}/download")
+def job_download(job_id: str, include_video: bool = True):
+    """The whole case as one .zip: report, data tables, images, the original video and a manifest with hashes."""
+    d = _job_dir(job_id)
+    result = AnalysisResult.model_validate_json((d / "result.json").read_text())
+    path = build_case_zip(result, d, include_video=include_video)
+    return FileResponse(path, media_type="application/zip", filename=f"case-{job_id}.zip", background=BackgroundTask(os.unlink, path))
 
 
 @app.get("/api/jobs/{job_id}", response_model=AnalysisResult)

@@ -27,6 +27,9 @@ BRAINS = [
           "AGPL-3.0", MODELS_DIR / "plate_s.pt", True),
     Brain("plate_ocr", "Plate characters with per-character confidence",
           "PP-OCRv4 recogniser bundled in rapidocr-onnxruntime", "Apache-2.0", None, True),
+    Brain("second_reader", "Independent second reader that cross-checks the plate (agrees, disagrees, or inconclusive)",
+          "ankandrew/fast-plate-ocr, cct-s-v2-global-model", "MIT",
+          MODELS_DIR / "fast-plate-ocr" / "cct_s_v2_global.onnx", False),
     Brain("clip", "Zero-shot body type; appearance embedding for cross-camera matching",
           "openai/clip-vit-base-patch32", "none stated on its Hugging Face page; weights not redistributed", CLIP_DIR, False),
 ]
@@ -38,6 +41,8 @@ def brain_status() -> list[dict]:
         if b.id == "clip":
             weights = CLIP_DIR / "pytorch_model.bin"
             ready = weights.exists() and weights.stat().st_size == CLIP_WEIGHTS_BYTES
+        elif b.id == "second_reader":
+            ready = Path(b.path).exists() and find_spec("fast_plate_ocr") is not None
         else:
             ready = Path(b.path).exists() if b.path else find_spec("rapidocr_onnxruntime") is not None
         out.append({"id": b.id, "role": b.role, "source": b.source, "license": b.license,

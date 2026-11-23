@@ -28,13 +28,22 @@ function kpis(m) {
   }));
 }
 
+function crossBlock(m) {
+  const c = m.jobs.cross_check, tot = c.agrees + c.disagrees + c.inconclusive;
+  if (!tot) return h("p", { class: "muted", style: "font-size:13px;margin-top:16px" }, "Second-reader cross-check: no plates have been cross-checked yet.");
+  const parts = [["agrees", "Agrees", "#3ddc97"], ["disagrees", "Disagrees", "#ff2a3f"], ["inconclusive", "Inconclusive", "#ffb454"]];
+  return h("div", { style: "margin-top:24px" }, h("p", { class: "label-s" }, "Second reader, on vehicles with a readable plate"),
+    h("div", { class: "stack", role: "img", "aria-label": parts.map(([k, l]) => `${l}: ${c[k]}`).join(", ") }, parts.map(([k, , col]) => h("i", { style: `width:${(c[k] / tot) * 100}%;background:${col}` }))),
+    h("div", { class: "legend" }, parts.map(([k, l, col]) => h("span", { style: `--c:${col}` }, `${l} ${c[k]}`))));
+}
+
 function outcomes(m) {
   const o = m.jobs.outcomes, total = Object.values(o).reduce((a, b) => a + b, 0);
   if (!total) { $("#outcomes").replaceChildren(h("p", { class: "empty" }, "No vehicles analysed yet.")); return; }
   $("#outcomes").replaceChildren(
     h("div", { class: "stack", role: "img", "aria-label": OUTCOME.map(([k, l]) => `${l}: ${o[k]}`).join(", ") }, OUTCOME.map(([k, , c]) => h("i", { style: `width:${(o[k] / total) * 100}%;background:${c}` }))),
     h("div", { class: "legend" }, OUTCOME.map(([k, l, c]) => h("span", { style: `--c:${c}` }, `${l} ${o[k]}`))),
-    h("p", { class: "muted", style: "font-size:13px;margin-top:16px" }, "Most vehicles in real footage have no readable plate, which is why “insufficient evidence” dominates. The system says so instead of guessing."));
+    h("p", { class: "muted", style: "font-size:13px;margin-top:16px" }, "Most vehicles in real footage have no readable plate, which is why “insufficient evidence” dominates. The system says so instead of guessing."), crossBlock(m));
 }
 
 function histogram(m) {
@@ -82,9 +91,9 @@ function brains(m) {
 function recent(m) {
   const r = m.jobs.recent;
   if (!r.length) { $("#recent").replaceChildren(h("p", { class: "empty" }, "No analyses yet. Upload a clip in the console.")); return; }
-  $("#recent").replaceChildren(h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Job", "When", "Agency", "Vehicles", "Readable", "Best plate", ""].map((t) => h("th", {}, t)))),
-    h("tbody", {}, r.map((j) => h("tr", {}, h("td", { class: "mono" }, h("a", { href: `/console/?job=${j.job_id}` }, j.job_id)), h("td", {}, when(j.when)), h("td", {}, AGENCY[j.department] || j.department), h("td", { class: "mono" }, j.tracks), h("td", { class: "mono" }, j.readable), h("td", { class: "mono" }, j.best_plate || "·"),
-      h("td", {}, h("a", { href: `/api/jobs/${j.job_id}/report`, target: "_blank", rel: "noopener" }, "report ↗"))))))));
+  $("#recent").replaceChildren(h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Job", "File", "When", "Agency", "Vehicles", "Readable", "Best plate", ""].map((t) => h("th", {}, t)))),
+    h("tbody", {}, r.map((j) => h("tr", {}, h("td", { class: "mono" }, h("a", { href: `/console/?job=${j.job_id}` }, j.job_id)), h("td", { style: "max-width:170px;overflow:hidden;text-overflow:ellipsis" }, j.filename || "·"), h("td", {}, when(j.when)), h("td", {}, AGENCY[j.department] || j.department), h("td", { class: "mono" }, j.tracks), h("td", { class: "mono" }, j.readable), h("td", { class: "mono" }, j.best_plate || "·"),
+      h("td", { style: "white-space:nowrap" }, h("a", { href: `/api/jobs/${j.job_id}/report`, target: "_blank", rel: "noopener" }, "report ↗"), "  ", h("a", { href: `/api/jobs/${j.job_id}/download`, download: `case-${j.job_id}.zip` }, "zip ↓"))))))));
 }
 
 function render(m) {

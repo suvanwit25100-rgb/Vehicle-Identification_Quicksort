@@ -107,7 +107,25 @@ const V = {
       h("tbody", {}, [["10 real crops, exact", "70%", "70%", "80%"], ["300 synthetic, medium", "89%", "65%", "85%"], ["300 synthetic, hard", "69%", "30%", "70%"]].map((r) => h("tr", {}, r.map((c, i) => h("td", { class: i ? "mono" : "" }, c))))))),
     cap("Measured on 2026-11-24, one crop at a time. The real set is only 10 crops of 4 plates, so it proves little. The synthetic sets use fonts unlike real plates. When two readers agree they were right about 99% of the time on synthetic plates; that cross-check is not built yet.")),
 
-  notbuilt: () => h("div", {}, ["PDF export of the report (it prints to PDF from the browser)", "Make and model recognition, and cross-camera tracking", "Individual officer accounts and citizen OTP sign-in", "Face blurring, retention and deletion rules", "A 9-character plate grammar (one series letter)", "Linking several citizens' reports of one vehicle"]
+  cross: () => slot(monitor(), (m) => {
+    const c = m.jobs.cross_check, tot = c.agrees + c.disagrees + c.inconclusive;
+    return [...[["agrees", "No clash, and at least 4 known characters confirmed", "built"], ["disagrees", "Any known character differs: verify by eye", "weak"], ["inconclusive", "Too little to compare", "partial"]]
+      .map(([k, t, chip]) => h("div", { class: "mini", style: "padding:5px 0;gap:10px" }, h("span", {}, h("span", { class: `chip ${chip}`, style: "padding:3px 8px;margin-right:10px" }, k), t), h("b", {}, String(c[k])))),
+      cap(tot ? `Live: ${tot} vehicle${tot === 1 ? "" : "s"} with a readable plate cross-checked so far.` : "No plates cross-checked yet. Analyse a clip to see it.")];
+  }),
+
+  casefile: () => slot(monitor(), (m) => [...[["report.html", "printable, self-contained"], ["manifest.json", "hashes, models, settings"], ["data/*.csv", "vehicles, frames, candidates"], ["media/", "plates, vehicles, evidence frames"], ["source/", "the original video"]]
+    .map(([a, b]) => h("div", { class: "mini", style: "padding:4px 0" }, h("b", { class: "mono", style: "font-weight:500" }, a), h("span", {}, b))),
+    m.jobs.recent[0] ? h("a", { class: "btn sm", style: "justify-self:start;margin-top:10px", href: `/api/jobs/${m.jobs.recent[0].job_id}/download`, download: `case-${m.jobs.recent[0].job_id}.zip` }, "Download a real case file ↓") : null]),
+
+  archive: () => slot(api("/api/jobs").catch(() => null), (jobs) => {
+    const bytes = jobs.reduce((a, j) => a + j.size_bytes, 0);
+    return [h("div", { class: "kpis", style: "grid-template-columns:repeat(3,1fr);gap:10px" }, [[jobs.length, "videos stored"], [(bytes / 1048576).toFixed(0), "MB on the server"], [jobs.filter((j) => j.has_video).length, "originals kept"]]
+      .map(([n, l]) => h("div", {}, h("div", { class: "big" }, String(n)), h("div", { class: "mini" }, h("span", {}, l))))),
+      cap("Live from the server. Search by a whole or partial plate to find the same vehicle in other videos.")];
+  }),
+
+  notbuilt: () => h("div", {}, ["PDF export of the report (it prints to PDF from the browser)", "Make and model recognition, and cross-camera tracking", "Individual officer accounts and citizen OTP sign-in", "Face blurring, retention and deletion rules", "A 9-character plate grammar (one series letter)", "Linking several citizens' reports of one vehicle", "Deleting stored analyses: videos stay until removed by hand"]
     .map((t) => h("div", { class: "tick off" }, h("i", {}, "–"), t))),
 };
 
@@ -124,6 +142,8 @@ const GROUPS = [
       ["Merge only if the plates agree on 6 or more characters and clash on none", "A group grows only if every pair in it is compatible", "Honest gap: on one real clip nothing needed merging, and unreadable fragments stay separate"], "stitch"],
     ["built", "Too small to read", "A vehicle with a tiny plate is not forced into a read. It is listed with the reason.",
       ["Plates under about 80 px wide are flagged", "The console lists every vehicle without a plate and why", "Plates that were 20 to 30 px wide stayed fully unknown on real footage"], "small"],
+    ["built", "Independent second reader", "A second, different model reads the same plate crops. When two unrelated models agree, that is a strong sign; when they disagree, a person should look.",
+      ["Its text is fitted to the same ten positions, so a plate of a different length is compared fairly", "Agrees: no clash and at least 4 known characters confirmed. Any clash: disagrees, verify manually", "It never changes the plate and never fills in a ?", "Honest limits: about 98% right when they agreed on synthetic plates; on 10 real crops they agreed on 7 and 6 were right"], "cross"],
   ]],
   ["deciding", "Deciding what it means", [
     ["built", "Ranked shortlist with reasons", "The readable characters, colour and body type are compared with the registry. The top five come back, each with a score and a plain-English explanation.",
@@ -152,6 +172,10 @@ const GROUPS = [
   ["trust", "Trust and proof", [
     ["built", "Audit report", "Every analysis can be printed as one self-contained file that shows its working.",
       ["The SHA-256 of the input proves which file was analysed", "Frames used, and characters per frame with their confidence", "The reasoning for each candidate, and why unreadable vehicles had no plate"], "audit"],
+    ["built", "Full case file for every video", "Everything about an analysed video is stored on the server and downloadable as one file: the report, the data, every image and the original video.",
+      ["One ZIP with the printable report, three data tables for Excel, the plate, vehicle and evidence images, and the original video", "A manifest lists every file with its SHA-256, plus the models, software versions and agency settings used", "The video in the ZIP is byte-identical to the one analysed, and the manifest proves it"], "casefile", ["/archive/", "Open the archive"]],
+    ["built", "Archive and plate search", "Nothing analysed is lost. Every video is listed, and a plate found in one video can be searched for in all the others.",
+      ["Search with a whole or partial plate; ? stands for a character you cannot read", "Open, print or download any stored analysis", "Honest gap: nothing deletes stored videos yet, so they stay until removed by hand"], "archive", ["/archive/", "Search the archive"]],
     ["built", "Live monitor", "A page that shows what the system has really done: models, jobs, outcomes, reports and calibration.",
       ["Nothing on it is sample data", "Refreshes by itself", "Calibration can be switched by agency"], "monitor", ["/monitor/", "Open the monitor"]],
     ["built", "Automated tests", "Behaviour that must not break is covered by tests, not by promises.",
@@ -159,9 +183,9 @@ const GROUPS = [
   ]],
   ["stack", "Under the hood", [
     ["built", "Pretrained models, none trained by us", "The system is built from ready-made models, and the work is in how their uncertainty is carried through.",
-      ["Vehicles: YOLOv8n with ByteTrack. Plates: a YOLO11 plate detector", "Characters: PP-OCRv4 read with per-character confidence", "Body type: CLIP ViT-B/32"], "stack"],
+      ["Vehicles: YOLOv8n with ByteTrack. Plates: a YOLO11 plate detector", "Characters: PP-OCRv4 read with per-character confidence, checked by a second reader (fast-plate-ocr)", "Body type: CLIP ViT-B/32"], "stack"],
     ["partial", "Plate readers compared", "We tested two other pretrained plate readers against the current one.",
-      ["None was clearly better alone", "Two readers agreeing was right about 99% of the time on synthetic plates", "A second-reader cross-check is the promising next step, and is not built"], "evidence"],
+      ["None was clearly better alone, so none replaced the current reader", "Two readers agreeing was right about 98% of the time on synthetic plates, so one of them (fast-plate-ocr, 5 MB) now cross-checks every plate", "Awiros agreed more often and was right on every real agreement, but needs a heavy runtime, so it is not used"], "evidence"],
     ["planned", "Not built yet", "What the system does not do, stated plainly.", ["These are the gaps we know about"], "notbuilt"],
   ]],
 ];

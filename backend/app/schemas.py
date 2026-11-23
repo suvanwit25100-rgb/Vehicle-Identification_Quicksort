@@ -15,6 +15,7 @@ class FrameRead(BaseModel):
     sharpness: float = Field(ge=0.0)
     plate_area: float = Field(ge=0.0)
     chars: list[CharRead | None]
+    raw: str | None = None  # the whole plate as the reader returned it, before it was fitted to ten slots
 
     @field_validator("chars")
     @classmethod
@@ -77,6 +78,22 @@ class Candidate(BaseModel):
     reasons: list[str]
 
 
+class SecondReading(BaseModel):
+    reader: str
+    reading: str
+    verdict: Literal["agrees", "disagrees", "inconclusive"]
+    agree: int
+    clash: int
+
+
+class VideoInfo(BaseModel):
+    width: int
+    height: int
+    fps: float
+    duration_s: float | None = None
+    frames_total: int | None = None
+
+
 class TrackAnalysis(BaseModel):
     track_id: int
     vehicle_label: str
@@ -89,6 +106,9 @@ class TrackAnalysis(BaseModel):
     max_plate_width_px: int | None = None
     plate_note: str | None = None
     merged_from: list[int] = []
+    vehicle_crop: str | None = None
+    evidence_frame: str | None = None
+    second_reader: SecondReading | None = None
     match: "MatchResult"
 
 
@@ -98,6 +118,13 @@ class AnalysisResult(BaseModel):
     source_sha256: str
     frames_sampled: int
     tracks: list[TrackAnalysis]
+    # everything below is optional so jobs saved by earlier versions still load
+    source_filename: str | None = None
+    created_at: str | None = None
+    video: VideoInfo | None = None
+    processing_seconds: float | None = None
+    body_model: str | None = None
+    second_reader_used: str | None = None
 
 
 class MatchResult(BaseModel):

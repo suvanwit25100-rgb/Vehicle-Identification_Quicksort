@@ -117,7 +117,7 @@ def test_analyze_rejects_wrong_extension_and_unknown_department(client):
     assert r.status_code == 404
 
 
-PAGES = ["/", "/features/", "/console/", "/monitor/", "/report-issue/", "/desk/"]
+PAGES = ["/", "/features/", "/console/", "/monitor/", "/archive/", "/report-issue/", "/desk/"]
 
 
 @pytest.mark.parametrize("page", PAGES)

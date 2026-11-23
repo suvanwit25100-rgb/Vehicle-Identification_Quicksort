@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>try{if(sessionStorage.getItem('nav')){document.documentElement.classList.add('arrived');sessionStorage.removeItem('nav')}}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Archive · AIML-01</title>
+<meta name="theme-color" content="#030612">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/pages.css">
+</head>
+<body data-page="archive">
+<header class="bar" id="bar"></header>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Archive</span>
+    <h1 class="h2">Every video analysed,<br><em>kept and searchable.</em></h1>
+    <p class="lede">Each analysis is stored on the server with its original video, every image and all of its data. Open it, print it, or download the whole case as one file. Search by plate to find the same vehicle in other videos.</p>
+  </div>
+
+  <section class="panel">
+    <div class="search-row">
+      <label class="f" for="q">Find a plate in any stored video
+        <input id="q" type="text" class="plate-input" maxlength="12" placeholder="UP14CA0914  or  DL8C??4767" autocomplete="off" spellcheck="false">
+        <span class="hint">A whole plate or part of one. Type ? for a character you cannot read; unknown characters in stored plates match anything.</span>
+      </label>
+      <button class="btn sm" id="clear" type="button">Show all</button>
+    </div>
+    <div class="totals" id="totals" role="status" aria-live="polite"></div>
+    <div id="list"><p class="empty">Loading…</p></div>
+  </section>
+</main>
+<footer id="foot"></footer>
+<script src="/ui.js"></script>
+<script src="/archive/archive.js"></script>
+</body>
+</html>

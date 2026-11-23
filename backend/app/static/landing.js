@@ -105,7 +105,7 @@ function buildCards() {
   const grid = $("#fgrid");
   const jobsStat = h("div", { class: "mini", style: "margin-top:8px" }, "…");
   const monStat = h("div", {}, h("div", { class: "big" }, "…"), h("div", { class: "mini" }, h("span", {}, "jobs analysed")));
-  const reportCard = card({ title: "Audit report", text: "A printable, self-contained report: frames used, characters per frame with confidence, and the reasoning behind each candidate.", vis: reportVisual(), href: "/console/", cta: "Open the console" });
+  const reportCard = card({ title: "Audit report", text: "Every video is stored with its images and data, and downloads as one case file: a printable report, data tables, evidence frames, the original video and a hash manifest.", vis: reportVisual(), href: "/console/", cta: "Open the console" });
   monitor().then((m) => {
     if (!m) { jobsStat.textContent = "Start the backend for live numbers."; return; }
     jobsStat.replaceChildren(h("span", {}, "reports filed ", h("b", {}, m.complaints.total)));
@@ -226,7 +226,7 @@ const BOARD = [
   ["built", "Unknown, never invented", "Doubtful characters stay as ?. On footage where plates were only 20 to 30 px wide, every position stayed unknown instead of being guessed."],
   ["built", "Registry ranking with reasons, and refusal", "Top five candidates with plain-English reasons. Plates missing from the registry were refused in every real-footage test."],
   ["built", "Citizen reports, officer desk and monitor", "Photo to plate read to department queue, with owner data visible only to officers. The monitor reads from saved jobs and reports, not sample data."],
-  ["partial", "Plate-reading accuracy", "We compared two pretrained plate readers with the current one. None was clearly better alone, but two readers agreeing was right 99% of the time on synthetic plates. A cross-check is not built yet."],
+  ["built", "Second-reader cross-check", "A second, unrelated pretrained reader checks every plate. On the real Indian clip it agreed on all five readable vehicles. It marks a plate for review if it disagrees, and never changes the plate. Plate-reading accuracy overall is still unmeasured on a labelled set."],
   ["weak", "Colour and body type", "Weak signals. Zero-shot body type was close to a coin flip on one real clip, so it carries a low weight."],
   ["partial", "Plate grammar", "Plates are modelled as 10 characters. A real 9-character plate (one series letter) appeared in our footage and was only partly read."],
   ["partial", "Vehicle tracking", "One vehicle can split into several tracks. Tracks without a readable plate are collapsed in the results."],

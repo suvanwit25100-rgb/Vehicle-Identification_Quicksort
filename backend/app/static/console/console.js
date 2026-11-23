@@ -20,6 +20,23 @@ function framesTable(reads) {
   return h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, head), h("tbody", {}, rows)));
 }
 
+const VERDICT = { agrees: "agrees", disagrees: "disagrees, verify manually", inconclusive: "inconclusive" };
+function secondView(t) {
+  const s = t.second_reader;
+  if (!s) return null;
+  const known = t.match.fused.slots.filter((x) => x.char).length;   // the API sends slots, not a count
+  return h("div", { class: `second ${s.verdict}` },
+    h("b", {}, "Second reader "), h("span", { class: "mono" }, s.reading || "read nothing"), ` ${VERDICT[s.verdict]}`,
+    h("span", { class: "muted" }, s.verdict === "inconclusive" ? "" : ` · ${s.agree} of ${known} known characters confirmed, ${s.clash} clash`),
+    h("small", {}, `${s.reader}. It never changes the recovered plate or fills a ? in.`));
+}
+function wholeReads(t) {
+  const counts = {};
+  t.frame_reads.forEach((f) => { if (f.raw && f.raw.length >= 6) counts[f.raw] = (counts[f.raw] || 0) + 1; });
+  const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  return top.length ? h("p", { class: "attrs" }, "Whole-plate reads before fitting to ten slots: ", ...top.map(([r, n], i) => [i ? " · " : "", h("span", { class: "mono" }, r), h("span", { class: "muted" }, ` ×${n}`)])) : null;
+}
+
 function trackView(jobId, t) {
   const m = t.match;
   const merged = (t.merged_from || []).length;
@@ -33,8 +50,13 @@ function trackView(jobId, t) {
         h("h4", {}, "Recovered plate"),
         slotsView(m.fused.slots),
         h("p", { class: "hint-s" }, "Amber ? positions were unreadable across frames and are reported as unknown, never guessed."),
+        secondView(t),
         t.plate_crops.length ? h("div", { class: "crops" }, t.plate_crops.map((n) => h("img", { src: `/api/jobs/${jobId}/crops/${n}`, alt: `Plate crop ${n}`, loading: "lazy" }))) : null,
-        h("p", { class: "attrs" }, `Colour: ${topOf(t.colour)} · Body type: ${topOf(t.body_type)}` + (t.max_plate_width_px ? ` · Largest plate: ${t.max_plate_width_px} px wide` : ""))),
+        wholeReads(t),
+        h("p", { class: "attrs" }, `Colour: ${topOf(t.colour)} · Body type: ${topOf(t.body_type)}` + (t.max_plate_width_px ? ` · Largest plate: ${t.max_plate_width_px} px wide` : "")),
+        (t.evidence_frame || t.vehicle_crop) ? h("div", { class: "media" },
+          t.evidence_frame ? h("a", { href: `/api/jobs/${jobId}/crops/${t.evidence_frame}`, target: "_blank", rel: "noopener", title: "Open the full frame" }, h("img", { class: "evimg", src: `/api/jobs/${jobId}/crops/${t.evidence_frame}`, alt: `Frame the plate of vehicle ${t.track_id} was read from`, loading: "lazy" })) : null,
+          t.vehicle_crop ? h("img", { class: "vehimg", src: `/api/jobs/${jobId}/crops/${t.vehicle_crop}`, alt: `Vehicle ${t.track_id}`, loading: "lazy" }) : null) : null),
       h("div", {}, banner(m),
         m.candidates.length ? h("h4", { style: "margin-top:22px" }, "Ranked candidates") : null,
         m.candidates.map((c, i) => candidateView(c, i + 1)))),
@@ -56,10 +78,20 @@ function render(result) {
   box.replaceChildren(
     h("section", { class: "panel summary" },
       h("div", { class: "sum-top" }, h("h3", { style: "margin:0" }, "Analysis result"),
-        h("a", { class: "btn sm", href: `/api/jobs/${result.job_id}/report`, target: "_blank", rel: "noopener" }, "Open printable report")),
+        h("div", { class: "row-btns", style: "margin:0" },
+          h("a", { class: "btn primary sm", href: `/api/jobs/${result.job_id}/download`, download: `case-${result.job_id}.zip` }, "Download full report (ZIP)"),
+          h("a", { class: "btn sm", href: `/api/jobs/${result.job_id}/report`, target: "_blank", rel: "noopener" }, "Open printable report"))),
       h("div", { class: "kpis", style: "margin-top:18px" },
         ...[[result.tracks.length, "vehicles tracked"], [shown.length, "with a readable plate"], [result.frames_sampled, "frames sampled"], [result.department.replace("_", " / ").toUpperCase(), "agency"]]
           .map(([n, l]) => h("div", { class: "kpi" }, h("div", { class: "n", style: typeof n === "string" ? "font-size:26px;padding-top:12px" : "" }, String(n)), h("div", { class: "l" }, l)))),
+      h("p", { class: "attrs", style: "margin-top:18px" }, [
+        result.source_filename ? `File: ${result.source_filename}` : null,
+        result.video ? `${result.video.width}×${result.video.height} at ${result.video.fps} fps${result.video.duration_s ? `, ${result.video.duration_s} s` : ""}` : null,
+        result.processing_seconds != null ? `analysed in ${result.processing_seconds} s` : null,
+        result.body_model ? `body type: ${result.body_model}` : null,
+        result.second_reader_used ? `second reader: ${result.second_reader_used}` : null,
+      ].filter(Boolean).join(" · ")),
+      h("p", { class: "attrs" }, "Everything about this video is stored on the server: the original, every image, and the data. The ZIP holds all of it."),
       h("p", { class: "hash" }, "Job ", h("span", { class: "mono" }, result.job_id), "  ·  SHA-256 ", h("span", { class: "mono" }, result.source_sha256))),
     ...(!result.tracks.length ? [h("section", { class: "panel" }, "No vehicles were tracked in this clip.")]
       : [...(shown.length ? shown.map((t) => trackView(result.job_id, t)) : [h("section", { class: "panel" }, "No plate could be read for any vehicle in this clip.")]),
@@ -82,7 +114,7 @@ async function loadRecent() {
     const m = await api("/api/monitor");
     if (!m.jobs.recent.length) { box.replaceChildren(h("p", { class: "empty" }, "Nothing analysed yet. Upload a clip to start.")); return; }
     box.replaceChildren(...m.jobs.recent.slice(0, 5).map((j) => h("button", { class: "recent-item", type: "button", onclick: () => openJob(j.job_id) },
-      h("span", { class: "mono" }, j.job_id), h("span", { class: "muted" }, `${j.readable} of ${j.tracks} readable`), h("span", { class: "plate-s mono" }, j.best_plate || "no plate"), h("span", { class: "muted" }, when(j.when)))));
+      h("span", { class: "mono" }, j.job_id), h("span", { class: "muted" }, `${j.filename ? j.filename + " · " : ""}${j.readable} of ${j.tracks} readable`), h("span", { class: "plate-s mono" }, j.best_plate || "no plate"), h("span", { class: "muted" }, when(j.when)))));
   } catch (_) { box.replaceChildren(h("p", { class: "empty" }, "Recent jobs unavailable.")); }
 }
 
