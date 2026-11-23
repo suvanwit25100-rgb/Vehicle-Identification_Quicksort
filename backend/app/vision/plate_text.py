@@ -12,12 +12,13 @@ clearly better than all others; ties and weak fits are left as they were.
 import re
 
 from app.fusion import DIGITS, LETTERS, SLOT_KINDS
-from app.schemas import PLATE_LEN, CharRead
+from app.schemas import ABSENT, ABSENT_SLOT, PLATE_LEN, CharRead
 
 SHAPE = re.compile(r"^([A-Z]{2})(\d[0-9A-Z])([A-Z]{1,3})(\d{1,4})$")
 MAX_SHIFT = 3
 MIN_SHIFT_GAIN = 2
 MIN_PLACED_WHEN_LENGTH_OFF = 8
+ABSENT_DISCOUNT = 0.9   # the marker is inferred from the layout, so it is slightly less certain than the letter that implies it
 
 
 def _fits(ch: str, kind: str) -> bool:
@@ -89,6 +90,14 @@ def align_to_slots(chars: list[tuple[str, float]]) -> list[CharRead | None]:
 
     place(0, 2, True)
     place(2, 2, True)
-    place(4, len(series), len(series) == 2)
+    if len(series) == 1 and len(number) == 4:
+        # nine characters: the single series letter takes the first series slot and the second is marked absent
+        c, conf = chars[pos]
+        conf = min(1.0, max(0.0, conf))
+        slots[4] = CharRead(char=c, conf=conf)
+        slots[ABSENT_SLOT] = CharRead(char=ABSENT, conf=conf * ABSENT_DISCOUNT)
+        pos += 1
+    else:
+        place(4, len(series), len(series) == 2)
     place(6, len(number), len(number) == 4)
     return slots

@@ -28,7 +28,7 @@ h3{font-size:14px;margin:18px 0 6px}.muted{color:var(--muted)}.mono{font-family:
 table{border-collapse:collapse;width:100%;margin:6px 0}th,td{border:1px solid var(--rule);padding:5px 8px;text-align:left;vertical-align:top}
 th{background:var(--soft);font-weight:600}.slots{display:flex;gap:4px;margin:8px 0}
 .slot{width:44px;border:1px solid var(--rule);text-align:center;padding:4px 0}.slot b{display:block;font:600 20px ui-monospace,Menlo,monospace}
-.slot.unk{background:#fff3f1;border-color:var(--bad)}.slot.unk b{color:var(--bad)}.slot small{color:var(--muted)}
+.slot.absent{border-style:dashed;opacity:.6}.slot.unk{background:#fff3f1;border-color:var(--bad)}.slot.unk b{color:var(--bad)}.slot small{color:var(--muted)}
 .banner{padding:8px 12px;border-left:4px solid;margin:8px 0;background:var(--soft)}
 .banner.match{border-color:var(--ok)}.banner.ambiguous,.banner.insufficient_evidence{border-color:var(--warn)}.banner.no_confident_match{border-color:var(--bad)}
 img.crop{height:56px;border:1px solid var(--rule);margin-right:6px}img.veh{height:130px;border:1px solid var(--rule);margin-right:8px}
@@ -42,8 +42,9 @@ img.ev{max-width:100%;height:auto;border:1px solid var(--rule);margin:6px 0}ul{m
 def _slots_html(track: TrackAnalysis) -> str:
     cells = []
     for s in track.match.fused.slots:
-        cls = "slot" if s.char else "slot unk"
-        cells.append(f'<div class="{cls}"><b>{escape(s.char or "?")}</b><small>{s.confidence:.2f}</small></div>')
+        cls = "slot absent" if s.char == "-" else "slot" if s.char else "slot unk"
+        shown = "-" if s.char == "-" else (s.char or "?")
+        cells.append(f'<div class="{cls}"><b>{escape(shown)}</b><small>{"none" if s.char == "-" else f"{s.confidence:.2f}"}</small></div>')
     return f'<div class="slots">{"".join(cells)}</div>'
 
 
@@ -85,7 +86,7 @@ def _track_html(track: TrackAnalysis, job_dir: Path | None) -> str:
     out.append(_slots_html(track))
     out.append(
         '<p class="muted">Positions marked ? could not be read reliably and are reported as unknown, never guessed. '
-        f'Pattern: <span class="mono">{escape(m.pattern)}</span></p>'
+        f'Pattern: <span class="mono">{escape(m.fused.display)}</span></p>'
     )
     s = track.second_reader
     if s:

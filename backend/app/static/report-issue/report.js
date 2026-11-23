@@ -35,7 +35,7 @@ async function handleFile(file) {
     const crop = $("#crop");
     crop.hidden = !p.plate_crop_url;
     if (p.plate_crop_url) crop.src = p.plate_crop_url;
-    $("#use-read").hidden = p.known_count !== 10;
+    $("#use-read").hidden = p.pattern.includes("?") || !p.known_count;
     $("#plate").value = "";
     if (p.exif.observed_at) $("#when").value = p.exif.observed_at;
     if (p.exif.lat != null) state.geo = { lat: p.exif.lat, lon: p.exif.lon, from: "photo" };
@@ -51,7 +51,7 @@ const drop = $("#drop");
 drop.addEventListener("drop", (e) => handleFile(e.dataTransfer.files[0]));
 
 /* ---------- step 2: check ---------- */
-$("#use-read").addEventListener("click", () => { $("#plate").value = state.preview.pattern; });
+$("#use-read").addEventListener("click", () => { $("#plate").value = state.preview.pattern.replace(/-/g, ""); });
 $("#back1").addEventListener("click", () => setStep(1));
 $("#next2").addEventListener("click", () => {
   const p = cleanPlate($("#plate").value);

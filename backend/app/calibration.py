@@ -107,6 +107,7 @@ class Sample:
 
 def make_samples(registry: list[RegistryRow], n_pos: int, n_neg: int, seed: int = 7) -> list[Sample]:
     rng = random.Random(seed)
+    registry = [r for r in registry if len(r.plate) == 10]   # the simulation draws ten characters; nine-character plates are not simulated
     known = {r.plate for r in registry}
     levels, weights = list(LEVELS), [LEVELS[k]["p"] for k in LEVELS]
     out = []

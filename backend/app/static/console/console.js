@@ -64,7 +64,7 @@ function trackView(jobId, t) {
     h("details", { class: "frames-d" }, h("summary", {}, `Characters read in each frame (${t.frame_reads.length})`), framesTable(t.frame_reads)));
 }
 
-const isReadable = (t) => t.match.fused.slots.some((s) => s.char);
+const isReadable = (t) => t.match.fused.slots.some((s) => s.char && s.char !== "-");
 
 function unreadView(tracks) {
   const rows = tracks.map((t) => h("tr", {}, h("td", { class: "mono" }, t.track_id), h("td", {}, t.vehicle_label), h("td", { class: "mono" }, t.frames_seen), h("td", { style: "white-space:normal;min-width:260px" }, t.plate_note || "No readable plate characters.")));

@@ -10,7 +10,7 @@ The score is an uncalibrated confidence until tuned on held-out clips.
 """
 
 from .config import DepartmentConfig
-from .schemas import PLATE_LEN, Candidate, FusedPlate, MatchResult, RegistryRow
+from .schemas import ABSENT, PLATE_LEN, Candidate, FusedPlate, MatchResult, RegistryRow, to_slots
 
 SIMILAR_COLOURS = {
     frozenset(p)
@@ -45,9 +45,12 @@ def _ranges(indices: list[int]) -> str:
 
 
 def _score_row(row, fused, colour, body, cfg) -> Candidate | None:
+    rp = to_slots(row.plate)
+    if len(rp) != PLATE_LEN:
+        return None   # a registry plate that does not fit the plate format cannot be compared position by position
     known = [s for s in fused.slots if s.char]
-    matched = [s for s in known if row.plate[s.index] == s.char]
-    mismatched = [s for s in known if row.plate[s.index] != s.char]
+    matched = [s for s in known if rp[s.index] == s.char]
+    mismatched = [s for s in known if rp[s.index] != s.char]
     if len(mismatched) > cfg.max_known_mismatches:
         return None
 
@@ -66,13 +69,15 @@ def _score_row(row, fused, colour, body, cfg) -> Candidate | None:
     score = max(0.0, min(1.0, score))
 
     unknown = [s.index for s in fused.slots if not s.char]
+    shown = lambda ch: "no letter" if ch == ABSENT else f"'{ch}'"
+    n_matched, n_known = sum(s.char != ABSENT for s in matched), sum(s.char != ABSENT for s in known)
     reasons = [
-        f"Plate: {len(matched)} of {len(known)} readable characters agree (positions {_ranges([s.index for s in matched])}).",
+        f"Plate: {n_matched} of {n_known} readable characters agree (positions {_ranges([s.index for s in matched])}).",
     ]
     if mismatched:
         reasons.append(
             f"Mismatch at position {_ranges([s.index for s in mismatched])}: registry has "
-            + ", ".join(f"'{row.plate[s.index]}' where '{s.char}' was read" for s in mismatched)
+            + ", ".join(f"{shown(rp[s.index])} where {shown(s.char)} was read" for s in mismatched)
             + "; score reduced."
         )
     if unknown:
@@ -97,6 +102,7 @@ def _score_row(row, fused, colour, body, cfg) -> Candidate | None:
     return Candidate(
         reg_id=row.reg_id,
         plate=row.plate,
+        slots=rp,
         colour=row.colour,
         body_type=row.body_type,
         make=row.make,

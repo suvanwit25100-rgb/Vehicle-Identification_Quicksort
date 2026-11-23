@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from .schemas import FusedPlate, SecondReading
+from .schemas import ABSENT, FusedPlate, SecondReading
 
 MIN_AGREE = 4  # known characters that must agree before we call it agreement
 
@@ -26,7 +26,7 @@ def cross_check(fused: FusedPlate, reading: str, reader: str) -> SecondReading:
     for mine, theirs in zip(fused.slots, other):
         if mine.char and theirs is not None:
             if mine.char == theirs.char:
-                agree += 1
+                agree += mine.char != ABSENT      # both saying "no second series letter" is a layout match, not a confirmed character
             else:
                 clash += 1
     if clash:

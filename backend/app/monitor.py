@@ -133,7 +133,7 @@ def job_summary(data_dir: Path) -> dict:
         d = per_day.setdefault(day, {"analyses": 0, "vehicles": 0})
         d["analyses"] += 1
         d["vehicles"] += len(r.tracks)
-        best, n_read = "", 0
+        best, best_k, n_read = "", 0, 0
         for t in r.tracks:
             tracks += 1
             k = t.match.fused.known_count
@@ -155,8 +155,8 @@ def job_summary(data_dir: Path) -> dict:
             if k:
                 readable += 1
                 n_read += 1
-                if k > sum(c != "?" for c in best):
-                    best = t.match.pattern
+                if k > best_k:
+                    best, best_k = t.match.fused.display, k
         recent.append({"job_id": r.job_id, "when": datetime.fromtimestamp(mtime, timezone.utc).isoformat(timespec="seconds"),
                        "department": r.department, "tracks": len(r.tracks), "readable": n_read, "best_plate": best or None,
                        "filename": r.source_filename})
@@ -222,7 +222,7 @@ def list_jobs(data_dir: Path, plate: str | None = None, limit: int = 200) -> lis
         out.append({
             "job_id": r.job_id, "when": r.created_at or datetime.fromtimestamp(f.stat().st_mtime, timezone.utc).isoformat(timespec="seconds"),
             "filename": r.source_filename, "department": r.department, "vehicles": len(r.tracks), "readable": len(patterns),
-            "plates": patterns[:8], "matched_plates": hits, "size_bytes": _size(d), "has_video": any(d.glob("source.*")),
+            "plates": [p.replace("-", "") for p in patterns[:8]], "matched_plates": [p.replace("-", "") for p in hits], "size_bytes": _size(d), "has_video": any(d.glob("source.*")),
             "video": r.video.model_dump() if r.video else None, "second_reader": r.second_reader_used,
             "processing_seconds": r.processing_seconds,
         })

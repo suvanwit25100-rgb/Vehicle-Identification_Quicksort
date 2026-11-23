@@ -228,7 +228,7 @@ const BOARD = [
   ["built", "Citizen reports, officer desk and monitor", "Photo to plate read to department queue, with owner data visible only to officers. The monitor reads from saved jobs and reports, not sample data."],
   ["built", "Second-reader cross-check", "A second, unrelated pretrained reader checks every plate. On the real Indian clip it agreed on all five readable vehicles. It marks a plate for review if it disagrees, and never changes the plate. Plate-reading accuracy overall is still unmeasured on a labelled set."],
   ["weak", "Colour and body type", "Weak signals. Zero-shot body type was close to a coin flip on one real clip, so it carries a low weight."],
-  ["partial", "Plate grammar", "Plates are modelled as 10 characters. A real 9-character plate (one series letter) appeared in our footage and was only partly read."],
+  ["built", "Plate grammar", "Plates are fitted to ten positions, and a 9-character plate with one series letter is now read as it is. Three series letters and short numbers are not handled."],
   ["partial", "Vehicle tracking", "One vehicle can split into several tracks. Tracks without a readable plate are collapsed in the results."],
   ["partial", "Agency features", "Per-agency strictness is live. Watch-lists, FASTag checks and repeat-crossing detection are still to come. Make and model, and cross-camera tracking, are bonus items not yet started."],
 ];

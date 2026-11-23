@@ -45,13 +45,14 @@
   /* slots: [{char|null, confidence}] -> the ten boxes. Unknown positions are amber and are never guessed. */
   function slotsView(slots, { small = true } = {}) {
     return h("div", { class: "slots", role: "list", "aria-label": "Plate characters" },
-      slots.map((s, i) => h("div", { class: "slot " + (s.char ? "known" : "unk"), role: "listitem", style: `--i:${i}`, title: s.char ? `Read as ${s.char}` : "Unreadable, not guessed" },
-        h("b", {}, s.char || "?"), small ? h("small", {}, (s.confidence ?? 0).toFixed(2)) : null)));
+      slots.map((s, i) => { const absent = s.char === "-"; return h("div", { class: "slot " + (absent ? "absent" : s.char ? "known" : "unk"), role: "listitem", style: `--i:${i}`,
+        title: absent ? "This plate has a single series letter, so this position is empty" : s.char ? `Read as ${s.char}` : "Unreadable, not guessed" },
+        h("b", {}, absent ? "–" : s.char || "?"), small ? h("small", {}, absent ? "none" : (s.confidence ?? 0).toFixed(2)) : null); }));
   }
 
   function plateView(c) {
     const el = h("span", { class: "plate" });
-    [...c.plate].forEach((ch, i) => el.append(h("span", { class: (c.mismatched_slots || []).includes(i) ? "miss" : (c.unknown_slots || []).includes(i) ? "unkc" : "" }, ch)));
+    [...(c.slots || c.plate)].forEach((ch, i) => ch === "-" ? null : el.append(h("span", { class: (c.mismatched_slots || []).includes(i) ? "miss" : (c.unknown_slots || []).includes(i) ? "unkc" : "" }, ch)));
     return el;
   }
 

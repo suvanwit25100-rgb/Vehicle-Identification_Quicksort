@@ -1,8 +1,18 @@
+import re
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
 PLATE_LEN = 10
+ABSENT = "-"        # the second series slot of a plate that has only one series letter: not unreadable, simply not there
+ABSENT_SLOT = 5
+_ONE_SERIES_LETTER = re.compile(r"^[A-Z]{2}\d[0-9A-Z][A-Z]\d{4}$")   # SS D A L NNNN: nine characters
+
+
+def to_slots(plate: str) -> str:
+    """A plate as the ten slots the engine works in. A nine-character plate gets an absent marker in the second series slot."""
+    p = "".join(plate.upper().split())
+    return p[:ABSENT_SLOT] + ABSENT + p[ABSENT_SLOT:] if len(p) == PLATE_LEN - 1 and _ONE_SERIES_LETTER.match(p) else p
 
 
 class CharRead(BaseModel):
@@ -42,8 +52,14 @@ class FusedPlate(BaseModel):
         return "".join(s.char or "?" for s in self.slots)
 
     @property
+    def display(self) -> str:
+        """The plate as a person writes it: the absent marker is left out (DL1LR2711, not DL1LR-2711)."""
+        return self.pattern.replace(ABSENT, "")
+
+    @property
     def known_count(self) -> int:
-        return sum(1 for s in self.slots if s.char)
+        """Characters actually read. The absent marker is knowledge about the layout, not a readable character."""
+        return sum(1 for s in self.slots if s.char and s.char != ABSENT)
 
 
 class Evidence(BaseModel):
@@ -66,6 +82,7 @@ class RegistryRow(BaseModel):
 class Candidate(BaseModel):
     reg_id: str
     plate: str
+    slots: str = ""   # the plate in the engine's ten slots (a nine-character plate has an absent marker); the mismatch positions refer to this
     colour: str
     body_type: str
     make: str

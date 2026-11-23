@@ -291,3 +291,7 @@ html.leaving::after { transform: scaleX(1); transform-origin: left; transition: 
 /* label and value on one line (used by the monitor panels and the Features visuals) */
 .mini { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; font-size: 13.5px; color: var(--muted); }
 .mini b { color: var(--fg); font-family: var(--mono); font-weight: 600; text-align: right; }
+
+/* a position that is simply not there (a plate with one series letter), as opposed to one that could not be read */
+.slot.absent { border-style: dashed; opacity: .6; background: transparent; }
+.slot.absent b { color: var(--muted); font-weight: 400; }

@@ -225,7 +225,7 @@ def analyze_video(
             if tid in evidence:
                 _, eimg, vbox, pbox = evidence[tid]
                 evidence_name = f"track{tid}_evidence.jpg"
-                cv2.imwrite(str(job_dir / evidence_name), _annotate(eimg, vbox, pbox, tid, fused.pattern))
+                cv2.imwrite(str(job_dir / evidence_name), _annotate(eimg, vbox, pbox, tid, fused.display))
 
         layout = plate_layout(reads[tid])
 

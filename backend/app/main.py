@@ -268,12 +268,12 @@ def complaint_preview(request: Request, photo: UploadFile = File(...)):
     draft_id = _store().create_draft(_jpeg(img), _jpeg(r["crop"]) if r["crop"] is not None else None, meta)
     if not r["plate_found"]:
         note = "No number plate could be located in this photo. You can still file the report and type the plate yourself."
-    elif fused.known_count == 10:
-        note = "All 10 characters were read. Please check them against the photo before you continue."
+    elif "?" not in fused.pattern:
+        note = f"All {fused.known_count} characters were read. Please check them against the photo before you continue."
     else:
         note = (f"{fused.known_count} of 10 characters were readable. The rest are marked ? and were not guessed. "
                 "Please check the plate against the photo and correct it if you can see it.")
-    return {"draft_id": draft_id, "pattern": fused.pattern, "known_count": fused.known_count,
+    return {"draft_id": draft_id, "pattern": fused.pattern, "display": fused.display, "known_count": fused.known_count,
             "slots": [{"index": s.index, "char": s.char, "confidence": s.confidence} for s in fused.slots],
             "vehicle_found": r["vehicle_found"], "plate_found": r["plate_found"], "plate_width_px": r["plate_width_px"],
             "note": note, "exif": cm.exif_hints(data),
@@ -329,7 +329,7 @@ def require_officer(x_officer_key: str | None = Header(None)):
 def _summary(row) -> dict:
     return {"id": row["id"], "created_at": row["created_at"], "category": row["category"],
             "category_label": cm.CATEGORIES[row["category"]][0], "department": row["department"],
-            "department_name": get_department(row["department"]).name, "plate_read": row["plate_read"],
+            "department_name": get_department(row["department"]).name, "plate_read": row["plate_read"].replace("-", ""),
             "plate_confirmed": row["plate_confirmed"], "status": row["status"], "location_text": row["location_text"],
             "observed_at": row["observed_at"], "plate_found": bool(row["plate_found"]), "vehicle_found": bool(row["vehicle_found"])}
 

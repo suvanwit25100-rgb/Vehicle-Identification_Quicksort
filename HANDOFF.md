@@ -346,6 +346,15 @@ All use the existing pretrained models; nothing was trained.
   disagreeing, so it is flagged for manual verification. Only one clear real two-row plate could be checked; generated plates use unrealistic fonts.
 - **Not done:** a 80 px minimum is still applied to all plates (no real motorcycle data to calibrate a separate one); no helmet or rider logic.
 
+### Feature 2: variable-length plates (nine-character plates with one series letter)
+- **Why:** real plates like `DL1LR2711` have a single series letter (9 characters). The engine models 10 slots, so the second series slot was left unreadable and the match was partial.
+- **How:** the second series slot can now hold an explicit **absent marker `-`** (`schemas.ABSENT`, slot 5), different from `?` (unreadable). `to_slots()` converts a 9-character plate to ten slots;
+  `align_to_slots` places a single series letter with certainty (marker confidence x0.9); fusion lets the marker vote only in slot 5; the matcher compares in slots (a nine-character
+  registry row meets a nine-character read, reasons say "no letter"); the cross-check does not count the marker as a confirmed character; `FusedPlate.display` / `known_count` hide it, so people see `DL1LR2711` and "9 of 9".
+  The registry gained 24 nine-character rows (REG0301-REG0324, separate RNG; the first 300 rows are byte-identical). Calibration simulates ten-character plates only.
+- **Measured:** real clip track 90 was `DL1L??2711` and is now `DL1LR-2711` (second reader agrees); the other tracks are unchanged. 186 tests pass (7 new in `test_variable_length.py`).
+- **Not handled:** three series letters, numbers shorter than four digits, and Bharat-series plates (`22BH1234AA`).
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

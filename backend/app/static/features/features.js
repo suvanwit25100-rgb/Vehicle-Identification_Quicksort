@@ -129,7 +129,7 @@ const V = {
       cap("Live from the server. Search by a whole or partial plate to find the same vehicle in other videos.")];
   }),
 
-  notbuilt: () => h("div", {}, ["PDF export of the report (it prints to PDF from the browser)", "Make and model recognition, and cross-camera tracking", "Individual officer accounts and citizen OTP sign-in", "Face blurring, retention and deletion rules", "A 9-character plate grammar (one series letter)", "Linking several citizens' reports of one vehicle", "Deleting stored analyses: videos stay until removed by hand"]
+  notbuilt: () => h("div", {}, ["PDF export of the report (it prints to PDF from the browser)", "Make and model recognition, and cross-camera tracking", "Individual officer accounts and citizen OTP sign-in", "Face blurring, retention and deletion rules", "Linking several citizens' reports of one vehicle", "Deleting stored analyses: videos stay until removed by hand"]
     .map((t) => h("div", { class: "tick off" }, h("i", {}, "–"), t))),
 };
 
@@ -140,8 +140,8 @@ const GROUPS = [
       ["Votes are weighted by confidence, image sharpness and plate size", "A character needs a score of at least 0.60 and a 0.25 lead over the runner-up", "Anything short of that stays unknown"], "fusion", ["/#engine", "Watch it run"]],
     ["built", "Unknown, never invented", "When the evidence cannot settle a character, the system says so. A guessed plate sends an investigation after the wrong vehicle.",
       ["Unreadable positions are shown as ?, in amber, everywhere", "Matching uses only the characters that are known", "Plates too small to read stay entirely unknown"], "unknown"],
-    ["partial", "Plate grammar and alignment", "Indian plates follow a pattern. The system aligns every read to ten fixed positions, and corrects look-alike characters by where they sit.",
-      ["Position 4 may be a letter or a digit (Delhi RTO codes such as 1L and 8C)", "O/0, I/1 and S/5 are corrected by position, with a confidence discount", "One extra or missing end character is tolerated", "Honest gap: a 9-character plate (one series letter) is only partly read"], "grammar"],
+    ["built", "Plate grammar and alignment", "Indian plates follow a pattern. The system aligns every read to ten fixed positions, and corrects look-alike characters by where they sit.",
+      ["Position 4 may be a letter or a digit (Delhi RTO codes such as 1L and 8C)", "O/0, I/1 and S/5 are corrected by position, with a confidence discount", "One extra or missing end character is tolerated", "A 9-character plate with a single series letter is read as it is: the empty second series position is shown as a gap, not as unreadable", "Still not handled: three series letters, and numbers shorter than four digits"], "grammar"],
     ["built", "Motorcycles and two-row plates", "Most Indian two-wheelers carry a two-row plate. A reader built for one line turns it into fragments, so each row is read as its own line and joined.",
       ["A plate that is not clearly one line is read both ways, and the reading that fits the plate format better wins", "A one-row plate is never split, so cars are unaffected (identical results in the measurement)", "Honest limits: tiny or blurry two-row plates still cannot be read, and only one clear two-row plate in our real clip could be checked"], "tworow"],
     ["partial", "Track stitching", "Trackers sometimes split one vehicle into several tracks. Fragments that clearly carry the same plate are joined.",

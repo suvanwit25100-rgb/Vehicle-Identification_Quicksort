@@ -13,6 +13,7 @@ OUT = Path(__file__).resolve().parent.parent / "data" / "registry.csv"
 SEED = 42
 N_ROWS = 300
 N_NEAR_DUPLICATES = 12
+N_SINGLE_LETTER = 24   # older plates with one series letter (nine characters), appended after the original rows
 
 STATES = {"CG": (1, 30), "MH": (1, 50), "DL": (1, 14), "UP": (10, 85), "KA": (1, 60),
           "WB": (1, 90), "BR": (1, 50), "RJ": (1, 45), "MP": (1, 70), "OD": (1, 35)}
@@ -45,6 +46,15 @@ def make_plate(rng: random.Random) -> str:
     if state == "DL" and rng.random() < 0.5:
         rto = f"{rng.randint(1, 9)}{rng.choice('CLSPAT')}"  # Delhi zones, e.g. DL 1L, DL 8C
     return f"{state}{rto}{series}{rng.randint(1000, 9999)}"
+
+
+def make_single_letter_plate(rng: random.Random) -> str:
+    state = rng.choice(list(STATES))
+    lo, hi = STATES[state]
+    rto = f"{rng.randint(lo, hi):02d}"
+    if state == "DL" and rng.random() < 0.5:
+        rto = f"{rng.randint(1, 9)}{rng.choice('CLSPAT')}"
+    return f"{state}{rto}{rng.choice(SERIES_LETTERS)}{rng.randint(1000, 9999)}"
 
 
 def make_flags(rng: random.Random) -> str:
@@ -94,6 +104,14 @@ def main() -> None:
                      "make": make, "model": model, "flags": make_flags(rng)})
 
     rng.shuffle(rows)
+    extra = random.Random(SEED + 1)        # separate generator, so the original 300 rows stay identical
+    while len(rows) < N_ROWS + N_SINGLE_LETTER:
+        plate = make_single_letter_plate(extra)
+        if plate in seen:
+            continue
+        seen.add(plate)
+        body, colour, make, model = make_vehicle(extra)
+        rows.append({"plate": plate, "colour": colour, "body_type": body, "make": make, "model": model, "flags": make_flags(extra)})
     OUT.parent.mkdir(parents=True, exist_ok=True)
     fields = ["reg_id", "plate", "colour", "body_type", "make", "model", "flags"]
     with OUT.open("w", newline="") as fh:

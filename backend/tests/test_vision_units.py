@@ -19,9 +19,9 @@ class TestAlign:
         slots = align_to_slots(chars("CG04KA2819"))
         assert "".join(s.char for s in slots) == "CG04KA2819"
 
-    def test_nine_char_single_letter_series_leaves_series_unknown(self):
+    def test_nine_char_single_letter_series_marks_second_series_slot_absent(self):
         slots = align_to_slots(chars("CG04A1234"))
-        assert [s.char if s else None for s in slots] == ["C", "G", "0", "4", None, None, "1", "2", "3", "4"]
+        assert [s.char if s else None for s in slots] == ["C", "G", "0", "4", "A", "-", "1", "2", "3", "4"]
 
     def test_unplaceable_read_yields_all_unknown(self):
         assert all(s is None for s in align_to_slots(chars("CGKA2819")))

@@ -92,7 +92,7 @@ def tracks_csv(result: AnalysisResult) -> bytes:
         c, cc = _top(t.colour)
         b, bc = _top(t.body_type)
         s = t.second_reader
-        rows.append([t.track_id, t.vehicle_label, t.frames_seen, t.frames_with_plate, " ".join(map(str, t.merged_from)), m.pattern,
+        rows.append([t.track_id, t.vehicle_label, t.frames_seen, t.frames_with_plate, " ".join(map(str, t.merged_from)), m.fused.display,
                      m.fused.known_count, m.status, m.message, top.plate if top else "", f"{top.confidence:.2f}" if top else "", c, cc, b, bc,
                      t.max_plate_width_px or "", t.plate_note or "", s.reader if s else "", s.reading if s else "",
                      s.verdict if s else "", s.agree if s else "", s.clash if s else "", t.plate_layout or ""])

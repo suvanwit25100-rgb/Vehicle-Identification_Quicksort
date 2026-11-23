@@ -7,7 +7,7 @@ confidence or margin test stays unknown; its best guesses are kept only as
 labelled alternatives for the report, never as the answer.
 """
 
-from .schemas import PLATE_LEN, FrameRead, FusedPlate, SlotResult
+from .schemas import ABSENT, ABSENT_SLOT, PLATE_LEN, FrameRead, FusedPlate, SlotResult
 
 # Indian format: state(2 letters) RTO(digit + digit-or-letter, e.g. DL 1L, DL 8C) series(2 letters) number(4 digits).
 # Kind "A" accepts either class and is never corrected.
@@ -21,8 +21,10 @@ DIGIT_TO_LETTER = {"0": "O", "1": "I", "2": "Z", "5": "S", "8": "B", "6": "G"}
 COERCE_DISCOUNT = 0.8
 
 
-def _coerce(ch: str, kind: str) -> tuple[str | None, bool]:
+def _coerce(ch: str, kind: str, index: int = -1) -> tuple[str | None, bool]:
     ch = ch.upper()
+    if ch == ABSENT:
+        return (ABSENT, False) if index == ABSENT_SLOT else (None, False)
     if kind == "A":
         return (ch, False) if ch in LETTERS or ch in DIGITS else (None, False)
     if kind == "L":
@@ -86,7 +88,7 @@ def fuse_frames(
             read = f.chars[i]
             if read is None:
                 continue
-            ch, coerced = _coerce(read.char, kind)
+            ch, coerced = _coerce(read.char, kind, i)
             if ch is None:
                 continue
             w = read.conf * weights[f.frame_id] * (COERCE_DISCOUNT if coerced else 1.0)
