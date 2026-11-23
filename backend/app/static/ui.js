@@ -209,19 +209,30 @@
   function initEnv() {
     if (document.querySelector(".env")) return;
     document.body.prepend(h("div", { class: "env", "aria-hidden": "true" }, h("div", { class: "env-bg" }),
-      h("i", { class: "orb o1" }), h("i", { class: "orb o2" }), h("i", { class: "orb o3" }), h("i", { class: "comet c1" }), h("i", { class: "comet c2" }),
+      h("i", { class: "orb o1" }), h("i", { class: "orb o3" }), h("i", { class: "comet c1" }), h("i", { class: "comet c2" }),
       h("div", { class: "grain" }), h("div", { class: "vignette" }), h("div", { id: "cursorlight" })));
   }
 
   function initEffects() {
     if (reduceMotion) return;
-    const bg = $(".env-bg"), hero = $(".hero");
-    // scroll: the background drifts slower than the page, depth elements float, the hero fades as you leave it
+    const bg = $(".env-bg"), env = $(".env"), hero = $(".hero");
+    // scroll: the view climbs the streaks of the background image, depth elements float, the hero fades as you leave it
     let queued = false;
+    const IMG_W = 736, IMG_H = 1308, FLARE = 0.72, STREAKS = [0.462, 0.537];   // measured from img/bg2.webp
     const frame = () => {
       queued = false;
-      const y = scrollY, vh = innerHeight;
-      if (bg) bg.style.setProperty("--sy", `${(-y * 0.07).toFixed(1)}px`);
+      const y = scrollY, vh = innerHeight, vw = innerWidth;
+      const max = document.documentElement.scrollHeight - vh, prog = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0;
+      const scale = Math.max(vw / IMG_W, vh / IMG_H), imgW = IMG_W * scale, imgH = IMG_H * scale, slack = Math.max(0, imgH - vh);
+      const at = slack > 0 ? 0.66 - 0.3 * prog : 0.5;                 // where in the image the viewport looks: the flare at the top of the page, then up the streaks
+      if (bg) bg.style.backgroundPosition = `50% ${(at * 100).toFixed(2)}%`;
+      if (env) {
+        const fy = FLARE * imgH - at * slack;                          // viewport row of the flare, so the pulses start from it
+        env.style.setProperty("--fy", `${fy.toFixed(0)}px`);
+        env.style.setProperty("--sx1", `${(vw / 2 + (STREAKS[0] - 0.5) * imgW).toFixed(1)}px`);
+        env.style.setProperty("--sx2", `${(vw / 2 + (STREAKS[1] - 0.5) * imgW).toFixed(1)}px`);
+        env.classList.toggle("nocomet", fy < vh * 0.22);
+      }
       if (hero) hero.style.setProperty("--hp", Math.min(1, Math.max(0, y / (hero.offsetHeight * 0.8))).toFixed(3));
       $$("[data-depth]").forEach((el) => {
         const r = el.getBoundingClientRect();
@@ -230,6 +241,7 @@
       });
     };
     addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(frame); } }, { passive: true });
+    addEventListener("resize", () => { if (!queued) { queued = true; requestAnimationFrame(frame); } });
     frame();
 
     // section dividers draw themselves as each section comes into view

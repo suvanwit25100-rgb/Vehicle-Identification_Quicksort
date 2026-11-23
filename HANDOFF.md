@@ -283,13 +283,18 @@ were added. Everything below runs against the real backend.
   trust and proof, under the hood). Each has what it does, how it works, an honest status chip (built / partial /
   planned) and a live visual read from the running backend (real frame reads, a live engine run, calibration curve,
   agency table, model readiness). The measured plate-reader comparison and a "not built yet" list are on it.
-- **Second background and lighting (`ui.css` environment block, built by `ui.js initEnv`):** the red light-streak image (`img/bg2.webp`) is
-  fixed behind every page except the landing hero, which keeps the main image. It breathes, drifts slower than the page, and has drifting light
-  orbs, pulses that travel up its two bright streaks (placed from the streak columns measured in the image, about 2.2vh either side of centre),
-  film grain, a vignette and a soft light that follows the cursor. Empty states are filled with the same image. Scroll effects: the hero fades
-  and lifts as you leave it, a marquee strip that speeds up while you scroll, a "how it works" rail that fills and lights each step, section
-  dividers that draw themselves, cards that tilt and have a cursor spotlight, primary buttons that lean towards the cursor, feature visuals that
-  float with depth, and headings that rise word by word (full text kept in `aria-label`). All of it is off under `prefers-reduced-motion`.
+- **Second background and lighting (`ui.css` environment block, built by `ui.js initEnv`):** the red light-streak image (`img/bg2.webp`,
+  736x1308) fills the whole viewport (`cover`) behind every page except the landing hero, which keeps the main image. Its geometry was measured
+  and `ui.js` uses it on every scroll and resize: the two bright streaks sit at 46.2% and 53.7% of the image width and its brightest row (the
+  flare) is 72% down. At the top of a page the view is positioned (66%) so the streaks rise into the flare; as you scroll the view climbs the
+  image (to 36%), so the page gets calmer further down. Light pulses start at the flare row and travel up the streak columns, recomputed from the
+  rendered size, so they stay on the streaks at any screen shape (checked at 1440x900, 2200x900 and a 375x812 phone; a portrait screen shows the
+  whole image fitted to its height). The panel and scrim colours moved from navy to the image's own warm black (`#060204`) and secondary glows use
+  its orange-red flare colour (`--ember`, `#e0583a`); the image has no blue, so the blue light orb was removed. Also: drifting light orbs, film
+  grain, a top scrim for legible headings, and a soft light that follows the cursor. Empty states are filled with the same image. Scroll effects: the
+  hero fades and lifts as you leave it, a marquee strip that speeds up while you scroll, a "how it works" rail that fills and lights each step,
+  section dividers that draw themselves, cards that tilt and have a cursor spotlight, primary buttons that lean towards the cursor, feature visuals
+  that float with depth, and headings that rise word by word (full text kept in `aria-label`). All of it is off under `prefers-reduced-motion`.
 - **Motion system (`ui.css` + `ui.js`, used by every page):** page-to-page curtain wipe (leaves from the left, uncovers to
   the right, no flash because the arriving page starts covered), staggered scroll reveals with left/right/scale variants
   (CSS animations, so a card's own hover transition cannot cancel them), bars that grow and charts that wipe in when their

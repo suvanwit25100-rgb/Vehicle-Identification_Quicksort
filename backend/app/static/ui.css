@@ -2,9 +2,9 @@
    Display type is wide and geometric (Unbounded); body is Manrope; plates and numbers are JetBrains Mono. */
 :root {
   color-scheme: dark;
-  --bg: #030612; --bg-2: #070c1e; --panel: rgba(9, 15, 34, .66); --panel-solid: #0a1128; --panel-2: rgba(255, 255, 255, .04);
+  --bg: #060204; --bg-2: #0d0507; --panel: rgba(14, 6, 9, .64); --panel-solid: #120709; --panel-2: rgba(255, 255, 255, .04);
   --fg: #eef1f8; --muted: #8f99b0; --dim: #5c667d;
-  --red: #ff2a3f; --red-deep: #c8102a; --red-soft: rgba(255, 42, 63, .14); --red-glow: rgba(255, 42, 63, .38);
+  --red: #ff2a3f; --ember: #e0583a; --red-deep: #c8102a; --red-soft: rgba(255, 42, 63, .14); --red-glow: rgba(255, 42, 63, .38);
   --amber: #ffb454; --green: #3ddc97; --blue: #6aa7ff;
   --rule: rgba(255, 255, 255, .09); --rule-2: rgba(255, 255, 255, .18);
   --display: "Unbounded", "Manrope", system-ui, sans-serif;
@@ -28,7 +28,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ---------- top bar ---------- */
 .bar { position: fixed; inset: 0 0 auto 0; z-index: 50; height: 68px; display: flex; align-items: center; transition: background .3s, border-color .3s; border-bottom: 1px solid transparent; }
-.bar.solid { background: rgba(3, 6, 18, .82); backdrop-filter: blur(14px); border-color: var(--rule); }
+.bar.solid { background: rgba(6, 2, 4, .82); backdrop-filter: blur(14px); border-color: var(--rule); }
 .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .glyph { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .glyph svg { width: 30px; height: 30px; }
@@ -41,7 +41,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .menu-btn { display: none; background: none; border: 1px solid var(--rule-2); border-radius: 999px; padding: 9px 16px; font: 500 12px var(--font); letter-spacing: .16em; cursor: pointer; }
 @media (max-width: 1320px) {
   .menu-btn { display: inline-block; }
-  .nav { position: fixed; inset: 68px 0 auto 0; flex-direction: column; align-items: stretch; background: rgba(3, 6, 18, .97); padding: 14px var(--gutter) 24px; border-bottom: 1px solid var(--rule); transform: translateY(-8px); opacity: 0; pointer-events: none; transition: .2s; }
+  .nav { position: fixed; inset: 68px 0 auto 0; flex-direction: column; align-items: stretch; background: rgba(6, 2, 4, .97); padding: 14px var(--gutter) 24px; border-bottom: 1px solid var(--rule); transform: translateY(-8px); opacity: 0; pointer-events: none; transition: .2s; }
   .nav.open { transform: none; opacity: 1; pointer-events: auto; }
   .nav a { padding: 14px 8px; font-size: 15px; border-radius: 10px; }
   .nav-sep { display: none; }
@@ -50,7 +50,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* ---------- buttons, chips ---------- */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; padding: 14px 26px; font: 600 13px var(--font); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; border: 1px solid var(--rule-2); background: transparent; cursor: pointer; transition: transform .2s, background .2s, border-color .2s, box-shadow .2s; }
 .btn:hover { transform: translateY(-1px); border-color: rgba(255, 255, 255, .4); }
-.btn.primary { background: var(--red); border-color: var(--red); box-shadow: 0 10px 40px -10px var(--red-glow); }
+.btn.primary { background: linear-gradient(100deg, var(--red) 10%, var(--ember)); border-color: var(--red); box-shadow: 0 10px 40px -10px var(--red-glow); }
 .btn.primary:hover { background: #ff4256; box-shadow: 0 14px 44px -8px var(--red-glow); }
 .btn.sm { padding: 9px 16px; font-size: 11px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
@@ -211,11 +211,11 @@ tbody tr:nth-child(5) { animation-delay: 200ms; } tbody tr:nth-child(6) { animat
 .spot:hover::before { opacity: 1; }
 
 /* scroll progress */
-#progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 80; background: linear-gradient(90deg, var(--red-deep), var(--red)); transform-origin: left; transform: scaleX(var(--p, 0)); box-shadow: 0 0 14px var(--red-glow); pointer-events: none; }
+#progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 80; background: linear-gradient(90deg, var(--red-deep), var(--red) 60%, var(--ember)); transform-origin: left; transform: scaleX(var(--p, 0)); box-shadow: 0 0 14px var(--red-glow); pointer-events: none; }
 
 /* page-to-page curtain: leaving covers the page from the left, arriving uncovers it to the right */
 html::after { content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none; transform: scaleX(0); transform-origin: left;
-  background: linear-gradient(90deg, #030612 0, #030612 calc(100% - 4px), #ff2a3f calc(100% - 4px)); transition: transform .5s var(--ease-io); }
+  background: linear-gradient(90deg, #060204 0, #060204 calc(100% - 4px), #ff2a3f calc(100% - 4px)); transition: transform .5s var(--ease-io); }
 html.arrived::after { transform: scaleX(1); transform-origin: right; transition: none; }
 html.reveal::after { transform: scaleX(0); transform-origin: right; transition: transform .75s var(--ease-io); }
 html.leaving::after { transform: scaleX(1); transform-origin: left; transition: transform .5s var(--ease-io); }
@@ -234,35 +234,35 @@ html.leaving::after { transform: scaleX(1); transform-origin: left; transition: 
 .foot p { max-width: 70ch; }
 
 /* ================= environment: second background, lighting, scroll effects ================= */
-/* The red light-streak image is the page background behind everything except the landing hero (which has its own main image).
-   .env sits under all content; panels are translucent glass, so the lights show faintly through them. */
-.env { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.env-bg { position: absolute; inset: -3% 0; background: url("/img/bg2.webp") center bottom / auto 106% no-repeat; opacity: .62; translate: 0 var(--sy, 0px);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 26%, #000 74%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 26%, #000 74%, transparent 100%);
-  animation: envBreath 9s ease-in-out infinite; }
-@keyframes envBreath { 50% { opacity: .42; scale: 1.02; } }
-.env::before { content: ""; position: absolute; inset: auto 0 0 0; height: 55vh; background: radial-gradient(70% 100% at 50% 100%, rgba(255, 42, 63, .22), transparent 70%); animation: horizon 7s ease-in-out infinite; }
-@keyframes horizon { 50% { opacity: .45; } }
-.orb { position: absolute; border-radius: 50%; opacity: .34; animation: orbDrift 26s ease-in-out infinite alternate; will-change: transform; }
-.orb.o1 { width: 52vmax; height: 52vmax; left: -18vmax; top: -16vmax; background: radial-gradient(circle, rgba(200, 16, 42, .55), transparent 66%); }
-.orb.o2 { width: 46vmax; height: 46vmax; right: -16vmax; top: 22vh; background: radial-gradient(circle, rgba(40, 80, 190, .5), transparent 66%); animation-duration: 32s; animation-delay: -9s; }
-.orb.o3 { width: 30vmax; height: 30vmax; left: 30vw; bottom: -14vmax; background: radial-gradient(circle, rgba(255, 90, 60, .42), transparent 66%); animation-duration: 21s; animation-delay: -4s; }
-@keyframes orbDrift { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(6vmax, 5vmax, 0) scale(1.16); } }
-/* light pulses that travel up the two bright streaks of the background image (they sit about 2.2vh either side of centre) */
-.comet { position: absolute; bottom: -24vh; width: 2px; height: 24vh; border-radius: 2px; opacity: 0; background: linear-gradient(to top, transparent, rgba(255, 110, 125, .95) 60%, #fff); animation: comet 7s linear infinite; }
-.comet.c1 { left: calc(50% - 2.3vh); } .comet.c2 { left: calc(50% + 2.1vh); animation-delay: -3.4s; animation-duration: 8.5s; }
-@keyframes comet { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: .85; } 75% { opacity: .55; } 100% { transform: translateY(-135vh); opacity: 0; } }
+/* The red light-streak image fills the whole viewport (cover) behind every page except the landing hero, which has its own image.
+   Measured from the image: it is 736x1308, the two bright streaks sit at 46.2% and 53.7% of its width, and its brightest row (the
+   flare) is 72% of the way down. ui.js reads that geometry on every scroll to slide the view up the streaks and to place the
+   light pulses exactly on them (--fy: flare row in the viewport, --sx1/--sx2: the streak columns). */
+.env { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; background: var(--bg); }
+.env-bg { position: absolute; inset: 0; background: url("/img/bg2.webp") 50% 66% / cover no-repeat; opacity: .82; animation: envBreath 9s ease-in-out infinite; }
+@keyframes envBreath { 50% { opacity: .64; } }
+/* a calm top so headings stay legible, and a little weight at the bottom edge; the sides stay open so the flare spans the full width */
+.vignette { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6, 2, 4, .78) 0, rgba(6, 2, 4, .3) 32%, rgba(6, 2, 4, 0) 58%, rgba(6, 2, 4, .28) 100%); }
+.orb { position: absolute; border-radius: 50%; opacity: .3; animation: orbDrift 26s ease-in-out infinite alternate; will-change: transform; }
+.orb.o1 { width: 50vmax; height: 50vmax; left: -16vmax; top: -18vmax; background: radial-gradient(circle, rgba(170, 37, 48, .55), transparent 66%); }
+.orb.o3 { width: 34vmax; height: 34vmax; right: -8vmax; top: 30vh; background: radial-gradient(circle, rgba(221, 96, 64, .4), transparent 66%); animation-duration: 21s; animation-delay: -4s; }
+@keyframes orbDrift { 0% { transform: translate3d(0, 0, 0) scale(1); } 100% { transform: translate3d(5vmax, 4vmax, 0) scale(1.14); } }
+/* light pulses that rise out of the flare along the two streaks */
+.comet { position: absolute; top: var(--fy, 72vh); margin-top: -3vh; width: 2px; height: 22vh; border-radius: 2px; opacity: 0;
+  background: linear-gradient(to top, transparent, rgba(255, 120, 135, .95) 62%, #fff); animation: comet 7s linear infinite; }
+.comet.c1 { left: var(--sx1, 46.2%); } .comet.c2 { left: var(--sx2, 53.7%); animation-delay: -3.4s; animation-duration: 8.5s; }
+@keyframes comet { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: .85; } 78% { opacity: .5; } 100% { transform: translateY(calc(-1 * var(--fy, 72vh) - 26vh)); opacity: 0; } }
+.env.nocomet .comet { display: none; }
 .grain { position: absolute; inset: 0; opacity: .07; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
-.vignette { position: absolute; inset: 0; background: radial-gradient(120% 95% at 50% 38%, transparent 52%, rgba(0, 0, 0, .55)); }
 #cursorlight { position: absolute; left: 0; top: 0; width: 560px; height: 560px; margin: -280px 0 0 -280px; border-radius: 50%; opacity: 0; transition: opacity .6s;
-  background: radial-gradient(circle, rgba(255, 60, 80, .17), transparent 62%); will-change: transform; }
+  background: radial-gradient(circle, rgba(255, 90, 80, .16), transparent 62%); will-change: transform; }
 #cursorlight.on { opacity: 1; }
-.glow { opacity: .55; }
+.glow { display: none; }
 
 /* empty states fill with the same image instead of plain dark */
 .empty { position: relative; text-align: center; padding: 38px 22px; border-radius: 12px; color: #aab3c6; overflow: hidden; isolation: isolate;
-  background: linear-gradient(rgba(3, 6, 18, .42), rgba(3, 6, 18, .62)), url("/img/bg2-sm.webp") center / cover no-repeat; border: 1px solid var(--rule); }
-.empty::after { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 80% at 50% 120%, rgba(255, 42, 63, .22), transparent 70%); animation: horizon 6s ease-in-out infinite; }
+  background: linear-gradient(rgba(6, 2, 4, .42), rgba(6, 2, 4, .62)), url("/img/bg2-sm.webp") center / cover no-repeat; border: 1px solid var(--rule); }
+.empty::after { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 80% at 50% 120%, rgba(255, 42, 63, .22), transparent 70%); animation: envBreath 6s ease-in-out infinite; }
 .detail-panel .empty { min-height: 260px; display: grid; place-items: center; }
 
 /* scroll effects */
@@ -280,14 +280,13 @@ html.leaving::after { transform: scaleX(1); transform-origin: left; transition: 
 
 @media (prefers-reduced-motion: reduce) {
   .comet, #cursorlight, .orb { display: none; }
+  .env-bg { animation: none; }
   .w > span { transform: none; }
   .sec::before { transform: scaleX(1); }
 }
-@media (max-width: 700px) { .orb.o2 { display: none; } .env-bg { opacity: .55; } }
 
 /* text that sits directly on the background image stays legible where a bright streak passes behind it */
-.page-head .h2, .page-head .lede, .sec-head .h2, .sec-head .lede, .fgroup-h h2 { text-shadow: 0 1px 16px rgba(3, 6, 18, .95), 0 0 2px rgba(3, 6, 18, .6); }
-.env-bg { opacity: .55; }
+.page-head .h2, .page-head .lede, .sec-head .h2, .sec-head .lede, .fgroup-h h2 { text-shadow: 0 1px 16px rgba(6, 2, 4, .95), 0 0 2px rgba(6, 2, 4, .6); }
 
 /* label and value on one line (used by the monitor panels and the Features visuals) */
 .mini { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; font-size: 13.5px; color: var(--muted); }

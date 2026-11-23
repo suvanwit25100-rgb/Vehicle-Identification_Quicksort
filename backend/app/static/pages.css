@@ -89,7 +89,7 @@ tr.sel td { background: var(--red-soft); }
 .triage { display: grid; gap: 12px; }
 
 /* ---------- features page ---------- */
-.fnav { position: sticky; top: 74px; z-index: 40; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0; margin-bottom: 8px; backdrop-filter: blur(10px); background: linear-gradient(180deg, rgba(3, 6, 18, .88), rgba(3, 6, 18, .55)); }
+.fnav { position: sticky; top: 74px; z-index: 40; display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0; margin-bottom: 8px; backdrop-filter: blur(10px); background: linear-gradient(180deg, rgba(6, 2, 4, .88), rgba(6, 2, 4, .55)); }
 .fnav a { text-decoration: none; font: 500 13px var(--font); color: var(--muted); padding: 9px 16px; border-radius: 999px; border: 1px solid var(--rule); transition: all .3s var(--ease); }
 .fnav a:hover { color: var(--fg); border-color: var(--rule-2); transform: translateY(-1px); }
 .fnav a[aria-current] { color: var(--fg); background: var(--red-soft); border-color: rgba(255, 42, 63, .55); }
