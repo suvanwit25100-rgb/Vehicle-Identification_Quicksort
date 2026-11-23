@@ -1,4 +1,6 @@
-# PlateTrace
+# Netra
+
+*(formerly PlateTrace)* — नेत्र, "the eye".
 
 Vehicle identification and traceability from CCTV footage (hackathon problem AIML-01, Option A).
 It recovers a number plate across many frames, marks unreadable characters as unknown instead of guessing,

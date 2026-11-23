@@ -22,7 +22,7 @@ ALLOWED_EXT = {".mp4", ".avi", ".mov", ".mkv"}
 JOB_ID_RE = re.compile(r"[0-9a-f]{12}")
 CROP_RE = re.compile(r"track\d+_plate\d+\.jpg")
 
-app = FastAPI(title="PlateTrace API")
+app = FastAPI(title="Netra API")
 
 
 @lru_cache

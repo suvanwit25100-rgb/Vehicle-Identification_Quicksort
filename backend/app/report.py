@@ -122,9 +122,9 @@ def render_report(result: AnalysisResult, job_dir: Path | None = None) -> str:
         if unread:
             body += "\n" + _unread_html(unread)
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>PlateTrace report {escape(result.job_id)}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Netra report {escape(result.job_id)}</title>
 <style>{CSS}</style></head><body>
-<h1>PlateTrace analysis report</h1>
+<h1>Netra analysis report</h1>
 <p class="muted">Job <span class="mono">{escape(result.job_id)}</span> - department: {escape(result.department)} -
 {result.frames_sampled} frames sampled - {len(result.tracks)} vehicle track(s)</p>
 <p class="muted">Input SHA-256: <span class="mono">{escape(result.source_sha256)}</span></p>

@@ -1,4 +1,4 @@
-# PlateTrace: read this first
+# Netra: read this first
 
 You are joining mid-project with no earlier conversation. **Read `HANDOFF.md` (the full state of the project) and
 `training/README.md` before doing anything.** Do not ask the user to re-explain the project; ask only for what is

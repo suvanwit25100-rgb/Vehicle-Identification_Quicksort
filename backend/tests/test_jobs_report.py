@@ -89,7 +89,7 @@ def test_job_round_trip_and_report_endpoint(client):
     got = client.get(f"/api/jobs/{result.job_id}")
     assert got.status_code == 200 and got.json()["job_id"] == result.job_id
     rep = client.get(f"/api/jobs/{result.job_id}/report")
-    assert rep.status_code == 200 and "PlateTrace analysis report" in rep.text
+    assert rep.status_code == 200 and "Netra analysis report" in rep.text
 
 
 def test_crop_endpoint_serves_only_expected_names(client, tmp_path):
@@ -119,7 +119,7 @@ def test_analyze_rejects_wrong_extension_and_unknown_department(client):
 
 def test_landing_and_console_are_served(client):
     r = client.get("/")
-    assert r.status_code == 200 and "PlateTrace" in r.text and "site.js" in r.text
+    assert r.status_code == 200 and "Netra" in r.text and "site.js" in r.text
     for path in ("/site.js", "/site.css", "/img/bg.webp", "/data/demo_clear.json",
                  "/console/", "/console/app.js", "/console/console.css"):
         assert client.get(path).status_code == 200, path

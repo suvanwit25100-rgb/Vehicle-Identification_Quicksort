@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
-DEVICE = os.environ.get("PLATETRACE_DEVICE", "cpu")
+DEVICE = os.environ.get("NETRA_DEVICE", "cpu")
 VEHICLE_CLASSES = {2: "car", 3: "motorcycle", 5: "bus", 7: "truck"}
 # Default association settings: a looser match threshold cut tracks 29 -> 23 on one clip but linked different vehicles and lost a plate.
 TRACKER_CFG = "bytetrack.yaml"

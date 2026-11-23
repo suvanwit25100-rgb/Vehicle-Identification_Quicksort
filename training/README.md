@@ -1,4 +1,4 @@
-# PlateTrace: plate recogniser training kit
+# Netra: plate recogniser training kit
 
 Trains a **plate-only** character recogniser (a small CRNN with CTC loss, about 2M parameters) on:
 

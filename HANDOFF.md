@@ -1,4 +1,6 @@
-# PlateTrace: full project handoff
+# Netra: full project handoff
+
+*(The project was called PlateTrace until 2026-11-23. Netra means "the eye" in Hindi.)*
 
 Written 2026-11-23. **Final evaluation: evening of 2026-11-24.** The mid evaluation went smoothly.
 This file is the complete state of the project so a new machine (the RTX 4050 laptop) and a new Claude Code
@@ -106,7 +108,7 @@ cd .. && python -m uvicorn app.main:app --app-dir backend --port 8000
 ```
 
 Open http://localhost:8000 (landing) and http://localhost:8000/console/. The device is CPU by default; set
-`PLATETRACE_DEVICE=cuda` to run the detectors on the GPU. `.claude/launch.json` uses the macOS venv path; on
+`NETRA_DEVICE=cuda` to run the detectors on the GPU. `.claude/launch.json` uses the macOS venv path; on
 Windows change it to `backend/.venv/Scripts/python.exe`.
 
 ## 6. Status and results so far
