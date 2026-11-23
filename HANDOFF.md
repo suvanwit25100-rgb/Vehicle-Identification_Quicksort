@@ -2,7 +2,7 @@
 
 *(The project was called PlateTrace until 2026-11-23. Netra means "the eye" in Hindi.)*
 
-Written 2026-11-23. **Final evaluation: evening of 2026-11-24.** The mid evaluation went smoothly.
+Written 2026-11-23. **Submission: morning of 2026-11-25. The model stack is final: see `MODELS.md`.** The mid evaluation went smoothly.
 This file is the complete state of the project so a new machine (the RTX 4050 laptop) and a new Claude Code
 session can pick it up without the earlier conversation. Start with section 10 for the first-session prompt.
 

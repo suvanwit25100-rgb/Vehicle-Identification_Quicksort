@@ -28,7 +28,7 @@ BRAINS = [
     Brain("plate_ocr", "Plate characters with per-character confidence",
           "PP-OCRv4 recogniser bundled in rapidocr-onnxruntime", "Apache-2.0", None, True),
     Brain("clip", "Zero-shot body type; appearance embedding for cross-camera matching",
-          "openai/clip-vit-base-patch32", "check model card", CLIP_DIR, False),
+          "openai/clip-vit-base-patch32", "none stated on its Hugging Face page; weights not redistributed", CLIP_DIR, False),
 ]
 
 

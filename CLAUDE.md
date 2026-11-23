@@ -10,7 +10,7 @@ marks unreadable characters as unknown, extracts colour and body type, matches a
 or says "no confident match". FastAPI backend, YOLO + PP-OCR + CLIP, multi-page static site. 124 tests.
 
 ## Deadline
-Final evaluation: **evening of 2026-11-24**. Keep a working demo at every step; never leave the app broken.
+Submission: **morning of 2026-11-25**. The model stack is final (see `MODELS.md`): pretrained only, no further model changes. Keep a working demo at every step; never leave the app broken.
 
 ## Decision (2026-11-24): pretrained models only, no training
 The user decided not to train our own models. The from-scratch kit in `training/` is parked. The evaluator's accuracy
@@ -19,6 +19,7 @@ PP-OCR alone, but PP-OCR and Awiros ANPR-OCR agree-and-are-right 99% of the time
 second-reader cross-check is the promising idea (not built).
 
 ## Open work (ask the user which one you take)
+0. **Models: final** (MODELS.md). Do not swap or add models before submission.
 1. **Site rebuild: done** (HANDOFF.md section 8): landing, features, console, monitor, citizen reports, officer desk, with a shared motion system. Remaining polish
    ideas: seed a few realistic demo reports, PDF export of the report, complaint de-duplication.
 2. **Second-reader cross-check** with Awiros in the pipeline (needs PaddlePaddle in the backend environment): only if

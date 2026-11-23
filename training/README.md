@@ -1,5 +1,7 @@
 # Netra: plate recogniser training kit
 
+> **Not part of the submitted system.** The final system uses pretrained models only (see `MODELS.md`). This folder is an unused experiment, kept for reference: a small plate recogniser trained from scratch on synthetic plates. It works on its own synthetic data, but it was never tested on real plates and is not used by the app.
+
 Trains a **plate-only** character recogniser (a small CRNN with CTC loss, about 2M parameters) on:
 
 - **synthetic Indian plates**, generated on the fly with perspective (viewing angle), rotation, Gaussian and
