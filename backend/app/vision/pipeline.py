@@ -15,7 +15,7 @@ from app.registry import load_registry
 from app.schemas import AnalysisResult, FrameRead, TrackAnalysis, VideoInfo
 
 from .attributes import BODY_PROMPTS, average_distributions, body_distribution, colour_distribution, fuse_body
-from .ocr import read_plate_chars
+from .rows import read_plate
 from .plate_text import align_to_slots
 from .stitch import group_tracks
 from .video import laplacian_var, sample_frames
@@ -37,6 +37,16 @@ def plate_note(frames_with_plate: int, max_width: int | None, known_chars: int) 
         return (f"Plate located but too small: the largest was {max_width} px wide, and about "
                 f"{MIN_PLATE_PX} px or more is needed to read it reliably.")
     return "Plate located but its characters could not be read reliably (blur, angle or occlusion)."
+
+
+def plate_layout(reads: list[FrameRead]) -> str | None:
+    """"two-row" or "one-row", judged by the frames that actually produced a reading. Tiny frames fall back to one-row and would
+    otherwise outvote the one good frame."""
+    good = [r.rows for r in reads if r.rows and sum(c is not None for c in r.chars) >= 5]
+    votes = good or [r.rows for r in reads if r.rows]
+    if not votes:
+        return None
+    return "two-row" if sum(v == 2 for v in votes) * 2 > len(votes) else "one-row"
 
 
 def _video_info(path: Path) -> VideoInfo | None:
@@ -143,12 +153,12 @@ def analyze_video(
             plate = vehicle[max(0, py1):py2, max(0, px1 - pad):px2 + pad]
             if plate.shape[0] < 8 or plate.shape[1] < 16:
                 continue
-            chars_raw = read_plate_chars(plate)
+            chars_raw, n_rows = read_plate(plate)
             chars = align_to_slots(chars_raw)
             sharp = laplacian_var(plate)
             area = float((px2 - px1) * (py2 - py1))
             reads[tid].append(FrameRead(frame_id=fr.frame_id, sharpness=sharp, plate_area=area, chars=chars,
-                                        raw="".join(c for c, _ in chars_raw)))
+                                        raw="".join(c for c, _ in chars_raw), rows=n_rows))
             crops[tid].append((sharp * area, plate))
             if tid not in evidence or sharp * area > evidence[tid][0]:
                 evidence[tid] = (sharp * area, fr.image, (x1, y1, x2, y2), (x1 + max(0, px1), y1 + max(0, py1), x1 + px2, y1 + py2))
@@ -217,12 +227,14 @@ def analyze_video(
                 evidence_name = f"track{tid}_evidence.jpg"
                 cv2.imwrite(str(job_dir / evidence_name), _annotate(eimg, vbox, pbox, tid, fused.pattern))
 
+        layout = plate_layout(reads[tid])
+
         tracks.append(TrackAnalysis(
             track_id=tid, vehicle_label=labels[tid].most_common(1)[0][0], frames_seen=seen[tid],
             frames_with_plate=len(reads[tid]), colour=colour, body_type=body,
             frame_reads=reads[tid], plate_crops=saved, max_plate_width_px=widths[tid] or None,
             plate_note=note, merged_from=sorted(merged_from.get(tid, [])), vehicle_crop=vehicle_name,
-            evidence_frame=evidence_name, second_reader=second, match=result,
+            evidence_frame=evidence_name, second_reader=second, plate_layout=layout, match=result,
         ))
     tracks.sort(key=lambda t: (-t.match.fused.known_count, -t.frames_with_plate, -t.frames_seen))
 

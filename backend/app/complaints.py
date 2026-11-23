@@ -29,7 +29,7 @@ from .config import DepartmentConfig
 from .fusion import fuse_frames
 from .schemas import FrameRead, FusedPlate
 from .vision.attributes import colour_distribution
-from .vision.ocr import read_plate_chars
+from .vision.rows import read_plate
 from .vision.plate_text import align_to_slots
 from .vision.video import laplacian_var
 
@@ -122,7 +122,7 @@ def read_photo(img: np.ndarray, vehicle_detector, plate_detector, cfg: Departmen
         crop = source[max(0, py1):py2, max(0, px1 - pad):px2 + pad]
         if crop.shape[0] >= 8 and crop.shape[1] >= 16:
             reads.append(FrameRead(frame_id=0, sharpness=laplacian_var(crop), plate_area=float((px2 - px1) * (py2 - py1)),
-                                   chars=align_to_slots(read_plate_chars(crop))))
+                                   chars=align_to_slots(read_plate(crop)[0])))
         else:
             crop = None
     fused = fuse_frames(reads, slot_accept=cfg.slot_accept)

@@ -72,6 +72,8 @@ def _track_html(track: TrackAnalysis, job_dir: Path | None) -> str:
         f'<p class="muted">Seen in {track.frames_seen} sampled frames; plate located in {track.frames_with_plate}. '
         f"Detected colour: {_top(track.colour)}. Detected body type: {_top(track.body_type)}.</p>"
     )
+    if track.plate_layout == "two-row":
+        out.append('<p class="muted">Two-row plate (typical of two-wheelers): each row was read as its own line, then joined.</p>')
     if track.merged_from:
         ids = ", ".join(str(i) for i in track.merged_from)
         out.append(f'<p class="muted">Merged with track(s) {ids}: their plates agree on 6 or more characters and clash on none.</p>')

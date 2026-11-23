@@ -37,6 +37,10 @@ const V = {
       cap("Position 4 can be a letter, as in Delhi's 1L and 8C, so it is never forced to a digit."));
   },
 
+  tworow: () => h("div", {}, h("div", { class: "mrow fused", style: "width:62%" }, [..."DL14S"].map((c) => h("span", {}, c))), h("div", { class: "mrow fused", style: "width:62%" }, [..."Z8550"].map((c) => h("span", {}, c))),
+    h("div", { class: "arrow" }, "↓ read each row as a line, then join"), mrow("DL14SZ8550", "fused"),
+    cap("Measured on 300 generated two-row plates per setting: the old reader got 0%, the row-aware reader 82% (easier) and 66% (harder), fixing 247 and 197 plates and breaking none. One-row plates were identical before and after. On the real clip it read one clear two-row plate that was a fragment before.")),
+
   stitch: () => h("div", {}, mrow("UP14CA??14"), mrow("??14CA0914"), h("div", { class: "arrow" }, "↓ agree on 6 characters, clash on none"), mrow("UP14CA0914", "fused"),
     cap("Two fragments of one vehicle become one track. A single clash blocks the merge.")),
 
@@ -138,6 +142,8 @@ const GROUPS = [
       ["Unreadable positions are shown as ?, in amber, everywhere", "Matching uses only the characters that are known", "Plates too small to read stay entirely unknown"], "unknown"],
     ["partial", "Plate grammar and alignment", "Indian plates follow a pattern. The system aligns every read to ten fixed positions, and corrects look-alike characters by where they sit.",
       ["Position 4 may be a letter or a digit (Delhi RTO codes such as 1L and 8C)", "O/0, I/1 and S/5 are corrected by position, with a confidence discount", "One extra or missing end character is tolerated", "Honest gap: a 9-character plate (one series letter) is only partly read"], "grammar"],
+    ["built", "Motorcycles and two-row plates", "Most Indian two-wheelers carry a two-row plate. A reader built for one line turns it into fragments, so each row is read as its own line and joined.",
+      ["A plate that is not clearly one line is read both ways, and the reading that fits the plate format better wins", "A one-row plate is never split, so cars are unaffected (identical results in the measurement)", "Honest limits: tiny or blurry two-row plates still cannot be read, and only one clear two-row plate in our real clip could be checked"], "tworow"],
     ["partial", "Track stitching", "Trackers sometimes split one vehicle into several tracks. Fragments that clearly carry the same plate are joined.",
       ["Merge only if the plates agree on 6 or more characters and clash on none", "A group grows only if every pair in it is compatible", "Honest gap: on one real clip nothing needed merging, and unreadable fragments stay separate"], "stitch"],
     ["built", "Too small to read", "A vehicle with a tiny plate is not forced into a read. It is listed with the reason.",

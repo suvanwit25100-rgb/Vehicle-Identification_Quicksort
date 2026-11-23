@@ -327,6 +327,25 @@ Not built, by design or time: real officer accounts and citizen OTP sign-in (sin
 retention and deletion rules, complaint de-duplication, and fusing several citizens' reads of one vehicle (the cross-camera
 bonus). Photos from different reports of the same plate are not linked yet. Citizen photos are one frame, so expect more `?`.
 
+## 8b. Features built after the model freeze (2026-11-24), one at a time, each tested before the next
+
+The user chose: handle motorcycles WITHOUT training, then variable-length plates, watch-list with repeat sightings, PDF export, and agency tools.
+All use the existing pretrained models; nothing was trained.
+
+### Feature 1: motorcycles and two-row plates (`app/vision/rows.py`)
+- **Why:** the registry, the COCO motorcycle class and the `two_wheeler` body type already existed, so the real gap was reading the plate. Most Indian
+  two-wheelers have a two-row plate (DL14S over Z8550), and a reader built for one line returns fragments. In our real clip all 10 motorcycles were unreadable;
+  the crops showed several clear two-row plates (e.g. track 95), read as `2658` or `ALSS`.
+- **How:** `find_split` locates the gap between rows from the text-density profile; `read_plate` reads each row as a line and joins them. A crop that is not
+  clearly one line (width/height under 3.0) is read BOTH ways and the reading that fits the plate format better by at least one confident character wins, so a
+  one-row plate with a loose crop is never damaged. The second reader does the same. `FrameRead.rows` and `TrackAnalysis.plate_layout` record it; the console
+  shows a "two-row plate" chip and the CSVs and report carry it. Layout is judged by the frames that produced a reading (`plate_layout` in `pipeline.py`).
+- **Measured (generated plates, `training/plategen.py` now has `two_row=True`; 300 per setting):** two-row plates, old reader 0.0% exact, new 82.3% (easier) and
+  65.7% (harder), fixing 247 and 197 plates and breaking none. One-row plates identical before and after (94.3%, 86.7%). Real clip: track 95 now reads
+  `DL14SZ8550` exactly (second reader agrees 10/10); other motorcycle plates are mostly too small or blurry, and track 30 is read partly with the second reader
+  disagreeing, so it is flagged for manual verification. Only one clear real two-row plate could be checked; generated plates use unrealistic fonts.
+- **Not done:** a 80 px minimum is still applied to all plates (no real motorcycle data to calibrate a separate one); no helmet or rider logic.
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

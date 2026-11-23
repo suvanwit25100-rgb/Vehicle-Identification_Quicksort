@@ -44,6 +44,7 @@ function trackView(jobId, t) {
     h("div", { class: "track-h" },
       h("h3", {}, `Vehicle ${t.track_id} · ${t.vehicle_label}`),
       h("span", { class: "chip planned" }, `seen in ${t.frames_seen} frames`), h("span", { class: "chip planned" }, `plate in ${t.frames_with_plate}`),
+      t.plate_layout === "two-row" ? h("span", { class: "chip built", title: "Typical of two-wheelers: each row was read as its own line, then joined." }, "two-row plate") : null,
       merged ? h("span", { class: "chip built", title: "Their plates agree on 6 or more characters and clash on none." }, `merged with track${merged > 1 ? "s" : ""} ${t.merged_from.join(", ")}`) : null),
     h("div", { class: "track-grid" },
       h("div", {},

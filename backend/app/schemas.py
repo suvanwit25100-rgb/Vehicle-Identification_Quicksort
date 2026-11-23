@@ -16,6 +16,7 @@ class FrameRead(BaseModel):
     plate_area: float = Field(ge=0.0)
     chars: list[CharRead | None]
     raw: str | None = None  # the whole plate as the reader returned it, before it was fitted to ten slots
+    rows: int | None = None  # 1 if read as one line, 2 if split into two rows (most two-wheelers)
 
     @field_validator("chars")
     @classmethod
@@ -108,6 +109,7 @@ class TrackAnalysis(BaseModel):
     merged_from: list[int] = []
     vehicle_crop: str | None = None
     evidence_frame: str | None = None
+    plate_layout: str | None = None  # "one-row" or "two-row", from how most frames of this vehicle were read
     second_reader: SecondReading | None = None
     match: "MatchResult"
 

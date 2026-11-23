@@ -129,6 +129,7 @@ def test_the_data_tables_say_what_the_report_says(client, tmp_path):
     tracks = read("data/tracks.csv")
     assert len(tracks) == 1 and tracks[0]["plate_pattern"] == "CG04??2819" and tracks[0]["known_characters"] == "8"
     assert tracks[0]["status"] == "match" and tracks[0]["second_reader_verdict"] == "agrees" and tracks[0]["top_candidate_plate"] == "CG04KA2819"
+    assert "plate_layout" in tracks[0] and "rows" in read("data/frame_reads.csv")[0]
     frames = read("data/frame_reads.csv")
     assert len(frames) == 3 and frames[0]["whole_read"] == "CG04KA2819" and frames[0]["p1_char"] == "C" and frames[0]["p1_conf"] == "0.900"
     # positions 5 and 6 were unreadable in these frames: their cells stay blank rather than holding a guess

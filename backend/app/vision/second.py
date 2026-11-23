@@ -7,6 +7,8 @@ from pathlib import Path
 import cv2
 
 from .detectors import MODELS_DIR
+from .plate_text import align_to_slots
+from .rows import MARGIN, split_rows
 
 MODEL_DIR = MODELS_DIR / "fast-plate-ocr"
 ONNX = MODEL_DIR / "cct_s_v2_global.onnx"
@@ -31,7 +33,16 @@ class SecondReader:
         self.rec = LicensePlateRecognizer(onnx_model_path=str(onnx), plate_config_path=str(config),
                                           providers=["CPUExecutionProvider"])
 
-    def read(self, plate_bgr) -> str:
-        rgb = cv2.cvtColor(plate_bgr, cv2.COLOR_BGR2RGB)
-        out = self.rec.run(rgb)
+    def _read(self, img) -> str:
+        out = self.rec.run(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         return (out[0].plate if out else "") or ""
+
+    def read(self, plate_bgr) -> str:
+        """The plate as text. A two-row plate is read row by row when that fits the plate format clearly better, as for the first reader."""
+        one = self._read(plate_bgr)
+        parts = split_rows(plate_bgr)
+        if parts is None:
+            return one
+        two = "".join(self._read(p) for p in parts)
+        placed = lambda t: sum(1 for s in align_to_slots([(c, 1.0) for c in t]) if s)
+        return two if placed(two) >= placed(one) + MARGIN else one

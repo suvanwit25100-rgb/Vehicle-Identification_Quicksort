@@ -85,7 +85,7 @@ def tracks_csv(result: AnalysisResult) -> bytes:
     header = ["track_id", "vehicle", "frames_seen", "frames_with_plate", "merged_from", "plate_pattern", "known_characters", "status",
               "message", "top_candidate_plate", "top_candidate_confidence", "colour", "colour_confidence", "body_type",
               "body_type_confidence", "largest_plate_px", "plate_note", "second_reader", "second_reader_reading",
-              "second_reader_verdict", "second_reader_agree", "second_reader_clash"]
+              "second_reader_verdict", "second_reader_agree", "second_reader_clash", "plate_layout"]
     rows = []
     for t in result.tracks:
         m, top = t.match, (t.match.candidates[0] if t.match.candidates else None)
@@ -95,19 +95,19 @@ def tracks_csv(result: AnalysisResult) -> bytes:
         rows.append([t.track_id, t.vehicle_label, t.frames_seen, t.frames_with_plate, " ".join(map(str, t.merged_from)), m.pattern,
                      m.fused.known_count, m.status, m.message, top.plate if top else "", f"{top.confidence:.2f}" if top else "", c, cc, b, bc,
                      t.max_plate_width_px or "", t.plate_note or "", s.reader if s else "", s.reading if s else "",
-                     s.verdict if s else "", s.agree if s else "", s.clash if s else ""])
+                     s.verdict if s else "", s.agree if s else "", s.clash if s else "", t.plate_layout or ""])
     return _csv(header, rows)
 
 
 def frame_reads_csv(result: AnalysisResult) -> bytes:
-    header = ["track_id", "frame_id", "sharpness", "plate_area_px2", "whole_read"] + [f"p{i}_{k}" for i in range(1, PLATE_LEN + 1) for k in ("char", "conf")]
+    header = ["track_id", "frame_id", "sharpness", "plate_area_px2", "whole_read", "rows"] + [f"p{i}_{k}" for i in range(1, PLATE_LEN + 1) for k in ("char", "conf")]
     rows = []
     for t in result.tracks:
         for fr in t.frame_reads:
             cells = []
             for c in fr.chars:
                 cells += [c.char, f"{c.conf:.3f}"] if c else ["", ""]
-            rows.append([t.track_id, fr.frame_id, f"{fr.sharpness:.1f}", f"{fr.plate_area:.0f}", fr.raw or ""] + cells)
+            rows.append([t.track_id, fr.frame_id, f"{fr.sharpness:.1f}", f"{fr.plate_area:.0f}", fr.raw or "", fr.rows or ""] + cells)
     return _csv(header, rows)
 
 

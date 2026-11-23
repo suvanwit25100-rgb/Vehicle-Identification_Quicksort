@@ -77,12 +77,16 @@ def _jitter(colour, rng, amount=16):
     return tuple(int(min(255, max(0, c + rng.randint(-amount, amount)))) for c in colour)
 
 
-def render_plate(text: str, rng: random.Random) -> np.ndarray:
-    """A clean, high-resolution plate image (BGR)."""
+def render_plate(text: str, rng: random.Random, two_row: bool = False) -> np.ndarray:
+    """A clean, high-resolution plate image (BGR). two_row=True draws the layout used on most two-wheelers: DL14S over Z8550."""
     fonts = find_fonts()
     path = rng.choice(fonts) if fonts else None
-    width = rng.randint(300, 520)
-    height = max(64, int(width / rng.uniform(3.4, 5.0)))
+    if two_row:
+        width = rng.randint(230, 360)
+        height = max(100, int(width / rng.uniform(1.5, 2.1)))
+    else:
+        width = rng.randint(300, 520)
+        height = max(64, int(width / rng.uniform(3.4, 5.0)))
     bg, fg, _ = rng.choices(SCHEMES, [s[2] for s in SCHEMES])[0]
     bg, fg = _jitter(bg, rng), _jitter(fg, rng, 10)
     img = Image.new("RGB", (width, height), bg)
@@ -92,33 +96,40 @@ def render_plate(text: str, rng: random.Random) -> np.ndarray:
                         outline=fg, width=border)
     x0 = border + int(0.03 * width)
     if rng.random() < 0.3:  # blue "IND" strip
-        strip = int(width * 0.08)
+        strip = int(width * (0.1 if two_row else 0.08))
         d.rectangle([border, border, border + strip, height - border], fill=(20, 45, 150))
         d.text((border + strip // 2, height // 2), "IND", font=_font(path, max(6, strip // 3)),
                fill=(255, 255, 255), anchor="mm")
         x0 = border + strip + int(0.02 * width)
 
-    shown = text if rng.random() < 0.4 else f"{text[:2]} {text[2:4]} {text[4:6]} {text[6:]}"
+    if two_row:
+        k = rng.choice([4, 5])
+        lines = [text[:k], text[k:]]
+    else:
+        lines = [text if rng.random() < 0.4 else f"{text[:2]} {text[2:4]} {text[4:6]} {text[6:]}"]
     tracking = rng.uniform(0.0, 0.14)
     word_gap = rng.uniform(0.8, 1.6)
     avail = width - x0 - border - int(0.03 * width)
-    size = max(10, int(height * rng.uniform(0.5, 0.72) / 0.72))
+    row_h = (height - 2 * border) / len(lines)
+    size = max(10, int((row_h * rng.uniform(0.62, 0.8) if two_row else height * rng.uniform(0.5, 0.72)) / 0.72))
 
-    def layout(sz):
+    def measure(line, sz):
         f = _font(path, sz)
-        advances = [f.getlength(c) * (word_gap if c == " " else 1) + sz * tracking for c in shown]
+        advances = [f.getlength(c) * (word_gap if c == " " else 1) + sz * tracking for c in line]
         return f, advances, sum(advances) - sz * tracking
 
-    font, advances, total = layout(size)
-    if total > avail:
-        font, advances, total = layout(max(8, int(size * avail / total * 0.98)))
-    cap = -font.getbbox("H", anchor="ls")[1]
-    x = x0 + max(0, (avail - total) / 2) + rng.uniform(-0.02, 0.02) * width
-    baseline = height / 2 + cap / 2 + rng.uniform(-0.03, 0.03) * height
-    for ch, adv in zip(shown, advances):
-        if ch != " ":
-            d.text((x, baseline), ch, font=font, fill=fg, anchor="ls")
-        x += adv
+    while size > 8 and max(measure(line, size)[2] for line in lines) > avail:
+        size = max(8, int(size * 0.95))
+    cap = -measure(lines[0], size)[0].getbbox("H", anchor="ls")[1]
+    jitter_y = rng.uniform(-0.03, 0.03) * height
+    for i, line in enumerate(lines):
+        font, advances, total = measure(line, size)
+        x = x0 + max(0, (avail - total) / 2) + rng.uniform(-0.02, 0.02) * width
+        baseline = border + row_h * (i + 0.5) + cap / 2 + jitter_y
+        for ch, adv in zip(line, advances):
+            if ch != " ":
+                d.text((x, baseline), ch, font=font, fill=fg, anchor="ls")
+            x += adv
     return cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
 
 
@@ -201,10 +212,10 @@ def degrade(img: np.ndarray, rng: random.Random, strength: float = 0.7) -> np.nd
     return img
 
 
-def make_sample(rng: random.Random, strength: float | None = None) -> tuple[str, np.ndarray]:
+def make_sample(rng: random.Random, strength: float | None = None, two_row: bool = False) -> tuple[str, np.ndarray]:
     text = random_plate(rng)
     s = rng.uniform(0.2, 1.0) if strength is None else strength
-    return text, degrade(render_plate(text, rng), rng, s)
+    return text, degrade(render_plate(text, rng, two_row), rng, s)
 
 
 def to_model_input(img_bgr: np.ndarray) -> np.ndarray:
