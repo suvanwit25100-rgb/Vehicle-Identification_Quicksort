@@ -153,13 +153,22 @@ Known weaknesses and dead ends (do not repeat these):
   "confidently wrong" rate, accuracy by plate width.
 
 Verified: generator output viewed and tuned; train / validate / export run end to end; real-crop path tested on a
-fake folder; evaluate.py runs. First baseline: **PP-OCR reads 69.3% of 300 synthetic plates (strength 0.8) exactly and is
-confidently wrong on 21.7%.** This synthetic set favours a model trained on the same generator, so it is a reference
-point, not a result.
+fake folder; evaluate.py runs; the model learns on synthetic data (below).
 
-**Not verified:** that the CRNN actually learns to read well. A 12-epoch run on the Mac was at epoch 2 (loss 2.95,
-5.6% character accuracy; the usual CTC flat phase) when this was written and had not finished. Nothing has run on real
-crops or on the GPU. **Do not claim an accuracy gain until `evaluate.py` shows it on real held-out crops.**
+**Learning test (finished):** 12 epochs x 20,000 synthetic plates on the Mac (about 18 minutes, MPS). The loss sat
+flat near 3 for four epochs, as CTC usually does, then broke out at epoch 5 and ended at **94.9% exact / 99.0%
+character accuracy on its synthetic validation set (strength 0.7)**. On 500 fresh synthetic plates (strength 0.8):
+
+| reader | exact | character acc | confidently wrong |
+|---|---|---|---|
+| PP-OCRv4 (current) | 68.8% | 91.7% | 20.0% |
+| trained CRNN | 89.6% | 98.0% | 7.6% |
+
+**Read this carefully:** that test set comes from the same generator the CRNN trained on, so it flatters the CRNN.
+It proves the kit works and the model can learn plate reading; it does **not** prove the model beats PP-OCR on real CCTV
+footage. Nothing has been run on real crops or on the GPU yet. **Do not claim an accuracy gain until `evaluate.py`
+shows it on real held-out crops.** Expect the synthetic-to-real gap to cost accuracy; mixing real crops into training
+(`--real-dir`) is the main defence. On the 4050 use the default 40 epochs x 40,000 samples.
 
 Gotchas found while building it: the legacy ONNX exporter needs the `onnx` package and `dynamo=False`;
 `AdaptiveAvgPool2d((1, None))` does not export (replaced by a mean over height); `torch.onnx.export` puts the model
