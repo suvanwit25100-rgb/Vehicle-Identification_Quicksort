@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlateTrace Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;600&family=Rajdhani:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="console.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+<header class="top">
+  <a class="brand" href="/" aria-label="PlateTrace home">
+    <svg viewBox="0 0 48 46" width="30" height="28" aria-hidden="true"><polygon points="24,2 46,18 38,44 10,44 2,18" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M24 2 L24 26 M2 18 L24 26 L46 18 M10 44 L24 26 L38 44" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".7"/></svg>
+    <span class="wordmark">PLATE<b>TRACE</b></span>
+    <span class="sub">INVESTIGATOR CONSOLE</span>
+  </a>
+  <div id="brains" class="brains" aria-label="Model status"></div>
+</header>
+
+<main>
+  <section class="panel" aria-labelledby="up-h">
+    <h2 id="up-h">New analysis</h2>
+    <form id="upload" class="row">
+      <label class="field">Department
+        <select id="department"></select>
+      </label>
+      <label class="field grow">CCTV clip (mp4, avi, mov, mkv)
+        <input id="file" type="file" accept=".mp4,.avi,.mov,.mkv,video/*" required>
+      </label>
+      <button id="go" type="submit">Analyse clip</button>
+    </form>
+    <form id="lookup" class="row small">
+      <label class="field grow">Open an earlier job by ID
+        <input id="jobid" type="text" inputmode="latin" maxlength="12" placeholder="12-character job ID" pattern="[0-9a-f]{12}">
+      </label>
+      <button type="submit" class="ghost">Open</button>
+    </form>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <section id="results" hidden></section>
+</main>
+
+<footer class="foot">
+  Confidence scores are uncalibrated estimates. Results are leads for an investigator to verify.
+  Characters that cannot be read are shown as <span class="mono">?</span> and are never guessed.
+  <a href="/">Back to the overview</a>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

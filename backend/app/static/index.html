@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlateTrace</title>
+<meta name="description" content="Turn blurry CCTV footage and a partial number plate into a ranked, explainable shortlist of vehicles.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;600&family=Rajdhani:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"></div>
+<div class="shade" aria-hidden="true"></div>
+
+<header class="chrome top">
+  <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="menu">
+    <svg viewBox="0 0 48 46" width="38" height="36" aria-hidden="true"><polygon points="24,2 46,18 38,44 10,44 2,18" fill="none" stroke="currentColor" stroke-width="2"/><path d="M24 2 L24 26 M2 18 L24 26 L46 18 M10 44 L24 26 L38 44" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".7"/></svg>
+    <span>MENU</span>
+  </button>
+  <div class="brand-top">
+    <span class="wordmark">PLATE<b>TRACE</b></span>
+    <span class="cap">AIML-01 · VEHICLE TRACEABILITY</span>
+  </div>
+</header>
+
+<nav class="overlay" id="menu" aria-label="Site" hidden>
+  <ol>
+    <li><a href="#s0">Overview</a></li>
+    <li><a href="#s1">The pipeline</a></li>
+    <li><a href="#s2">Live engine demo</a></li>
+    <li><a href="#s3">Departments</a></li>
+    <li><a href="#s4">Where we stand</a></li>
+    <li><a href="/console/" class="go">Open the console</a></li>
+  </ol>
+</nav>
+
+<nav class="pager" id="pager" aria-label="Sections">
+  <button data-go="s0" aria-label="Overview" aria-current="true"></button>
+  <button data-go="s1" aria-label="The pipeline"></button>
+  <button data-go="s2" aria-label="Live engine demo"></button>
+  <button data-go="s3" aria-label="Departments"></button>
+  <button data-go="s4" aria-label="Where we stand"></button>
+</nav>
+
+<footer class="chrome bottom">
+  <div class="legal-wrap">
+    <button class="legal-btn" id="legal-btn" aria-expanded="false" aria-controls="legal">LEGAL</button>
+    <p class="legal" id="legal" hidden>Results are investigative leads, not identifications. Confidence scores are uncalibrated estimates. All registry data shown here is synthetic. Footage is processed on this machine.</p>
+  </div>
+  <div class="roman" id="roman" aria-hidden="true">I.</div>
+</footer>
+
+<main id="main">
+
+  <section id="s0" class="hero" data-roman="I.">
+    <div class="col">
+      <p class="eyebrow rv">AIML-01 · TRACK 02</p>
+      <h1 class="rv">PLATE<br>TRACE</h1>
+      <p class="lede rv">A blurry frame and half a number plate go in. A ranked, explained shortlist comes out. Where the footage is silent, the system says so instead of guessing.</p>
+      <div class="actions rv">
+        <a class="btn primary" href="/console/">Open the console</a>
+        <a class="btn" href="#s1" data-go="s1">How it works</a>
+      </div>
+    </div>
+    <div class="scroll-hint rv" aria-hidden="true"><span>SCROLL</span><span>FOR</span><span>MORE</span><i></i></div>
+  </section>
+
+  <section id="s1" data-roman="II.">
+    <div class="col wide">
+      <p class="eyebrow rv">SECTION — 01</p>
+      <h2 class="rv">FROM FOOTAGE<br>TO EVIDENCE</h2>
+      <ol class="steps">
+        <li class="step rv">
+          <span class="hex"><svg viewBox="0 0 44 50" aria-hidden="true"><polygon points="22,2 42,13 42,37 22,48 2,37 2,13"/></svg><b>1</b></span>
+          <h3>Track</h3>
+          <p>Vehicles are detected and followed through the clip, so every frame of one car stays together.</p>
+        </li>
+        <li class="step rv">
+          <span class="hex"><svg viewBox="0 0 44 50" aria-hidden="true"><polygon points="22,2 42,13 42,37 22,48 2,37 2,13"/></svg><b>2</b></span>
+          <h3>Locate</h3>
+          <p>A plate detector finds the plate in each frame and crops it.</p>
+        </li>
+        <li class="step rv">
+          <span class="hex"><svg viewBox="0 0 44 50" aria-hidden="true"><polygon points="22,2 42,13 42,37 22,48 2,37 2,13"/></svg><b>3</b></span>
+          <h3>Read</h3>
+          <p>Each character is read on its own, and how sure the reader was is kept.</p>
+        </li>
+        <li class="step rv">
+          <span class="hex"><svg viewBox="0 0 44 50" aria-hidden="true"><polygon points="22,2 42,13 42,37 22,48 2,37 2,13"/></svg><b>4</b></span>
+          <h3>Fuse</h3>
+          <p>Frames vote slot by slot. A slot they cannot agree on stays unknown.</p>
+        </li>
+        <li class="step rv">
+          <span class="hex"><svg viewBox="0 0 44 50" aria-hidden="true"><polygon points="22,2 42,13 42,37 22,48 2,37 2,13"/></svg><b>5</b></span>
+          <h3>Match</h3>
+          <p>The pattern is matched to the registry, scored with colour and body type, and explained line by line.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="s2" data-roman="III.">
+    <div class="col wide">
+      <p class="eyebrow rv">SECTION — 02</p>
+      <h2 class="rv">NEVER<br>INVENTED</h2>
+      <p class="lede rv">This runs the real engine, live. Pick a case, press run, and watch frames vote on each plate position.</p>
+      <div class="demo rv" id="demo">
+        <div class="tabs" role="tablist" aria-label="Demo case">
+          <button role="tab" aria-selected="true" data-case="partial">Partial plate, in the registry</button>
+          <button role="tab" aria-selected="false" data-case="clear">Clear plate, from real footage</button>
+        </div>
+        <p class="note" id="demo-note"></p>
+        <div class="frames" id="frames" aria-label="Characters read in each frame"></div>
+        <div class="fused" id="fused" role="list" aria-label="Fused plate"></div>
+        <div class="verdict" id="verdict" role="status" aria-live="polite"></div>
+        <div class="demo-actions"><button class="btn primary" id="run">Run the engine</button><span class="mono-note" id="demo-state"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s3" data-roman="IV.">
+    <div class="col wide">
+      <p class="eyebrow rv">SECTION — 03</p>
+      <h2 class="rv">ONE ENGINE,<br>FIVE DESKS</h2>
+      <p class="lede rv">Each department runs the same engine with its own strictness. The numbers below come live from the backend configuration.</p>
+      <div class="depts" id="depts"></div>
+    </div>
+  </section>
+
+  <section id="s4" data-roman="V.">
+    <div class="col wide">
+      <p class="eyebrow rv">SECTION — 04</p>
+      <h2 class="rv">WHERE WE<br>STAND</h2>
+      <p class="lede rv">An honest build status for the mid evaluation, including the parts that are weak.</p>
+      <ul class="board" id="board"></ul>
+      <div class="actions rv end">
+        <a class="btn primary" href="/console/">Open the console</a>
+        <a class="btn" href="#s0" data-go="s0">Back to top</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script src="site.js"></script>
+</body>
+</html>

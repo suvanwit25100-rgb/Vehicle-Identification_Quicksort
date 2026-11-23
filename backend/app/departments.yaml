@@ -1,0 +1,49 @@
+# match_threshold values come from `python scripts/calibrate.py` (simulated sightings, seed 7, 800 in-registry
+# and 1500 out-of-registry). Each is the lowest threshold whose 95% upper bound on the false-match rate meets
+# that department's target. The noise model is an assumption; re-run after testing on more real footage.
+# A department's strictness also comes from min_known_chars and max_known_mismatches, not the threshold alone.
+departments:
+  police:                      # target false-match rate 5%
+    name: Police
+    min_known_chars: 4
+    match_threshold: 0.66
+    ambiguity_margin: 0.05
+    max_known_mismatches: 1
+    slot_accept: 0.60
+    weights: {plate: 0.70, colour: 0.15, body: 0.15, mismatch_penalty: 0.5}
+
+  morth_nhai:                  # target 5%
+    name: Ministry of Road Transport and Highways / NHAI
+    min_known_chars: 5
+    match_threshold: 0.61
+    ambiguity_margin: 0.05
+    max_known_mismatches: 1
+    slot_accept: 0.60
+    weights: {plate: 0.60, colour: 0.10, body: 0.30, mismatch_penalty: 0.5}
+
+  bsf:                         # target 1%; no mismatches allowed, so a lower threshold is still the strictest
+    name: Border Security Force
+    min_known_chars: 6
+    match_threshold: 0.59
+    ambiguity_margin: 0.08
+    max_known_mismatches: 0
+    slot_accept: 0.65
+    weights: {plate: 0.60, colour: 0.15, body: 0.25, mismatch_penalty: 0.7}
+
+  ssb:                         # target 3%
+    name: Sashastra Seema Bal
+    min_known_chars: 5
+    match_threshold: 0.62
+    ambiguity_margin: 0.06
+    max_known_mismatches: 1
+    slot_accept: 0.60
+    weights: {plate: 0.55, colour: 0.15, body: 0.30, mismatch_penalty: 0.6}
+
+  customs:                     # target 3%
+    name: Customs
+    min_known_chars: 5
+    match_threshold: 0.62
+    ambiguity_margin: 0.06
+    max_known_mismatches: 1
+    slot_accept: 0.60
+    weights: {plate: 0.55, colour: 0.10, body: 0.35, mismatch_penalty: 0.6}

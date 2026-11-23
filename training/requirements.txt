@@ -1,0 +1,10 @@
+torch>=2.5
+numpy
+opencv-python
+pillow
+onnx
+onnxruntime
+# optional: score the current PP-OCR reader as the baseline in evaluate.py
+rapidocr-onnxruntime
+# optional: only for fine-tuning the plate detector (README, track B)
+ultralytics

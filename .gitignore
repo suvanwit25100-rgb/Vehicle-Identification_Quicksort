@@ -1,0 +1,25 @@
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+
+# runtime data: uploaded clips and per-job crops can show real vehicles, keep them out of the repo
+backend/data/uploads/
+backend/data/jobs/
+
+# 577 MB; fetch with: python backend/scripts/download_models.py
+backend/models/clip-vit-b32/
+
+# training: keep outputs out of git except the exported model and its logs
+training/real/
+training/*.png
+training/checkpoints/*
+!training/checkpoints/plate_crnn.onnx
+!training/checkpoints/train_log.jsonl
+training/eval_*.json
+!training/eval_real.json
+
+# local tool settings
+.claude/settings.local.json
