@@ -50,7 +50,7 @@ video -> sample frames (6 fps) -> detect + track vehicles -> detect plate per ve
 | Body type | CLIP ViT-B/32 zero-shot, fused with the COCO class prior (`app/vision/attributes.py`, `clip_brain.py`) |
 | Colour | pixel-distribution analysis on the vehicle crop |
 | Registry | `data/registry.csv`, 300 synthetic rows incl. Delhi-style RTO codes and 12 near-duplicates (`scripts/make_registry.py`) |
-| Frontend | static multi-page site served by FastAPI: landing `/`, console `/console/`, monitor `/monitor/`, citizen reports `/report-issue/`, officer desk `/desk/`. Dark navy and red palette from the hero image (`img/hero.webp`); fonts Unbounded (display), Manrope (body), JetBrains Mono (plates), loaded from Google Fonts; no project name is shown on the landing page by request |
+| Frontend | static multi-page site served by FastAPI: landing `/`, features `/features/`, console `/console/`, monitor `/monitor/`, citizen reports `/report-issue/`, officer desk `/desk/`. Dark navy and red palette from the hero image (`img/hero.webp`); fonts Unbounded (display), Manrope (body), JetBrains Mono (plates), loaded from Google Fonts; no project name is shown on the landing page by request |
 
 **Core logic (the rules that must survive any change):**
 
@@ -83,7 +83,7 @@ video -> sample frames (6 fps) -> detect + track vehicles -> detect plate per ve
 backend/
   app/            main.py (API + static), fusion.py, matcher.py, config.py, departments.yaml, registry.py,
                   calibration.py, schemas.py, report.py, brains.py, vision/ (pipeline, detectors, ocr,
-                  plate_text, attributes, clip_brain, video, stitch), static/ (5 pages: ui.css/ui.js shared, per-page js), complaints.py, monitor.py
+                  plate_text, attributes, clip_brain, video, stitch), static/ (6 pages: ui.css/ui.js shared, per-page js), complaints.py, monitor.py
   scripts/        make_registry.py, calibrate.py, download_models.py
   tests/          122 tests (fusion, matcher, API, stitching, pipeline, calibration, reports, brains, complaints, monitor, pages)
   models/         yolov8n.pt, plate_s.pt (committed); clip-vit-b32/ (download, see below)
@@ -257,6 +257,17 @@ were added. Everything below runs against the real backend.
 - **Monitor `/monitor/`**: totals, outcome split, characters-recovered histogram, analyses by agency, citizen-report counts,
   model readiness, calibration curves per agency with the chosen thresholds, recent analyses. All read from disk
   (`app/monitor.py`); refreshes every 20 s. An empty chart means nothing has happened; there is no sample data.
+- **Features `/features/`**: every capability in six groups (reading the plate, deciding, agencies, citizens and officers,
+  trust and proof, under the hood). Each has what it does, how it works, an honest status chip (built / partial /
+  planned) and a live visual read from the running backend (real frame reads, a live engine run, calibration curve,
+  agency table, model readiness). The measured plate-reader comparison and a "not built yet" list are on it.
+- **Motion system (`ui.css` + `ui.js`, used by every page):** page-to-page curtain wipe (leaves from the left, uncovers to
+  the right, no flash because the arriving page starts covered), staggered scroll reveals with left/right/scale variants
+  (CSS animations, so a card's own hover transition cannot cancel them), bars that grow and charts that wipe in when their
+  panel appears, plate characters that pop in one by one, number count-ups, a scroll progress bar, a cursor spotlight on
+  cards, a button shine, a staged hero entrance with parallax on scroll, and step/row/detail transitions in the report flow
+  and officer desk. Content added later by fetches is animated by a MutationObserver. The monitor's 20-second refresh does
+  not replay animations (`data-live` plus `data-settled`). `prefers-reduced-motion` turns all of it off.
 - **Citizen reports `/report-issue/`**: photo (camera or file) -> plate read with unknowns shown as `?` -> citizen may type
   the plate -> category (routes to an agency), description, place (optional "use my location"), time, optional contact,
   explicit consent -> report ID plus a status checker. EXIF time/GPS are only suggested. The photo is re-encoded (EXIF dropped).

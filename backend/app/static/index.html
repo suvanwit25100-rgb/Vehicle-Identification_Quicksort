@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>try{if(sessionStorage.getItem('nav')){document.documentElement.classList.add('arrived');sessionStorage.removeItem('nav')}}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vehicle identification from CCTV footage · AIML-01</title>
 <meta name="description" content="Recovers a number plate across many frames, marks unreadable characters as unknown instead of guessing, and returns a ranked, explained shortlist, or says there is no confident match.">
@@ -62,6 +63,7 @@
         <span class="eyebrow">What we built</span>
         <h2 class="h2">Eight parts, each one<br><em>running on real data.</em></h2>
         <p class="lede">Every card below reads from the live system. Numbers come from jobs that were actually analysed, not from a slide.</p>
+        <div><a class="btn" href="/features/">See every feature, in depth</a></div>
       </div>
       <div class="fgrid" id="fgrid"></div>
     </div>
@@ -75,7 +77,7 @@
         <h2 class="h2">Frames in.<br><em>Evidence out.</em></h2>
         <p class="lede" id="demo-note"></p>
       </div>
-      <div class="panel demo rv">
+      <div class="panel demo rv" data-rv="scale">
         <div class="demo-top">
           <div class="tabs" role="tablist" aria-label="Demo case">
             <button role="tab" data-case="partial" aria-selected="true">Partly hidden plate</button>

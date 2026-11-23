@@ -145,14 +145,88 @@ tr.click { cursor: pointer; } tr.click:hover td { background: var(--panel-2); }
 .panel h3 { font: 600 12px var(--font); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
 .empty { color: var(--dim); font-size: 14px; padding: 8px 0; }
 
-/* ---------- motion helpers ---------- */
-.rv { opacity: 0; transform: translateY(22px); transition: opacity .8s cubic-bezier(.2, .8, .2, 1), transform .8s cubic-bezier(.2, .8, .2, 1); }
-.rv.in { opacity: 1; transform: none; }
+/* ---------- motion system ---------- */
+:root { --ease: cubic-bezier(.2, .8, .2, 1); --ease-io: cubic-bezier(.7, 0, .2, 1); }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner { width: 18px; height: 18px; border: 2px solid var(--rule-2); border-top-color: var(--red); border-radius: 50%; animation: spin .8s linear infinite; display: inline-block; vertical-align: -4px; margin-right: 10px; }
 @keyframes pulse { 50% { opacity: .45; } }
 .skel { animation: pulse 1.4s infinite; background: var(--rule); border-radius: 8px; }
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } .rv { opacity: 1; transform: none; } }
+
+/* Scroll reveal uses CSS animations, not transitions: a component's own hover transition (cards, tiles) would
+   otherwise override a reveal transition and the element would just pop in. */
+.rv { opacity: 0; }
+.rv.in { opacity: 1; animation: rvUp .95s var(--ease) var(--d, 0ms) backwards; }
+.rv[data-rv="left"].in { animation-name: rvLeft; } .rv[data-rv="right"].in { animation-name: rvRight; } .rv[data-rv="scale"].in { animation-name: rvScale; }
+@keyframes rvUp { from { opacity: 0; transform: translateY(30px); } }
+@keyframes rvLeft { from { opacity: 0; transform: translateX(-40px); } }
+@keyframes rvRight { from { opacity: 0; transform: translateX(40px); } }
+@keyframes rvScale { from { opacity: 0; transform: scale(.94); } }
+
+/* bars grow and charts wipe in when their panel is revealed */
+:is(.t i, .meter s, .gauge i, .stack i, .bar-s i) { transform-origin: left; transition: transform 1.2s var(--ease) .35s, width .8s var(--ease); }
+.vcol i { transform-origin: bottom; transition: transform 1.2s var(--ease) .35s, height .8s var(--ease); }
+.rv:not(.in) :is(.t i, .meter s, .gauge i, .stack i, .bar-s i) { transform: scaleX(0); }
+.rv:not(.in) .vcol i { transform: scaleY(0); }
+.calsvg, .spark { clip-path: inset(0 0 0 0); transition: clip-path 1.9s var(--ease-io) .3s; }
+.rv:not(.in) :is(.calsvg, .spark) { clip-path: inset(0 100% 0 0); }
+.calsvg.redraw { animation: wipe 1.5s var(--ease-io) backwards; }
+@keyframes wipe { from { clip-path: inset(0 100% 0 0); } }
+
+/* plate characters pop in one by one; a slot that is resolved later pops again */
+.slots .slot { animation: slotIn .6s var(--ease) calc(var(--i, 0) * 60ms) backwards; }
+.slots .slot.known, .slots .slot.unk { animation-name: slotPop; }
+@keyframes slotIn { from { opacity: 0; transform: translateY(16px) scale(.9); } }
+@keyframes slotPop { from { opacity: 0; transform: scale(.6); } 55% { transform: scale(1.12); } }
+
+/* panels that appear because a step changed, or a detail was swapped */
+.step:not([hidden]) { animation: stepIn .65s var(--ease) backwards; }
+@keyframes stepIn { from { opacity: 0; transform: translateX(34px); } }
+#detail > * { animation: rvUp .6s var(--ease) backwards; }
+#detail > :nth-child(2) { animation-delay: 50ms; } #detail > :nth-child(3) { animation-delay: 100ms; } #detail > :nth-child(4) { animation-delay: 150ms; }
+#detail > :nth-child(5) { animation-delay: 200ms; } #detail > :nth-child(6) { animation-delay: 250ms; } #detail > :nth-child(n + 7) { animation-delay: 300ms; }
+tbody tr { animation: rowIn .55s var(--ease) backwards; }
+tbody tr:nth-child(2) { animation-delay: 50ms; } tbody tr:nth-child(3) { animation-delay: 100ms; } tbody tr:nth-child(4) { animation-delay: 150ms; }
+tbody tr:nth-child(5) { animation-delay: 200ms; } tbody tr:nth-child(6) { animation-delay: 250ms; } tbody tr:nth-child(n + 7) { animation-delay: 300ms; }
+@keyframes rowIn { from { opacity: 0; transform: translateX(-14px); } }
+.banner { animation: rvUp .6s var(--ease) .1s backwards; }
+.cand { animation: rvUp .6s var(--ease) backwards; }
+.cand:nth-of-type(2) { animation-delay: 80ms; } .cand:nth-of-type(3) { animation-delay: 160ms; } .cand:nth-of-type(n + 4) { animation-delay: 240ms; }
+.tabs button, .nav a, .chip, .btn, .recent-item, .stepper li { transition: background .3s, color .3s, border-color .3s, transform .3s, box-shadow .3s; }
+.stepper li.now { animation: stepPulse 2.4s ease-in-out infinite; }
+@keyframes stepPulse { 50% { box-shadow: 0 0 0 6px rgba(255, 42, 63, .12); } }
+
+/* header drops in; eyebrow rule draws itself */
+.bar { animation: barIn .9s var(--ease) .15s backwards; }
+@keyframes barIn { from { opacity: 0; transform: translateY(-20px); } }
+.eyebrow { display: inline-flex; align-items: center; gap: 14px; }
+.eyebrow::before { content: ""; height: 1px; width: 0; background: var(--red); transition: width .9s var(--ease) .25s; }
+.in .eyebrow::before, .in.eyebrow::before, .page-head .eyebrow.in::before { width: 34px; }
+
+/* primary button shine, card spotlight that follows the cursor */
+.btn.primary { position: relative; overflow: hidden; }
+.btn.primary::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .38) 50%, transparent 65%); transform: translateX(-130%); transition: transform .8s var(--ease); pointer-events: none; }
+.btn.primary:hover::after { transform: translateX(130%); }
+.spot { position: relative; }
+.spot::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .35s; background: radial-gradient(440px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 42, 63, .13), transparent 62%); }
+.spot:hover::before { opacity: 1; }
+
+/* scroll progress */
+#progress { position: fixed; top: 0; left: 0; height: 2px; width: 100%; z-index: 80; background: linear-gradient(90deg, var(--red-deep), var(--red)); transform-origin: left; transform: scaleX(var(--p, 0)); box-shadow: 0 0 14px var(--red-glow); pointer-events: none; }
+
+/* page-to-page curtain: leaving covers the page from the left, arriving uncovers it to the right */
+html::after { content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none; transform: scaleX(0); transform-origin: left;
+  background: linear-gradient(90deg, #030612 0, #030612 calc(100% - 4px), #ff2a3f calc(100% - 4px)); transition: transform .5s var(--ease-io); }
+html.arrived::after { transform: scaleX(1); transform-origin: right; transition: none; }
+html.reveal::after { transform: scaleX(0); transform-origin: right; transition: transform .75s var(--ease-io); }
+html.leaving::after { transform: scaleX(1); transform-origin: left; transition: transform .5s var(--ease-io); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .rv { opacity: 1; }
+  .rv:not(.in) :is(.t i, .meter s, .gauge i, .stack i, .bar-s i, .vcol i) { transform: none; }
+  .rv:not(.in) :is(.calsvg, .spark) { clip-path: none; }
+  html::after, #progress { display: none; }
+}
 
 /* ---------- footer ---------- */
 .foot { border-top: 1px solid var(--rule); padding: 36px 0 46px; color: var(--dim); font-size: 12.5px; }

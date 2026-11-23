@@ -7,7 +7,7 @@ machines never edit the same files.
 ## What this is
 Hackathon problem AIML-01 Option A: vehicle identification from CCTV footage. It recovers a plate across many frames,
 marks unreadable characters as unknown, extracts colour and body type, matches a registry (ranked top 5 with reasons),
-or says "no confident match". FastAPI backend, YOLO + PP-OCR + CLIP, multi-page static site. 122 tests.
+or says "no confident match". FastAPI backend, YOLO + PP-OCR + CLIP, multi-page static site. 124 tests.
 
 ## Deadline
 Final evaluation: **evening of 2026-11-24**. Keep a working demo at every step; never leave the app broken.
@@ -19,7 +19,7 @@ PP-OCR alone, but PP-OCR and Awiros ANPR-OCR agree-and-are-right 99% of the time
 second-reader cross-check is the promising idea (not built).
 
 ## Open work (ask the user which one you take)
-1. **Site rebuild: done** (HANDOFF.md section 8): landing, console, monitor, citizen reports, officer desk. Remaining polish
+1. **Site rebuild: done** (HANDOFF.md section 8): landing, features, console, monitor, citizen reports, officer desk, with a shared motion system. Remaining polish
    ideas: seed a few realistic demo reports, PDF export of the report, complaint de-duplication.
 2. **Second-reader cross-check** with Awiros in the pipeline (needs PaddlePaddle in the backend environment): only if
    the user wants it; mark a plate "verify" when the readers disagree.

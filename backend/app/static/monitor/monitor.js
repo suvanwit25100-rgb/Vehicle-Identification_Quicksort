@@ -7,6 +7,7 @@ const AGENCY = { police: "Police", morth_nhai: "MoRTH / NHAI", bsf: "BSF", ssb: 
 const OUTCOME = [["match", "Match", "#3ddc97"], ["ambiguous", "Ambiguous", "#ffb454"], ["no_confident_match", "No confident match", "#ff2a3f"], ["insufficient_evidence", "Insufficient evidence", "#5c667d"]];
 let calKey = "police";
 let last = null;
+let firstRender = true;
 
 const hbars = (obj, labels = {}) => {
   const entries = Object.entries(obj).sort((a, b) => b[1] - a[1]);
@@ -20,7 +21,11 @@ function kpis(m) {
   const items = [[j.total, "analyses run", `${j.frames_sampled} frames sampled`], [j.tracks, "vehicles tracked", "across all analyses"],
     [j.tracks_readable, "plates read", `${j.tracks ? Math.round((j.tracks_readable / j.tracks) * 100) : 0}% of vehicles had any readable character`],
     [m.complaints.total, "citizen reports", "filed through the public form"], [m.registry_rows, "registry rows", "synthetic demo registry"]];
-  $("#kpis").replaceChildren(...items.map(([n, l, d]) => h("div", { class: "kpi" }, h("div", { class: "n" }, String(n)), h("div", { class: "l" }, l), h("div", { class: "d" }, d))));
+  $("#kpis").replaceChildren(...items.map(([n, l, d]) => {
+    const num = h("div", { class: "n" }, String(n));
+    if (firstRender) UI.countUp(num, n);   // count up once; later refreshes just update the numbers
+    return h("div", { class: "kpi" }, num, h("div", { class: "l" }, l), h("div", { class: "d" }, d));
+  }));
 }
 
 function outcomes(m) {
@@ -39,17 +44,17 @@ function histogram(m) {
     h("p", { class: "muted", style: "font-size:13px;margin-top:12px" }, "Horizontal axis: how many of the 10 plate characters were recovered. 0 means the plate stayed unknown."));
 }
 
-function calibration(m) {
+function calibration(m, animate = false) {
   const cal = m.calibration;
   if (!cal) { $("#cal-chart").replaceChildren(h("p", { class: "empty" }, "No calibration report found. Run scripts/calibrate.py.")); return; }
   const keys = Object.keys(cal);
-  $("#cal-tabs").replaceChildren(...keys.map((k) => h("button", { role: "tab", "aria-selected": String(k === calKey), onclick: () => { calKey = k; calibration(last); } }, AGENCY[k] || k)));
+  $("#cal-tabs").replaceChildren(...keys.map((k) => h("button", { role: "tab", "aria-selected": String(k === calKey), onclick: () => { calKey = k; calibration(last, true); } }, AGENCY[k] || k)));
   const c = cal[calKey], sw = c.sweep, W = 560, H = 290, L = 44, B = 50, T = 12, R = 14;
   const x0 = sw[0].theta, x1 = sw[sw.length - 1].theta;
   const X = (t) => L + ((t - x0) / (x1 - x0)) * (W - L - R), Y = (v) => H - B - v * (H - B - T);
   const line = (key) => sw.map((s) => `${X(s.theta).toFixed(1)},${Y(s[key]).toFixed(1)}`).join(" ");
   const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
-  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("class", "calsvg"); svg.setAttribute("role", "img");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("class", "calsvg" + (animate ? " redraw" : "")); svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", `Recall and false-match rate against threshold for ${AGENCY[calKey] || calKey}`);
   const grid = [0, .25, .5, .75, 1].map((v) => `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.08)"/><text x="${L - 8}" y="${Y(v) + 4}" fill="#8f99b0" font-size="11" text-anchor="end">${Math.round(v * 100)}%</text>`).join("");
   const ticks = sw.filter((_, i) => i % 2 === 0).map((s) => `<text x="${X(s.theta)}" y="${H - B + 18}" fill="#8f99b0" font-size="11" text-anchor="middle">${s.theta.toFixed(2)}</text>`).join("");
@@ -91,6 +96,7 @@ function render(m) {
     h("p", { class: "muted", style: "font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:16px 0 6px" }, "By agency"), hbars(c.by_department, AGENCY)) : h("p", { class: "empty" }, "No reports filed yet. Citizens can file one from “Report an issue”."));
   calibration(m); brains(m); recent(m);
   $("#updated").textContent = `Updated ${when(m.generated_at)}. Refreshes every 20 seconds.`;
+  if (firstRender) { firstRender = false; setTimeout(() => { document.querySelector("main").dataset.settled = ""; }, 400); }
 }
 
 async function refresh() {

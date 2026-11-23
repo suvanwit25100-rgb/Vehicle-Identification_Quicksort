@@ -1,16 +1,23 @@
 "use strict";
 const { $, $$, h, api, slotsView, candidateView, banner, sleep, reveal } = UI;
 
-UI.initBar([["#how", "How it works"], ["#features", "Features"], ["#engine", "Live engine"], ["#departments", "Agencies"]]);
+UI.initBar([["#how", "How it works"], ["#engine", "Live engine"], ["#departments", "Agencies"]]);
 UI.initFoot();
 
-/* subtle depth on the hero image (desktop only) */
-if (matchMedia("(hover:hover)").matches && !UI.reduceMotion) {
-  const bg = $(".hero-bg");
-  addEventListener("mousemove", (e) => {
-    const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
-    bg.style.translate = `${(-x * 14).toFixed(1)}px ${(-y * 8).toFixed(1)}px`;
-  }, { passive: true });
+/* depth on the hero: the image drifts with the cursor and scrolls slower than the page; the numerals scroll faster */
+if (!UI.reduceMotion) {
+  const hero = $(".hero"), bg = $(".hero-bg"), giant = $(".giant");
+  let mx = 0, my = 0, queued = false;
+  const paint = () => {
+    queued = false;
+    const y = Math.min(scrollY, innerHeight * 1.2);
+    bg.style.setProperty("--bx", `${(-mx * 16).toFixed(1)}px`);
+    bg.style.setProperty("--by", `${(-my * 9 + y * 0.16).toFixed(1)}px`);
+    giant.style.setProperty("--gy", `${(-y * 0.07).toFixed(1)}px`);
+  };
+  const queue = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+  if (matchMedia("(hover:hover)").matches) addEventListener("mousemove", (e) => { mx = e.clientX / innerWidth - 0.5; my = e.clientY / innerHeight - 0.5; queue(); }, { passive: true });
+  addEventListener("scroll", queue, { passive: true });
 }
 
 /* ---------- how it works ---------- */
@@ -22,7 +29,7 @@ const STEPS = [
   ["Match and rank", "The readable characters, colour and body type are compared with the registry. The top five come back with reasons."],
   ["Explain or refuse", "An agency-specific gate decides: match, ambiguous, or no confident match. The report lists every frame used."],
 ];
-$("#steps").append(...STEPS.map(([t, d], i) => h("li", { class: "step rv" }, h("div", { class: "n" }, String(i + 1).padStart(2, "0")), h("h3", {}, t), h("p", {}, d))));
+$("#steps").append(...STEPS.map(([t, d], i) => h("li", { class: "step rv", "data-rv": i % 3 === 0 ? "left" : i % 3 === 2 ? "right" : null }, h("div", { class: "n" }, String(i + 1).padStart(2, "0")), h("h3", {}, t), h("p", {}, d))));
 
 /* ---------- shared data ---------- */
 let monitorP, clearP;
@@ -225,5 +232,5 @@ const BOARD = [
   ["partial", "Vehicle tracking", "One vehicle can split into several tracks. Tracks without a readable plate are collapsed in the results."],
   ["partial", "Agency features", "Per-agency strictness is live. Watch-lists, FASTag checks and repeat-crossing detection are still to come. Make and model, and cross-camera tracking, are bonus items not yet started."],
 ];
-$("#board").append(...BOARD.map(([s, t, d]) => h("li", { class: "rv" }, h("span", { class: `chip ${s}`, style: "justify-self:start" }, { built: "Built", partial: "Partial", weak: "Needs work" }[s]), h("div", {}, h("h3", {}, t), h("p", {}, d)))));
+$("#board").append(...BOARD.map(([s, t, d]) => h("li", { class: "rv", "data-rv": "left" }, h("span", { class: `chip ${s}`, style: "justify-self:start" }, { built: "Built", partial: "Partial", weak: "Needs work" }[s]), h("div", {}, h("h3", {}, t), h("p", {}, d)))));
 reveal();
