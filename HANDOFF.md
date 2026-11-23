@@ -24,13 +24,14 @@ confidence, reasoning).
 ## 2. Evaluator feedback from the mid evaluation (this is the work for the final)
 
 1. **Train on a plate-only dataset**, with augmentation for different angles (Gaussian noise and similar), for
-   better accuracy. This reverses an earlier "no training" decision; training is now in scope.
+   better accuracy. **Decision on 2026-11-24: the user chose pretrained models for everything, so our own training
+   is parked** (the kit stays in `training/`). Section 7 holds what was measured instead.
 2. **Cleaner UI/UX.** The site only restates the problem statement. Build sections for the features we built, a
    section to **monitor** them, and a **complaint-logging** section where any user in the country can submit a
    camera photo of a car.
 
-That was the complete feedback. Suggested order: (a) get a real labelled plate set and a baseline, (b) train and
-compare in parallel with (c) the site rebuild, (d) complaints last. See sections 7 to 9.
+That was the complete feedback. With training parked, the main remaining work is the site rebuild (section 8), then
+optional accuracy ideas (section 7a). See sections 7 to 9.
 
 ## 3. How it works (pipeline, stack, core logic)
 
@@ -135,7 +136,56 @@ Known weaknesses and dead ends (do not repeat these):
 - Not built: PDF export (the report prints to PDF from the browser), department-specific features (watch-lists,
   FASTag, repeat crossing), make/model, cross-camera tracking.
 
-## 7. Training track (evaluator item 1): state of the kit
+## 7. Plate OCR accuracy (evaluator item 1)
+
+### 7a. Pretrained plate readers compared (2026-11-24, measured)
+
+The user decided on pretrained models only. Two ready-made plate readers were downloaded into an isolated test
+environment (not part of the app) and compared with the current reader on the same plates:
+
+- **Awiros ANPR-OCR** (`Awiros/anpr-ocr` on Hugging Face, Apache-2.0): PP-OCRv5 architecture fine-tuned by its
+  authors on Indian plates; needs PaddlePaddle plus a clone of PaddleOCR (~232 MB) and 149 MB of weights. Per-character
+  confidence was extracted from its CTC probability table.
+- **fast-plate-ocr** (`cct-s-v2-global-model`, MIT): 5 MB ONNX, trained on plates from many countries, 10 slots with a
+  probability per slot.
+- **PP-OCRv4 (current)**: our decoder, restricted to A-Z0-9.
+
+Test sets: **10 real crops** from the Indian clip (4 plates; truth read by eye from the crops; a hand-occluded plate and a
+34 px fragment were left out) and **2 x 300 synthetic plates** from `training/plategen.py` (strength 0.5 and 0.8). None of
+the readers trained on that generator. Exact match per plate, single crop (no multi-frame fusion):
+
+| Set | PP-OCRv4 (current) | fast-plate-ocr | Awiros ANPR-OCR |
+|---|---|---|---|
+| real, 10 crops | 70% exact, 81% char | 70% exact, 96% char | **80% exact, 94% char** |
+| synthetic, mid | **89%** | 65% | 85% |
+| synthetic, hard | 69% | 30% | **70%** |
+
+**Honest reading of this:**
+
+- **No reader clearly beats the current PP-OCR.** Awiros is ahead by one crop on the 10 real ones (too small to mean
+  anything) and level on the hard synthetic set; fast-plate-ocr is clearly worse here. Awiros's own claim of 98.4% was
+  measured on its own data and was **not** reproduced on ours.
+- The synthetic sets use fonts and spacing unlike real Indian plates, so they probably understate models trained on real
+  plates. Treat them as a stress test, not as real accuracy.
+- **Confidence behaviour differs.** Awiros and fast-plate-ocr report near-1.0 confidence even when wrong (mean confidence
+  of wrong answers 0.91 and 0.99 on the real crops), while PP-OCR with our decoder is more informative (0.90 right vs
+  0.52 wrong). The multi-frame fusion weights votes by confidence, so saturated confidences would help it less.
+- **Agreement between two readers is a strong signal.** PP-OCR and Awiros agree on the whole plate for 78% (mid) and
+  57% (hard) of synthetic plates, and **when they agree they are right 99.6% and 98.8% of the time**. When they disagree,
+  one of them is right 85% and 61% of the time. On the 10 real crops: agree on 7, all 7 right. This suggests using a
+  second reader as a cross-check (agree: trust; disagree: mark for verification), not as a replacement. It is **not
+  built**, and Paddle would have to be added to the backend environment.
+- A 9-character plate (`DL1LR2711`, one series letter) appeared in the real clip. Both new readers read it; our
+  10-slot grammar (`LLDALLDDDD`) cannot represent it and produced `DL1L??2711`. Real plates can have 1 to 3 series letters.
+- Not measured: speed of each reader on CPU, and body-type or colour models. Candidates found by search only (not
+  downloaded or tested): `yigechundong/car-body-classifier` (EfficientNetV2-S, 8 body types; its card says outputs need
+  temperature calibration and it is for prototypes) and `dima806/vehicle_10_types_image_detection` (ViT, Apache-2.0)
+  for body type, which could replace the weak CLIP step. No documented pretrained colour model was found.
+
+### 7b. Parked: our own training kit
+
+The from-scratch training kit below was built before the decision. It works (see the learning test), but it is **not
+the plan**; do not spend time on it unless the user asks. Details kept for reference.
 
 `training/` is built and smoke-tested. See `training/README.md` for the exact commands.
 
@@ -177,7 +227,7 @@ Gotchas found while building it: the legacy ONNX exporter needs the `onnx` packa
 back into training mode afterwards, so verify in eval mode; DataLoader workers use spawn (Windows, macOS), so
 scripts must be real files with a `__main__` guard.
 
-**What is needed next, in order:**
+**If training is ever resumed, what is needed, in order:**
 
 1. **A real labelled plate-crop dataset** (crops plus the text of each plate). Detection-only datasets (boxes
    only) are no use for the recogniser. The three Roboflow links looked at earlier were detection datasets, so a
@@ -230,9 +280,7 @@ scripts must be real files with a `__main__` guard.
 
 ## 10. First prompt for Claude Code on the new machine
 
-> Read HANDOFF.md and training/README.md in this repo. Set up the environment (section 5), confirm
-> `torch.cuda.is_available()` is True, run the tests, then look at the generated plate samples
-> (`python plategen.py --preview samples.png` in training/). I will give you a real labelled plate dataset next.
-> Work on the training track in section 7, in order, and report real-crop numbers from `training/evaluate.py`.
-> Do not claim an improvement before it is measured on held-out real crops. Final evaluation is the evening of
-> 2026-11-24, so keep a working demo at every step.
+> Read HANDOFF.md in this repo (CLAUDE.md summarises it). Set up the environment (section 5) and run the tests.
+> We are using pretrained models only; our own training is parked (section 7). Ask me which open task from CLAUDE.md
+> you should take so we do not edit the same files. Do not claim an improvement before it is measured on real crops.
+> Final evaluation is the evening of 2026-11-24, so keep a working demo at every step.
