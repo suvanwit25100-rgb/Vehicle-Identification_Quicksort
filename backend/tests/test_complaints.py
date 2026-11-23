@@ -174,7 +174,7 @@ def test_monitor_counts_saved_jobs_and_complaints(client):
 
 def test_monitor_with_nothing_saved_is_empty_not_an_error(client):
     m = client.get("/api/monitor").json()
-    assert m["jobs"]["total"] == 0 and m["complaints"]["total"] == 0 and m["calibration"] is None
+    assert m["jobs"]["total"] == 0 and m["complaints"]["total"] == 0
 
 
 def test_clean_plate():

@@ -66,8 +66,8 @@ const V = {
     return [bars("Colour", t.colour), bars("Body type", t.body_type), cap("Real output. Body type was close to a coin flip on this clip, so it carries a low weight.")];
   }),
 
-  calibration: () => slot(monitor(), (m) => {
-    const c = m.calibration && m.calibration.police;
+  calibration: () => slot(api("/api/calibration").catch(() => null), (m) => {
+    const c = m.agencies && m.agencies.police;
     if (!c) return [offline()];
     const W = 260, H = 70, pts = (k) => c.sweep.map((s, i) => `${(i / (c.sweep.length - 1) * W).toFixed(1)},${(H - 4 - s[k] * (H - 8)).toFixed(1)}`).join(" ");
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -75,7 +75,7 @@ const V = {
     svg.innerHTML = `<polyline fill="none" stroke="#ff2a3f" stroke-width="2" points="${pts("recall_top1")}"/><polyline fill="none" stroke="#8f99b0" stroke-width="2" stroke-dasharray="4 3" points="${pts("false_match_upper95")}"/>`;
     const r = c.recommended;
     return [svg, h("div", { class: "mini" }, h("span", {}, "police θ ", h("b", {}, r.theta.toFixed(2))), h("span", {}, "recall ", h("b", {}, Math.round(r.recall_top1 * 100) + "%")), h("span", {}, "false ≤ ", h("b", {}, Math.round(r.false_match_upper95 * 100) + "%"))),
-      cap("Red: recall. Dashed: false matches. From a simulation, so a design target.")];
+      cap("Red: recall. Dashed: false matches. SIMULATED sightings, so a design target, not a measured accuracy.")];
   }),
 
   agencies: () => slot(api("/api/departments").catch(() => null), (ds) => [h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Agency", "Needs", "Threshold"].map((t) => h("th", {}, t)))),
@@ -153,7 +153,7 @@ const GROUPS = [
     ["partial", "Colour and body type", "Soft supporting signals, not identifiers. Body type blends a vision-language model with the detector's class.",
       ["Colour comes from pixel analysis of the vehicle", "Body type uses CLIP zero-shot fused with the detector's class", "Honest gap: body type was close to a coin flip on real footage, so it carries a low weight"], "attrs"],
     ["built", "Calibrated by simulation", "Each agency's threshold is chosen to keep its false matches under a target, using an upper confidence bound rather than a lucky average.",
-      ["Easy, medium and hard sightings, in-registry plates, look-alikes and random plates", "Wilson upper bound on the false-match rate", "The noise model is an assumption, so these are design targets"], "calibration", ["/monitor/", "See every curve"]],
+      ["Easy, medium and hard sightings, in-registry plates, look-alikes and random plates", "Wilson upper bound on the false-match rate", "The noise model is an assumption, so these are design targets"], "calibration"],
   ]],
   ["agencies", "Five agencies", [
     ["built", "One engine, five agencies", "Police, MoRTH/NHAI, BSF, SSB and Customs share one engine. They differ in how much evidence they need and how cautious they are.",
@@ -176,8 +176,8 @@ const GROUPS = [
       ["One ZIP with the printable report, three data tables for Excel, the plate, vehicle and evidence images, and the original video", "A manifest lists every file with its SHA-256, plus the models, software versions and agency settings used", "The video in the ZIP is byte-identical to the one analysed, and the manifest proves it"], "casefile", ["/archive/", "Open the archive"]],
     ["built", "Archive and plate search", "Nothing analysed is lost. Every video is listed, and a plate found in one video can be searched for in all the others.",
       ["Search with a whole or partial plate; ? stands for a character you cannot read", "Open, print or download any stored analysis", "Honest gap: nothing deletes stored videos yet, so they stay until removed by hand"], "archive", ["/archive/", "Search the archive"]],
-    ["built", "Live monitor", "A page that shows what the system has really done: models, jobs, outcomes, reports and calibration.",
-      ["Nothing on it is sample data", "Refreshes by itself", "Calibration can be switched by agency"], "monitor", ["/monitor/", "Open the monitor"]],
+    ["built", "Live monitor", "A page that shows what the system has really done: analyses, outcomes, plate size against readability, processing speed, reports, model files and the server's own health.",
+      ["Every number is measured: stored analyses, reports, request counters and the machine; nothing is simulated", "Each panel says what it was drawn from, and an empty panel means nothing has happened", "Refreshes by itself; server counters restart with the server"], "monitor", ["/monitor/", "Open the monitor"]],
     ["built", "Automated tests", "Behaviour that must not break is covered by tests, not by promises.",
       ["Fusion, matching, stitching, calibration and the report", "Citizen and officer rules: privacy, keys, consent and limits", "Every page, and every local file each page uses"], null],
   ]],

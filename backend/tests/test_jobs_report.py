@@ -139,7 +139,7 @@ def test_landing_does_not_show_the_project_name(client):
 
 
 def test_landing_data_files_are_served(client):
-    for path in ("/data/demo_clear.json", "/img/hero.webp", "/img/hero-sm.webp"):
+    for path in ("/data/demo_clear.json", "/img/hero.webp", "/img/hero-sm.webp", "/img/bg2.webp", "/img/bg2-sm.webp"):
         assert client.get(path).status_code == 200, path
 
 

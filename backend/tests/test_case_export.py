@@ -84,6 +84,7 @@ def stored_case(tmp_path, job_id="abcdef012345", rich=True, video=b"fakevideobyt
     if rich:
         t = result.tracks[0]
         t.vehicle_crop, t.evidence_frame = "track1_vehicle.jpg", "track1_evidence.jpg"
+        t.max_plate_width_px = 100
         t.second_reader = SecondReading(reader="test reader", reading="CG04KA2819", verdict="agrees", agree=8, clash=0)
         t.frame_reads[0].raw = "CG04KA2819"
         result.source_filename, result.created_at = "street clip.mp4", "2026-11-24T10:00:00+00:00"

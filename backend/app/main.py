@@ -20,7 +20,7 @@ from .brains import brain_status
 from .config import get_department, load_departments
 from .fusion import fuse_frames
 from .matcher import match_registry
-from .monitor import calibration_summary, job_summary, list_jobs
+from .monitor import calibration_summary, host_stats, job_summary, list_jobs, metrics
 from .registry import load_registry
 from .export import build_case_zip
 from .report import render_report
@@ -33,6 +33,13 @@ JOB_ID_RE = re.compile(r"[0-9a-f]{12}")
 CROP_RE = re.compile(r"track\d+_(?:plate\d+|vehicle|evidence)\.jpg")
 
 app = FastAPI(title="Netra API")
+
+
+@app.middleware("http")
+async def count_requests(request: Request, call_next):
+    response = await call_next(request)
+    metrics.record(request.url.path, response.status_code)
+    return response
 
 
 @lru_cache
@@ -169,15 +176,23 @@ def match(evidence: Evidence):
 
 @app.get("/api/monitor")
 def monitor():
-    """Everything the monitor page shows, read from saved jobs, complaints, model files and the calibration report."""
+    """Everything the monitor page shows. Every number is measured: saved analyses, citizen reports, model files, this server's own
+    request counters, and the machine it runs on. Nothing simulated and nothing hard-coded."""
     return {
         "generated_at": cm.now_iso(),
-        "registry_rows": len(load_registry()),
+        "server": metrics.snapshot(),
+        "host": host_stats(DATA_DIR),
         "brains": brain_status(),
         "jobs": job_summary(DATA_DIR),
         "complaints": _store().counts(),
-        "calibration": calibration_summary(DATA_DIR),
     }
+
+
+@app.get("/api/calibration")
+def calibration():
+    """The threshold calibration. This is the output of a SIMULATION (assumed noise), not measured footage, and is labelled so."""
+    return {"simulated": True, "agencies": calibration_summary(DATA_DIR),
+            "note": "Produced by scripts/calibrate.py from simulated sightings. A design target, not a measured accuracy."}
 
 
 # ---------------------------------------------------------------- citizen complaints

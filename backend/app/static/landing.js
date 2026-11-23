@@ -81,8 +81,8 @@ function deptVisual() {
 
 function calibVisual() {
   const box = h("div");
-  monitor().then((m) => {
-    const c = m && m.calibration && m.calibration.police;
+  api("/api/calibration").catch(() => null).then((m) => {
+    const c = m && m.agencies && m.agencies.police;
     if (!c) return;
     const W = 240, H = 64, pts = (key) => c.sweep.map((s, i) => `${(i / (c.sweep.length - 1) * W).toFixed(1)},${(H - 4 - s[key] * (H - 8)).toFixed(1)}`).join(" ");
     const ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
@@ -117,10 +117,10 @@ function buildCards() {
     card({ title: "Unknown, never invented", text: "A position the evidence cannot settle stays as ?. On real footage the system left characters blank instead of guessing.", vis: h("div", {}, mrow("DL9CA??014", "fused"), h("p", { class: "muted", style: "font-size:12px;margin-top:6px" }, "Real output: two positions hidden by a hand over the plate.")) }),
     card({ title: "The refusal gate", text: "When nothing in the registry fits well enough, the answer is “no confident match”, with the score and the threshold that decided it.", vis: refusalVisual() }),
     card({ title: "Five agencies, one engine", text: "Police, MoRTH/NHAI, BSF, SSB and Customs share the engine and differ in threshold, required characters and allowed mismatches.", vis: deptVisual(), href: "#departments", cta: "See agencies" }),
-    card({ title: "Calibrated by simulation", text: "Thresholds target each agency's false-match tolerance, using an upper confidence bound. The noise model is an assumption, and we say so.", vis: calibVisual(), href: "/monitor/", cta: "See the curves" }),
+    card({ title: "Calibrated by simulation", text: "Thresholds target each agency's false-match tolerance, using an upper confidence bound. The sightings are simulated and the noise model is an assumption, and we say so.", vis: calibVisual(), href: "/features/#deciding", cta: "How it works" }),
     reportCard,
     card({ title: "Citizen reports", text: "Anyone can photograph a vehicle. The plate is read, the citizen checks it, and the report goes to the right department. Citizens never see owner data.", vis: flowVisual("Photo", "Plate read", "Officer triage", jobsStat), href: "/report-issue/", cta: "Report an issue" }),
-    card({ title: "Live monitoring", text: "Model readiness, jobs, outcomes and calibration, drawn from what the system has actually done. Nothing on that page is sample data.", vis: monStat, href: "/monitor/", cta: "Open the monitor" }),
+    card({ title: "Live monitoring", text: "Analyses, outcomes, plate size against readability, processing speed, server health and reports, all measured. Nothing on that page is sample data.", vis: monStat, href: "/monitor/", cta: "Open the monitor" }),
   ];
   cards.forEach((c, i) => { $(".idx", c).textContent = String(i + 1).padStart(2, "0"); });
   grid.append(...cards);
@@ -234,3 +234,33 @@ const BOARD = [
 ];
 $("#board").append(...BOARD.map(([s, t, d]) => h("li", { class: "rv", "data-rv": "left" }, h("span", { class: `chip ${s}`, style: "justify-self:start" }, { built: "Built", partial: "Partial", weak: "Needs work" }[s]), h("div", {}, h("h3", {}, t), h("p", {}, d)))));
 reveal();
+
+
+/* ---------- marquee: loops forever, and runs faster while you scroll ---------- */
+(function marquee() {
+  const items = ["YOLOv8n", "ByteTrack", "YOLO11 plate detector", "PP-OCRv4", "second reader", "CLIP ViT-B/32", "multi-frame fusion", "unknown, never invented", "refusal gate", "SHA-256 case files"];
+  const once = items.flatMap((t) => [h("span", {}, t), h("span", { class: "sep" }, "◆")]);
+  const track = $("#marquee");
+  track.append(...once, ...items.flatMap((t) => [h("span", {}, t), h("span", { class: "sep" }, "◆")]));
+  if (UI.reduceMotion) return;
+  const anim = track.getAnimations()[0];
+  if (!anim) return;
+  let last = scrollY, rate = 1;
+  addEventListener("scroll", () => { rate = Math.min(9, 1 + Math.abs(scrollY - last) / 7); last = scrollY; }, { passive: true });
+  (function ease() { rate += (1 - rate) * 0.06; anim.playbackRate = rate; requestAnimationFrame(ease); })();
+})();
+
+/* ---------- how it works: the rail fills with your scroll and each step lights when reached ---------- */
+(function rail() {
+  const sec = $("#how"), bar = $(".rail", sec), steps = $$(".step", sec);
+  if (!sec || UI.reduceMotion) { steps.forEach((s) => s.classList.add("lit")); return; }
+  let q = false;
+  const paint = () => {
+    q = false;
+    const r = $("#steps").getBoundingClientRect(), vh = innerHeight;
+    bar.style.setProperty("--prog", Math.min(1, Math.max(0, (vh * 0.78 - r.top) / (r.height + vh * 0.2))).toFixed(3));
+    steps.forEach((s) => { const b = s.getBoundingClientRect(); s.classList.toggle("lit", b.top + b.height * 0.4 < vh * 0.78 && b.bottom > 0); });
+  };
+  addEventListener("scroll", () => { if (!q) { q = true; requestAnimationFrame(paint); } }, { passive: true });
+  paint();
+})();

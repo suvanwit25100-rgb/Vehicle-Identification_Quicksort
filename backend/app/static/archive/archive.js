@@ -4,7 +4,7 @@ UI.initBar();
 UI.initFoot();
 
 const AGENCY = { police: "Police", morth_nhai: "MoRTH / NHAI", bsf: "BSF", ssb: "SSB", customs: "Customs" };
-const size = (b) => (b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`);
+const size = (b) => (b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${b ? Math.max(1, Math.round(b / 1024)) : 0} KB`);
 
 function render(rows, query) {
   const bytes = rows.reduce((a, r) => a + r.size_bytes, 0);

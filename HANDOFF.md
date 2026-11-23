@@ -267,13 +267,29 @@ were added. Everything below runs against the real backend.
   report and job counts), the working engine demo, five agency cards, an honest status board, entry tiles.
 - **Console `/console/`**: drag-and-drop upload, agency info, recent analyses, model readiness, results with plate crops,
   ranked candidates, per-frame characters, unreadable vehicles collapsed. `?job=<id>` opens a saved job.
-- **Monitor `/monitor/`**: totals, outcome split, characters-recovered histogram, analyses by agency, citizen-report counts,
-  model readiness, calibration curves per agency with the chosen thresholds, recent analyses. All read from disk
-  (`app/monitor.py`); refreshes every 20 s. An empty chart means nothing has happened; there is no sample data.
+- **Monitor `/monitor/` (real data only, by decision on 2026-11-24):** every number is measured. Panels: totals (analyses, of how many
+  *distinct* videos, vehicles, plates read, footage analysed, bytes stored, citizen reports), outcome per vehicle with the
+  second-reader verdicts, characters recovered, analyses by agency, **plate width against how much was read** (the system's own evidence
+  for the 80 px rule), confidence of recovered characters, analyses per day, processing speed (median and real-time factor), the server
+  (uptime, requests by kind, 4xx and 5xx counts, load, peak memory, disk) and citizen reports, plus model files and recent analyses. Every
+  panel states what it was drawn from; an empty panel means nothing has happened. Removed because they were not measured: the
+  calibration curves (a simulation, now served separately at `/api/calibration` with `simulated: true` and used only on the landing and
+  Features pages, labelled as a design target), the registry-row count (synthetic data) and two hard-coded sentences that asserted
+  conclusions. Server counters live in memory and restart with the server (`Metrics` in `app/monitor.py`; `/api/monitor` and `/api/health` are not
+  counted so polling cannot inflate them). Host figures are included only if the platform can report them (load average and
+  `resource` do not exist on Windows). The stored analyses include development re-runs of the same test clips; that is why the page shows distinct
+  videos, and why plate-size figures lean on one clip.
 - **Features `/features/`**: every capability in six groups (reading the plate, deciding, agencies, citizens and officers,
   trust and proof, under the hood). Each has what it does, how it works, an honest status chip (built / partial /
   planned) and a live visual read from the running backend (real frame reads, a live engine run, calibration curve,
   agency table, model readiness). The measured plate-reader comparison and a "not built yet" list are on it.
+- **Second background and lighting (`ui.css` environment block, built by `ui.js initEnv`):** the red light-streak image (`img/bg2.webp`) is
+  fixed behind every page except the landing hero, which keeps the main image. It breathes, drifts slower than the page, and has drifting light
+  orbs, pulses that travel up its two bright streaks (placed from the streak columns measured in the image, about 2.2vh either side of centre),
+  film grain, a vignette and a soft light that follows the cursor. Empty states are filled with the same image. Scroll effects: the hero fades
+  and lifts as you leave it, a marquee strip that speeds up while you scroll, a "how it works" rail that fills and lights each step, section
+  dividers that draw themselves, cards that tilt and have a cursor spotlight, primary buttons that lean towards the cursor, feature visuals that
+  float with depth, and headings that rise word by word (full text kept in `aria-label`). All of it is off under `prefers-reduced-motion`.
 - **Motion system (`ui.css` + `ui.js`, used by every page):** page-to-page curtain wipe (leaves from the left, uncovers to
   the right, no flash because the arriving page starts covered), staggered scroll reveals with left/right/scale variants
   (CSS animations, so a card's own hover transition cannot cancel them), bars that grow and charts that wipe in when their

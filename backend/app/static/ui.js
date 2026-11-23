@@ -139,6 +139,33 @@
 
   const AUTO = ".page-head > *, .sec-head > *, main .panel:not(.step), .kpi, .fcard, .tile, .board li, .verdict > *, .stepper, .desk-bar, .feat-row, .evid, .rv";
   const SPOT = ".fcard, .tile, .step.rv, .dept, .kpi, .feat-row .vis";
+  const TILT = ".fcard, .tile, .feat-row .vis";
+  const DEPTH = ".feat-row .vis";
+
+  /* headings rise word by word; the words keep their order and the heading keeps its full text for screen readers */
+  function splitWords(el) {
+    if (el.dataset.split) return;
+    el.dataset.split = "1";
+    const copy = el.cloneNode(true);   // a line break is not a space in textContent, so make it one before reading the text out
+    copy.querySelectorAll("br").forEach((b) => b.replaceWith(" "));
+    el.setAttribute("aria-label", copy.textContent.replace(/\s+/g, " ").trim());
+    let i = 0;
+    const walk = (node) => [...node.childNodes].forEach((c) => {
+      if (c.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        c.textContent.split(/(\s+)/).forEach((tok) => {
+          if (!tok) return;
+          if (/^\s+$/.test(tok)) { frag.append(" "); return; }
+          const w = document.createElement("span"), inner = document.createElement("span");
+          w.className = "w"; w.setAttribute("aria-hidden", "true");
+          inner.textContent = tok; inner.style.setProperty("--wi", i++);
+          w.append(inner); frag.append(w);
+        });
+        c.replaceWith(frag);
+      } else if (c.nodeType === 1 && c.tagName !== "BR") walk(c);
+    });
+    walk(el);
+  }
 
   function annotate(root) {
     const nodes = root.matches && root.matches(AUTO) ? [root] : [];
@@ -150,6 +177,15 @@
     const spots = root.matches && root.matches(SPOT) ? [root] : [];
     if (root.querySelectorAll) spots.push(...root.querySelectorAll(SPOT));
     spots.forEach((n) => n.classList.add("spot"));
+    const tilts = root.matches && root.matches(TILT) ? [root] : [];
+    if (root.querySelectorAll) tilts.push(...root.querySelectorAll(TILT));
+    tilts.forEach((n) => n.classList.add("tilt"));
+    const heads = root.matches && root.matches(".h2") ? [root] : [];
+    if (root.querySelectorAll) heads.push(...root.querySelectorAll(".h2"));
+    if (!reduceMotion) heads.forEach(splitWords);
+    const deep = root.matches && root.matches(DEPTH) ? [root] : [];
+    if (root.querySelectorAll) deep.push(...root.querySelectorAll(DEPTH));
+    deep.forEach((n) => { if (!reduceMotion) n.setAttribute("data-depth", "26"); });
   }
 
   function reveal() { annotate(document.body); $$(".rv").forEach(watch); }
@@ -169,7 +205,66 @@
     io.observe(el);
   }
 
+  /* the second background and its lighting: image, drifting light, pulses on the streaks, grain, vignette, cursor glow */
+  function initEnv() {
+    if (document.querySelector(".env")) return;
+    document.body.prepend(h("div", { class: "env", "aria-hidden": "true" }, h("div", { class: "env-bg" }),
+      h("i", { class: "orb o1" }), h("i", { class: "orb o2" }), h("i", { class: "orb o3" }), h("i", { class: "comet c1" }), h("i", { class: "comet c2" }),
+      h("div", { class: "grain" }), h("div", { class: "vignette" }), h("div", { id: "cursorlight" })));
+  }
+
+  function initEffects() {
+    if (reduceMotion) return;
+    const bg = $(".env-bg"), hero = $(".hero");
+    // scroll: the background drifts slower than the page, depth elements float, the hero fades as you leave it
+    let queued = false;
+    const frame = () => {
+      queued = false;
+      const y = scrollY, vh = innerHeight;
+      if (bg) bg.style.setProperty("--sy", `${(-y * 0.07).toFixed(1)}px`);
+      if (hero) hero.style.setProperty("--hp", Math.min(1, Math.max(0, y / (hero.offsetHeight * 0.8))).toFixed(3));
+      $$("[data-depth]").forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.bottom < -80 || r.top > vh + 80) return;
+        el.style.setProperty("--dy", `${(-((r.top + r.height / 2) / vh - 0.5) * Number(el.dataset.depth)).toFixed(1)}px`);
+      });
+    };
+    addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(frame); } }, { passive: true });
+    frame();
+
+    // section dividers draw themselves as each section comes into view
+    if (hasIO) {
+      const lit = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("lit"); lit.unobserve(e.target); } }), { threshold: 0.12 });
+      $$(".sec").forEach((n) => lit.observe(n));
+    }
+
+    if (!matchMedia("(hover:hover)").matches) return;
+    // a soft light that follows the cursor
+    const light = $("#cursorlight");
+    let tx = innerWidth / 2, ty = innerHeight / 2, x = tx, y = ty;
+    addEventListener("pointermove", (e) => { tx = e.clientX; ty = e.clientY; light.classList.add("on"); }, { passive: true });
+    document.documentElement.addEventListener("mouseleave", () => light.classList.remove("on"));
+    (function loop() { x += (tx - x) * 0.09; y += (ty - y) * 0.09; light.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`; requestAnimationFrame(loop); })();
+
+    // cards tilt towards the cursor; primary buttons lean towards it
+    let tcur = null, bcur = null;
+    const clear = (el, a, b) => { if (el) { el.style.setProperty(a, ""); el.style.setProperty(b, ""); } };
+    document.addEventListener("pointermove", (e) => {
+      const t = e.target.closest && e.target.closest(".tilt");
+      if (tcur && tcur !== t) clear(tcur, "--rx", "--ry");
+      tcur = t || null;
+      if (t) { const r = t.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height; t.style.setProperty("--rx", `${((0.5 - py) * 7).toFixed(2)}deg`); t.style.setProperty("--ry", `${((px - 0.5) * 9).toFixed(2)}deg`); }
+      const b = e.target.closest && e.target.closest(".btn.primary");
+      if (bcur && bcur !== b) clear(bcur, "--mx2", "--my2");
+      bcur = b || null;
+      if (b) { const r = b.getBoundingClientRect(); b.style.setProperty("--mx2", `${((e.clientX - r.left - r.width / 2) * 0.18).toFixed(1)}px`); b.style.setProperty("--my2", `${((e.clientY - r.top - r.height / 2) * 0.28).toFixed(1)}px`); }
+    }, { passive: true });
+    document.documentElement.addEventListener("mouseleave", () => { clear(tcur, "--rx", "--ry"); clear(bcur, "--mx2", "--my2"); });
+  }
+
   function initMotion() {
+    initEnv();
+    initEffects();
     // scroll progress bar
     const bar = h("div", { id: "progress", "aria-hidden": "true" });
     document.body.append(bar);

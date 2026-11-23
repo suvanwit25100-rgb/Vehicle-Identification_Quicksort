@@ -139,3 +139,9 @@ tr.sel td { background: var(--red-soft); }
 .actions { display: flex; gap: 8px; white-space: nowrap; }
 .totals { display: flex; flex-wrap: wrap; gap: 24px; margin: 6px 0 22px; color: var(--muted); font-size: 14px; }
 .totals b { color: var(--fg); font: 500 22px var(--display); margin-right: 8px; }
+
+/* ---------- monitor: provenance line, width rows ---------- */
+.src { font: 400 12px/1.5 var(--font); color: var(--dim); margin: -10px 0 18px; }
+.wrow { display: grid; grid-template-columns: 96px 1fr 46px; gap: 12px; align-items: center; padding: 6px 0; font-size: 13px; color: var(--muted); }
+.wrow .stack { height: 14px; min-width: 6px; }
+.wrow .v { font: 500 12px var(--mono); text-align: right; }
