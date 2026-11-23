@@ -8,6 +8,8 @@ __pycache__/
 # runtime data: uploaded clips and per-job crops can show real vehicles, keep them out of the repo
 backend/data/uploads/
 backend/data/jobs/
+backend/data/complaints/
+backend/data/netra.db
 
 # 577 MB; fetch with: python backend/scripts/download_models.py
 backend/models/clip-vit-b32/

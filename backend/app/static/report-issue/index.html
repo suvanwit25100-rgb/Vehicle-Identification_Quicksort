@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Report an issue · AIML-01</title>
+<meta name="theme-color" content="#030612">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/pages.css">
+</head>
+<body data-page="report">
+<header class="bar" id="bar"></header>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Citizen reports</span>
+    <h1 class="h2">Report a vehicle.<br><em>It takes a minute.</em></h1>
+    <p class="lede">Photograph the vehicle. We read the plate, you check it, and the report goes to the department that handles it. A report is a lead for an officer to review, not a verdict on anyone.</p>
+  </div>
+
+  <ol class="stepper" id="stepper" aria-label="Progress"></ol>
+
+  <div class="report-grid">
+    <div id="flow">
+      <!-- 1 PHOTO -->
+      <section class="panel step" id="s1">
+        <h3>1 · Photograph the vehicle</h3>
+        <label class="drop" id="drop" for="photo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <strong>Take a photo or choose one</strong>
+          <span class="muted">Get the whole back or front of the vehicle in view, with the number plate visible. JPEG, PNG or WebP, up to 10 MB.</span>
+          <input id="photo" type="file" accept="image/*">
+        </label>
+        <div class="row-btns"><label class="btn sm" for="camera">Use the camera<input id="camera" type="file" accept="image/*" capture="environment" class="sr"></label></div>
+        <p class="status-line" id="s1-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <!-- 2 CHECK THE PLATE -->
+      <section class="panel step" id="s2" hidden>
+        <h3>2 · Check the plate we read</h3>
+        <div class="check-grid">
+          <div><img id="preview" alt="Your photo" class="preview"></div>
+          <div class="read">
+            <p class="label-s">What the system read</p>
+            <div id="read-slots"></div>
+            <img id="crop" alt="Plate found in the photo" class="crop-img" hidden>
+            <p class="notice" id="read-note" style="margin-top:14px"></p>
+          </div>
+        </div>
+        <label class="f" for="plate" style="margin-top:22px">Plate as you can see it (optional)
+          <input id="plate" type="text" class="plate-input" maxlength="14" placeholder="DL8CAY4767" autocomplete="off" spellcheck="false">
+          <span class="hint">Fill this in only if you can read the plate in your photo. Letters and digits only, spaces are fine. Leave it empty if you cannot see it.</span>
+        </label>
+        <div class="row-btns"><button class="btn" id="use-read" type="button" hidden>Use the system's read</button></div>
+        <p class="status-line" id="s2-status" role="status" aria-live="polite"></p>
+        <div class="row-btns"><button class="btn" id="back1" type="button">Back</button><button class="btn primary" id="next2" type="button">Continue</button></div>
+      </section>
+
+      <!-- 3 DETAILS -->
+      <section class="panel step" id="s3" hidden>
+        <h3>3 · What happened</h3>
+        <form id="details" class="stack-form" novalidate>
+          <label class="f" for="category">What are you reporting?<select id="category" required></select><span class="hint" id="cat-route"></span></label>
+          <label class="f" for="description">What did you see?<textarea id="description" maxlength="1000" required placeholder="For example: this vehicle jumped the red light at the junction and nearly hit a pedestrian."></textarea><span class="hint"><span id="desc-count">0</span> / 1000. Describe the vehicle and what it did, not who you think is driving.</span></label>
+          <div class="grid2">
+            <label class="f" for="location">Where?<input id="location" type="text" maxlength="200" required placeholder="Road, landmark, city"></label>
+            <label class="f" for="when">When?<input id="when" type="datetime-local"></label>
+          </div>
+          <div class="row-btns" style="margin-top:-6px"><button class="btn sm" id="geo" type="button">Use my current location</button><span class="status-line" id="geo-status"></span></div>
+          <label class="f" for="contact">Contact (optional)<input id="contact" type="text" maxlength="120" placeholder="Phone or email, only if an officer may call you" autocomplete="off"><span class="hint">Seen only by officers. Leave empty to stay anonymous.</span></label>
+          <label class="check"><input id="consent" type="checkbox"><span>I took this photo, what I wrote is true as far as I know, and I agree that the photo, plate, location and time are stored and seen by officers of the department that handles this report. I understand a false report can harm someone.</span></label>
+          <p class="status-line" id="s3-status" role="status" aria-live="polite"></p>
+          <div class="row-btns"><button class="btn" id="back2" type="button">Back</button><button class="btn primary" id="send" type="submit">Send report</button></div>
+        </form>
+      </section>
+
+      <!-- 4 DONE -->
+      <section class="panel step" id="s4" hidden>
+        <h3>4 · Report received</h3>
+        <p class="done-id mono" id="done-id"></p>
+        <p id="done-msg" class="lede"></p>
+        <p class="notice" style="margin-top:16px">Keep this ID. You can check the state of your report below at any time. You will not be shown owner or registry details: only officers can see those.</p>
+        <div class="row-btns"><button class="btn primary" id="again" type="button">Report another</button></div>
+      </section>
+    </div>
+
+    <aside class="side">
+      <section class="panel">
+        <h3>Check a report</h3>
+        <form id="status-form" class="lookup"><label class="sr" for="cid">Report ID</label><input id="cid" type="text" maxlength="12" placeholder="12-character report ID" autocomplete="off"><button class="btn sm" type="submit">Check</button></form>
+        <div id="status-out" style="margin-top:14px"></div>
+      </section>
+      <section class="panel">
+        <h3>What happens to your report</h3>
+        <ul class="plain">
+          <li>The photo, plate, place and time go to officers of the department that handles this kind of report. Nobody else sees them.</li>
+          <li>Owner details are never shown to you or to anyone who is not an officer.</li>
+          <li>Time and place hidden in a photo are only suggested to you. You decide what to send.</li>
+          <li>Please photograph the vehicle, not people. Do not follow or confront anyone.</li>
+          <li>This is a demonstration build. Do not use it for an emergency: call 112.</li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</main>
+<footer id="foot"></footer>
+<script src="/ui.js"></script>
+<script src="/report-issue/report.js"></script>
+</body>
+</html>

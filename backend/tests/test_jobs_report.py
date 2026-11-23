@@ -117,11 +117,29 @@ def test_analyze_rejects_wrong_extension_and_unknown_department(client):
     assert r.status_code == 404
 
 
-def test_landing_and_console_are_served(client):
-    r = client.get("/")
-    assert r.status_code == 200 and "Netra" in r.text and "site.js" in r.text
-    for path in ("/site.js", "/site.css", "/img/bg.webp", "/data/demo_clear.json",
-                 "/console/", "/console/app.js", "/console/console.css"):
+PAGES = ["/", "/console/", "/monitor/", "/report-issue/", "/desk/"]
+
+
+@pytest.mark.parametrize("page", PAGES)
+def test_every_page_loads_and_every_local_file_it_references_exists(client, page):
+    import re
+
+    r = client.get(page)
+    assert r.status_code == 200 and "ui.css" in r.text and "ui.js" in r.text
+    refs = set(re.findall(r'(?:src|href)="(/[^"#?]*)"', r.text)) - {page}
+    assert refs, "page references no local files"
+    for path in refs:
+        assert client.get(path).status_code == 200, f"{page} references missing {path}"
+
+
+def test_landing_does_not_show_the_project_name(client):
+    text = client.get("/").text + client.get("/landing.js").text
+    assert "Netra" not in text and "PlateTrace" not in text
+    assert "AIML-01" in text
+
+
+def test_landing_data_files_are_served(client):
+    for path in ("/data/demo_clear.json", "/img/hero.webp", "/img/hero-sm.webp"):
         assert client.get(path).status_code == 200, path
 
 

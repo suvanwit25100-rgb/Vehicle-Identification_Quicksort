@@ -42,6 +42,23 @@ class VehicleTracker:
         return out
 
 
+class VehicleDetector:
+    """Single-image vehicle detection (no tracking). Separate model instance so it cannot disturb tracker state."""
+
+    def __init__(self, weights: Path | None = None, conf: float = 0.3):
+        from ultralytics import YOLO
+
+        self.model = YOLO(str(weights or MODELS_DIR / "yolov8n.pt"))
+        self.conf = conf
+
+    def detect(self, frame) -> list[VehicleDet]:
+        r = self.model.predict(frame, classes=list(VEHICLE_CLASSES), conf=self.conf, device=DEVICE, verbose=False)[0]
+        if r.boxes is None:
+            return []
+        return [VehicleDet(-1, VEHICLE_CLASSES[int(c)], float(p), tuple(int(v) for v in b))
+                for b, c, p in zip(r.boxes.xyxy.tolist(), r.boxes.cls.tolist(), r.boxes.conf.tolist())]
+
+
 class PlateDetector:
     def __init__(self, weights: Path | None = None, conf: float = 0.25):
         from ultralytics import YOLO

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>System monitor · AIML-01</title>
+<meta name="theme-color" content="#030612">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/pages.css">
+</head>
+<body data-page="monitor">
+<header class="bar" id="bar"></header>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">System monitor</span>
+    <h1 class="h2">What the system has<br><em>actually done.</em></h1>
+    <p class="lede">Everything here is read from saved analyses, citizen reports, model files and the calibration run. Nothing is sample data, so an empty chart means nothing has happened yet.</p>
+    <p class="status-line" id="updated" role="status" aria-live="polite" style="margin-top:14px"></p>
+  </div>
+
+  <section class="kpis" id="kpis" aria-label="Totals"></section>
+
+  <div class="cols mon-cols">
+    <section class="panel"><h3>Outcome per vehicle</h3><div id="outcomes"></div></section>
+    <section class="panel"><h3>Characters recovered per vehicle</h3><div id="hist"></div></section>
+    <section class="panel"><h3>Analyses by agency</h3><div id="by-dept"></div></section>
+    <section class="panel"><h3>Citizen reports</h3><div id="complaints"></div></section>
+  </div>
+
+  <section class="panel" style="margin-top:20px" aria-labelledby="cal-h">
+    <div class="cal-top"><h3 id="cal-h" style="margin:0">Calibration: recall against false matches, by threshold</h3><div class="tabs" id="cal-tabs" role="tablist" aria-label="Agency"></div></div>
+    <div class="cal-grid">
+      <div id="cal-chart"></div>
+      <div id="cal-table"></div>
+    </div>
+    <p class="notice" style="margin-top:18px"><b>How to read this.</b> Each agency's threshold is the lowest score whose 95% upper bound on the false-match rate meets that agency's target. The noise model behind the simulation is an assumption, not measured footage, so treat these as design targets until they are re-run on labelled real clips.</p>
+  </section>
+
+  <div class="cols mon-cols" style="margin-top:20px">
+    <section class="panel"><h3>Models</h3><div id="brains"></div></section>
+    <section class="panel" style="grid-column: span 2"><h3>Recent analyses</h3><div id="recent"></div></section>
+  </div>
+</main>
+<footer id="foot"></footer>
+<script src="/ui.js"></script>
+<script src="/monitor/monitor.js"></script>
+</body>
+</html>

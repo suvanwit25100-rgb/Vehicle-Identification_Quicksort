@@ -50,7 +50,7 @@ video -> sample frames (6 fps) -> detect + track vehicles -> detect plate per ve
 | Body type | CLIP ViT-B/32 zero-shot, fused with the COCO class prior (`app/vision/attributes.py`, `clip_brain.py`) |
 | Colour | pixel-distribution analysis on the vehicle crop |
 | Registry | `data/registry.csv`, 300 synthetic rows incl. Delhi-style RTO codes and 12 near-duplicates (`scripts/make_registry.py`) |
-| Frontend | static site served by FastAPI: landing `/`, console `/console/`; dark HUD theme from the supplied background image; fonts Oxanium / Rajdhani / JetBrains Mono |
+| Frontend | static multi-page site served by FastAPI: landing `/`, console `/console/`, monitor `/monitor/`, citizen reports `/report-issue/`, officer desk `/desk/`. Dark navy and red palette from the hero image (`img/hero.webp`); fonts Unbounded (display), Manrope (body), JetBrains Mono (plates), loaded from Google Fonts; no project name is shown on the landing page by request |
 
 **Core logic (the rules that must survive any change):**
 
@@ -83,9 +83,9 @@ video -> sample frames (6 fps) -> detect + track vehicles -> detect plate per ve
 backend/
   app/            main.py (API + static), fusion.py, matcher.py, config.py, departments.yaml, registry.py,
                   calibration.py, schemas.py, report.py, brains.py, vision/ (pipeline, detectors, ocr,
-                  plate_text, attributes, clip_brain, video, stitch), static/ (landing + console)
+                  plate_text, attributes, clip_brain, video, stitch), static/ (5 pages: ui.css/ui.js shared, per-page js), complaints.py, monitor.py
   scripts/        make_registry.py, calibrate.py, download_models.py
-  tests/          95 tests (fusion, matcher, API, stitching, pipeline, calibration, reports, brains)
+  tests/          122 tests (fusion, matcher, API, stitching, pipeline, calibration, reports, brains, complaints, monitor, pages)
   models/         yolov8n.pt, plate_s.pt (committed); clip-vit-b32/ (download, see below)
   data/           registry.csv, calibration_report.json
 training/         plate recogniser training kit (section 7); see training/README.md
@@ -93,7 +93,7 @@ training/         plate recogniser training kit (section 7); see training/README
 ```
 
 API: `/api/health`, `/api/departments`, `/api/match`, `/api/analyze`, `/api/brains`, `/api/registry/sample`,
-`/api/jobs/{id}`, `/api/jobs/{id}/report`, `/api/jobs/{id}/crops/{name}`.
+`/api/jobs/{id}`, `/api/jobs/{id}/report`, `/api/jobs/{id}/crops/{name}`, `/api/monitor`, and the citizen/officer set: `/api/complaints/categories`, `POST /api/complaints/preview` (photo to plate read, files nothing), `POST /api/complaints`, `/api/complaints/{id}/status` (public, no registry data), and `/api/desk/complaints[/{id}[/photo|/plate]]` (officer only, header `X-Officer-Key`). There is no built-in key: set `NETRA_OFFICER_KEY` before starting the server, or a random key is generated per run and printed once in the server log as "Officer key for this run".
 
 ## 5. Run it
 
@@ -104,7 +104,7 @@ python -m venv .venv
 # On an NVIDIA GPU install the CUDA build of torch from pytorch.org first
 pip install -r requirements.txt
 python scripts/download_models.py          # CLIP, ~577 MB, optional (body type falls back to the COCO prior)
-python -m pytest                           # 95 tests; those needing weights skip if they are missing
+python -m pytest                           # 122 tests; those needing weights skip if they are missing
 cd .. && python -m uvicorn app.main:app --app-dir backend --port 8000
 ```
 
@@ -237,32 +237,40 @@ scripts must be real files with a `__main__` guard.
    `training/checkpoints/plate_crnn.onnx` (copy it to `backend/models/`), preprocess with the same
    `to_model_input`, run it, take `probs[0]` of shape `(48,37)`, decode with `ctc_greedy`, and return
    `[(char, conf)]` exactly as `read_plate_chars` does today. Keep PP-OCR as a fallback (env switch). Re-run the
-   95 tests and the real clip.
+   122 tests and the real clip.
 4. Optional track B: fine-tune the plate detector with Ultralytics (command in the training README), measure recall
    before and after.
 5. Build a small labelled real-clip evaluation (10 to 20 clips with the true plates written down) so the full pipeline has
    real numbers. The scoring harness for the full pipeline was started earlier and not kept; `evaluate.py` only
    covers the OCR step.
 
-## 8. Site rebuild (evaluator item 2): thinking so far, nothing built
+## 8. Site rebuild (evaluator item 2): built on 2026-11-24
 
-- **Feature sections** showing real output, not prose: multi-frame fusion (per-frame votes collapsing into one
-  plate), the refusal gate (a refused case with its reason), per-department config side by side, calibration curves
-  from `calibration_report.json`, the audit report.
-- **Monitoring section:** model readiness (`/api/brains`), jobs run, outcomes by status, confidence distributions,
-  per-department activity. Jobs are only files on disk today; real monitoring needs a small database (SQLite is enough).
-  Do not show invented numbers: read from stored job history.
-- **Complaint logging:** a mobile-friendly page (`<input type="file" accept="image/*" capture="environment">`)
-  where a citizen uploads a photo, the system reads the plate, the citizen confirms or edits it, adds location,
-  time and category, and it lands in a department queue with an officer triage view.
-  Design rules: a single photo has no multi-frame fusion, so more characters will be `?` and the plate must be
-  editable and shown as "to be verified". **Citizens must never see owner details from the registry; only officers.**
-  A complaint is a lead, not a verdict. Plan for false or malicious complaints (rate limits, officer verification),
-  faces and personal data in photos (India's DPDP Act), consent and retention, and use EXIF time/GPS as supporting
-  evidence with a hash of each image. "Any user in the country" needs authentication: simple role-based login is fine
-  for the demo, and say that real OTP sign-in is the production answer.
-  Nice tie-in: several complaints about the same vehicle act as extra frames, so fusing their plate reads is the
-  cross-camera tracking bonus.
+The whole front end was redesigned around the supplied hero image and type reference, and the evaluator's missing pieces
+were added. Everything below runs against the real backend.
+
+- **Landing `/`**: cinematic hero (small credit block, giant "01", car and beam), how it works (6 steps), **eight feature
+  cards reading live data** (real frame reads, refusal gauge, agency thresholds, calibration curve, latest real report,
+  report and job counts), the working engine demo, five agency cards, an honest status board, entry tiles.
+- **Console `/console/`**: drag-and-drop upload, agency info, recent analyses, model readiness, results with plate crops,
+  ranked candidates, per-frame characters, unreadable vehicles collapsed. `?job=<id>` opens a saved job.
+- **Monitor `/monitor/`**: totals, outcome split, characters-recovered histogram, analyses by agency, citizen-report counts,
+  model readiness, calibration curves per agency with the chosen thresholds, recent analyses. All read from disk
+  (`app/monitor.py`); refreshes every 20 s. An empty chart means nothing has happened; there is no sample data.
+- **Citizen reports `/report-issue/`**: photo (camera or file) -> plate read with unknowns shown as `?` -> citizen may type
+  the plate -> category (routes to an agency), description, place (optional "use my location"), time, optional contact,
+  explicit consent -> report ID plus a status checker. EXIF time/GPS are only suggested. The photo is re-encoded (EXIF dropped).
+- **Officer desk `/desk/`**: sign in with the officer key; list with filters; detail with photo, system read, citizen-typed
+  plate, registry match with reasons (basis stated), details, and triage (status plus note).
+- **Rules enforced in code and tests (`tests/test_complaints.py`):** citizens never receive registry data, owner data or
+  officer notes; every `/api/desk` route needs the key; a draft can be submitted once; consent is required; per-client
+  rate limits (20 previews and 5 reports per hour, in memory); photos limited to 10 MB; a typed plate that does not fit the
+  registry is refused, not forced.
+- **Storage:** SQLite `backend/data/netra.db` and photos in `backend/data/complaints/` (both gitignored).
+
+Not built, by design or time: real officer accounts and citizen OTP sign-in (single shared key for the demo), face blurring,
+retention and deletion rules, complaint de-duplication, and fusing several citizens' reads of one vehicle (the cross-camera
+bonus). Photos from different reports of the same plate are not linked yet. Citizen photos are one frame, so expect more `?`.
 
 ## 9. Ground rules, preferences and history
 

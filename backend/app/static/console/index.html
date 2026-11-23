@@ -2,53 +2,65 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Netra Console</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Investigator console · AIML-01</title>
+<meta name="theme-color" content="#030612">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;600&family=Rajdhani:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="console.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/pages.css">
 </head>
-<body>
-<div class="bg" aria-hidden="true"></div>
-<header class="top">
-  <a class="brand" href="/" aria-label="Netra home">
-    <svg viewBox="0 0 48 46" width="30" height="28" aria-hidden="true"><polygon points="24,2 46,18 38,44 10,44 2,18" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M24 2 L24 26 M2 18 L24 26 L46 18 M10 44 L24 26 L38 44" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".7"/></svg>
-    <span class="wordmark"><b>NETRA</b></span>
-    <span class="sub">INVESTIGATOR CONSOLE</span>
-  </a>
-  <div id="brains" class="brains" aria-label="Model status"></div>
-</header>
+<body data-page="console">
+<header class="bar" id="bar"></header>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Investigator console</span>
+    <h1 class="h2">Analyse a clip.<br><em>Get evidence, not a guess.</em></h1>
+    <p class="lede">Upload CCTV footage and choose the agency. Every vehicle gets a recovered plate with the characters that could not be read marked as unknown, a ranked shortlist with reasons, and a printable report.</p>
+  </div>
 
-<main>
-  <section class="panel" aria-labelledby="up-h">
-    <h2 id="up-h">New analysis</h2>
-    <form id="upload" class="row">
-      <label class="field">Department
-        <select id="department"></select>
-      </label>
-      <label class="field grow">CCTV clip (mp4, avi, mov, mkv)
-        <input id="file" type="file" accept=".mp4,.avi,.mov,.mkv,video/*" required>
-      </label>
-      <button id="go" type="submit">Analyse clip</button>
-    </form>
-    <form id="lookup" class="row small">
-      <label class="field grow">Open an earlier job by ID
-        <input id="jobid" type="text" inputmode="latin" maxlength="12" placeholder="12-character job ID" pattern="[0-9a-f]{12}">
-      </label>
-      <button type="submit" class="ghost">Open</button>
-    </form>
-    <p id="status" class="status" role="status" aria-live="polite"></p>
-  </section>
+  <div class="console-grid">
+    <section class="panel" aria-labelledby="new-h">
+      <h3 id="new-h">New analysis</h3>
+      <form id="upload" class="stack-form">
+        <label class="drop" id="drop" for="file">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+          <strong id="drop-title">Drop a clip here, or click to choose</strong>
+          <span class="muted" id="drop-sub">MP4, AVI, MOV or MKV. About 40 seconds of footage is analysed.</span>
+          <input id="file" name="file" type="file" accept=".mp4,.avi,.mov,.mkv,video/*" required>
+        </label>
+        <label class="f" for="department">Agency
+          <select id="department" name="department"></select>
+          <span class="hint" id="dept-info"></span>
+        </label>
+        <button class="btn primary" id="go" type="submit">Analyse clip</button>
+        <p class="status-line" id="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
 
-  <section id="results" hidden></section>
+    <aside class="side">
+      <section class="panel">
+        <h3>Recent analyses</h3>
+        <div id="recent" class="recent"><p class="empty">Loading…</p></div>
+        <form id="lookup" class="lookup">
+          <label class="sr" for="jobid">Job ID</label>
+          <input id="jobid" type="text" inputmode="latin" placeholder="Open a job by its 12-character ID" maxlength="12" autocomplete="off">
+          <button class="btn sm" type="submit">Open</button>
+        </form>
+      </section>
+      <section class="panel">
+        <h3>Models</h3>
+        <div id="brains" class="chips"></div>
+      </section>
+    </aside>
+  </div>
+
+  <div id="results" hidden></div>
 </main>
-
-<footer class="foot">
-  Confidence scores are uncalibrated estimates. Results are leads for an investigator to verify.
-  Characters that cannot be read are shown as <span class="mono">?</span> and are never guessed.
-  <a href="/">Back to the overview</a>
-</footer>
-<script src="app.js"></script>
+<footer id="foot"></footer>
+<script src="/ui.js"></script>
+<script src="/console/console.js"></script>
 </body>
 </html>
