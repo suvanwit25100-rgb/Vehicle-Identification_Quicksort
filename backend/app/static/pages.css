@@ -177,3 +177,6 @@ tr.sel td { background: var(--red-soft); }
 .trail-n { background: transparent; border: 0; box-shadow: none; color: #fff; font: 700 12px var(--mono); }
 .trail-n::before { display: none; }
 .trail { margin-top: 18px; }
+
+.queue { margin-top: 20px; }
+.queue h4 { margin-bottom: 10px; }

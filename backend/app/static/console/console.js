@@ -197,23 +197,61 @@ async function loadRecent() {
 /* ---------- upload ---------- */
 const fileIn = $("#file"), drop = $("#drop");
 function showFile() {
-  const f = fileIn.files[0];
-  $("#drop-title").textContent = f ? f.name : "Drop a clip here, or click to choose";
-  $("#drop-sub").textContent = f ? `${(f.size / 1048576).toFixed(1)} MB, ready to analyse` : "MP4, AVI, MOV or MKV. About 40 seconds of footage is analysed.";
+  const fs = [...fileIn.files], f = fs[0], mb = fs.reduce((a, x) => a + x.size, 0) / 1048576;
+  $("#drop-title").textContent = fs.length > 1 ? `${fs.length} clips chosen` : f ? f.name : "Drop a clip (or several) here, or click to choose";
+  $("#drop-sub").textContent = f ? (fs.length > 1 ? `${mb.toFixed(1)} MB in all. They are analysed one after another.` : `${mb.toFixed(1)} MB, ready to analyse`) : "MP4, AVI, MOV or MKV. About 40 seconds of footage is analysed.";
+  $("#go").textContent = fs.length > 1 ? `Analyse ${fs.length} clips` : "Analyse clip";
 }
 fileIn.addEventListener("change", showFile);
 ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", (e) => { if (e.dataTransfer.files.length) { fileIn.files = e.dataTransfer.files; showFile(); } });
 
-$("#upload").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const file = fileIn.files[0];
-  if (!file) return;
+function uploadForm(file) {
   const fd = new FormData();
   fd.append("file", file);
   fd.append("department", $("#department").value);
   [["camera", "#camera"], ["place", "#place"], ["lat", "#lat"], ["lon", "#lon"], ["recorded_at", "#recorded"]].forEach(([k, s]) => { if ($(s).value.trim()) fd.append(k, $(s).value.trim()); });
+  return fd;
+}
+const plateText = (t) => t.match.fused.slots.map((s) => (s.char === "-" ? "" : s.char || "?")).join("");
+const QSTATE = { waiting: "waiting", analysing: "analysing…", done: "done", failed: "failed", skipped: "not run" };
+
+/* Several clips at once: one after another, each through the same endpoint a single clip uses. */
+async function runBatch(files) {
+  const q = $("#queue");
+  const rows = files.map((f) => ({ f, state: /\.(mp4|avi|mov|mkv)$/i.test(f.name) ? "waiting" : "skipped", note: /\.(mp4|avi|mov|mkv)$/i.test(f.name) ? "" : "Not a video file." }));
+  let stop = false;
+  const stopBtn = h("button", { class: "btn sm", type: "button" }, "Stop after this clip");
+  stopBtn.addEventListener("click", () => { stop = true; stopBtn.disabled = true; stopBtn.textContent = "Stopping…"; });
+  const paint = (running) => q.replaceChildren(h("h4", {}, `Batch: ${rows.filter((r) => r.state === "done").length} of ${rows.length} analysed`),
+    h("div", { class: "tablewrap" }, h("table", {}, h("tbody", {}, rows.map((r) => h("tr", {},
+      h("td", { style: "max-width:200px;overflow:hidden;text-overflow:ellipsis" }, r.f.name), h("td", {}, h("span", { class: `chip ${r.state === "done" ? "built" : r.state === "failed" ? "rejected" : r.state === "analysing" ? "under_review" : "planned"}` }, QSTATE[r.state])),
+      h("td", { class: "mono", style: "font-size:12px" }, r.best || ""), h("td", { style: "white-space:normal;min-width:140px;color:var(--muted);font-size:13px" }, r.note),
+      h("td", {}, r.jobId ? h("button", { class: "btn sm", type: "button", onclick: () => openJob(r.jobId) }, "Open") : null)))))),
+    running ? h("div", { class: "row-btns" }, stopBtn) : null);
+  q.hidden = false; $("#go").disabled = true; paint(true);
+  for (const r of rows) {
+    if (r.state === "skipped") continue;
+    if (stop) { r.state = "skipped"; r.note = "Stopped before this clip."; paint(true); continue; }
+    r.state = "analysing"; paint(true);
+    try {
+      const res = await api((window.EXLEX?.uploadBase || "") + "/api/analyze", { method: "POST", body: uploadForm(r.f) });
+      const ok = res.tracks.filter(isReadable);
+      r.jobId = res.job_id; r.state = "done"; r.best = ok.length ? plateText(ok[0]) + (ok.length > 1 ? ` +${ok.length - 1}` : "") : "no plate"; r.note = `${ok.length} of ${res.tracks.length} vehicles readable`;
+    } catch (e) { r.state = "failed"; r.note = e.message; }
+    paint(true);
+  }
+  paint(false); $("#go").disabled = false; setStatus(""); loadRecent();
+}
+
+$("#upload").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const files = [...fileIn.files];
+  if (!files.length) return;
+  if (files.length > 1) return runBatch(files);
+  const file = files[0];
+  const fd = uploadForm(file);
   $("#go").disabled = true;
   const t0 = Date.now();
   const tick = setInterval(() => { $("#status").innerHTML = `<span class="spinner"></span>Analysing… ${Math.round((Date.now() - t0) / 1000)} s. Longer clips take a minute or two on CPU.`; $("#status").className = "status-line"; }, 500);

@@ -28,9 +28,9 @@
       <form id="upload" class="stack-form">
         <label class="drop" id="drop" for="file">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
-          <strong id="drop-title">Drop a clip here, or click to choose</strong>
+          <strong id="drop-title">Drop a clip (or several) here, or click to choose</strong>
           <span class="muted" id="drop-sub">MP4, AVI, MOV or MKV. About 40 seconds of footage is analysed.</span>
-          <input id="file" name="file" type="file" accept=".mp4,.avi,.mov,.mkv,video/*" required>
+          <input id="file" name="file" type="file" accept=".mp4,.avi,.mov,.mkv,video/*" multiple required>
         </label>
         <label class="f" for="department">Agency
           <select id="department" name="department"></select>
@@ -52,6 +52,7 @@
         <button class="btn primary" id="go" type="submit">Analyse clip</button>
         <p class="status-line" id="status" role="status" aria-live="polite"></p>
       </form>
+      <div id="queue" class="queue" hidden></div>
     </section>
 
     <aside class="side">
