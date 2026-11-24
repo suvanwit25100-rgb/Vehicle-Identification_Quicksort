@@ -426,6 +426,16 @@ Not built, on purpose: live camera streams, helmet/rider checks, FASTag/permit c
 - Code changes for hosting: `EXLEX_DATA_DIR` (data, key and database on a persistent disk), `EXLEX_CORS_ORIGINS` (off unless set; no credentials), `static/config.js` (`uploadBase` so large uploads go straight to the API), real visitor address behind a proxy for rate limits, 300 MB upload cap and analysis limit (30/hour/visitor), security headers, `robots.txt` disallowing indexing.
 - **Not verified:** the Docker image was never built (no Docker here); Vercel rewrites were not exercised against a live backend. The local dry run of the start command (proxy headers, per-visitor limits) did pass. 280 tests pass.
 
+### Seven more features (post-freeze, 2026-11-24; the user picked these from a list)
+1. **Cross-camera trail:** optional `camera`, `place`, `lat`/`lon`, `recorded_at` on `/api/analyze` (validated; stored on the result), `GET /api/trail?plate=` (in recording order, else analysis order, labelled), map and table on the archive page. Same footage analysed twice is one sighting.
+2. **Batch upload:** the console takes several clips and runs them one after another through the same endpoint (status per clip, stop button). Front end only.
+3. **Registry search** (`registry_search.py`, `/api/desk/registry/search`, officers only, audited): partial plate with `?`, colour, body type, make; needs 3 known characters or another filter.
+4. **Citizen status page** (`/status/`, `GET /api/complaints/{id}/progress`): plain-language progress and timeline; tested to carry no notes, officer names, registry data or plates; 60 lookups/hour/visitor.
+5. **Night-light boost: measured and NOT shipped.** Code written, tested, then removed. Generated plates darkened and noised (300 per level): very dark 51.7% exact reads without it, 53.0% with it at selection margin 1.0 (0 readings made worse) or 54.3% at margin 0.5 (1 made worse); dim and bright within 0.6 points. That is inside the noise for 300 plates. On the real clip, 4 of 20 unique crops of the five known vehicles were dark and the boost changed none. No evidence it helps, so it is not in the product. (The evaluation script was a scratch file, not kept.)
+6. **Hindi and English** (`static/i18n.js`): swaps text that matches a dictionary entry (also text added later), covering the menu, landing hero, report-a-problem pages, track page, categories, agency names, statuses. Untranslated text stays English. `tests/test_i18n.py` fails if a translated phrase no longer exists in the pages or server text. Dates stay in English format. **The Hindi has not been reviewed by a native speaker.**
+7. **Installable app** (`manifest.webmanifest`, `sw.js`, `pwa.js`, `offline.html`, icons in `static/img`): the service worker caches only the citizen page shell, never `/api`, `/officer`, `/desk`, writes or other sites. Offline notice on the pages; a report still needs a connection. The in-app browser pane refuses to register service workers, so registration was not seen live there; the worker's logic is tested in Node with a fake cache and network (`tests/sw_harness.js`). Install on a real phone is unverified.
+- 308 tests pass.
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

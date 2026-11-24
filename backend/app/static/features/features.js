@@ -129,7 +129,7 @@ const V = {
       cap("Live from the server. Search by a whole or partial plate to find the same vehicle in other videos.")];
   }),
 
-  notbuilt: () => h("div", {}, ["Live camera streams: analysis is of uploaded clips", "Real registry (VAHAN) or FASTag data: the registry is synthetic", "Make and model recognition, and cross-camera tracking", "Citizen OTP sign-in, and 'Sign in with Google' (needs a Google Cloud client that you create)", "Face blurring in stored images", "Helmet and rider checks, FASTag and permit checks, convoy detection", "Real email and SMS sending: citizen messages are queued as a demo"]
+  notbuilt: () => h("div", {}, ["Live camera streams: analysis is of uploaded clips", "Real registry (VAHAN) or FASTag data: the registry is synthetic", "Make and model recognition, and cross-camera tracking", "Citizen OTP sign-in, and 'Sign in with Google' (needs a Google Cloud client that you create)", "Face blurring in stored images", "Helmet and rider checks, FASTag and permit checks, convoy detection", "Real email and SMS sending: citizen messages are queued as a demo", "Night-light boost: tried, did not help on our footage, so it was not shipped", "Sending a report while offline and syncing later"]
     .map((t) => h("div", { class: "tick off" }, h("i", {}, "–"), t))),
 };
 
@@ -176,6 +176,18 @@ const GROUPS = [
       ["The request answers the same for every name, so it cannot be used to find accounts", "A reset signs the officer out everywhere", "Sends for real only if SMTP is configured; otherwise it is queued for an administrator and says nothing was sent"], "report"],
     ["built", "Live alerts", "New reports and watch-list hits pop up for officers while the portal is open.",
       ["Checked every 15 seconds, with an unread count and an Alerts list", "Respects agency permissions", "Optional desktop notifications. Honest limit: not a push to a closed browser or phone"], "monitor"],
+    ["built", "Cross-camera trail", "Tell the console which camera filmed a clip, where and when, and one plate's route across cameras appears in order, on a map.",
+      ["Optional camera name, place, position and recording time on every upload", "Ordered by recording time when it was given, and labelled when it falls back to analysis time", "The same video analysed twice is still one sighting", "Honest limit: the map needs internet; the table always works"], "stitch"],
+    ["built", "Batch upload", "Drop several clips at once and watch them analyse one after another.",
+      ["Per-clip status, a stop button, and a failed clip does not stop the rest", "Non-video files are skipped with a note", "Each clip goes through exactly the same analysis as a single upload"], "small"],
+    ["built", "Registry search", "Officers look up registry rows by partial plate, colour, body type and make.",
+      ["Unknown characters (?) match anything; a known character that differs never matches", "A search needs enough to be specific, so it cannot dump the registry", "Every search is written to the audit trail. The registry is synthetic"], "unknown"],
+    ["built", "Track a report", "A citizen enters their report ID and sees what has happened, in plain words.",
+      ["A progress bar, a timeline and what each status means", "Never officer names or notes, owner details or anyone's plate", "Lookups are rate limited"], "report"],
+    ["built", "Hindi and English", "A language switch for the menu, the landing hero, and the pages where a citizen reports or tracks.",
+      ["Remembered in the browser; Devanagari type loads only when Hindi is chosen", "Text without a translation stays in English, never blank", "A test fails if a translated phrase stops matching the page", "Honest limit: other pages stay English, and the Hindi should be read by a native speaker"], "report"],
+    ["built", "Installable app", "Citizens can add the report page to their phone's home screen and open it like an app.",
+      ["Opens quickly and opens with no signal, with a clear offline notice", "Caches only the page shell: never reports, plates, photos or officer pages", "Honest limit: a report can only be sent while online, so nothing is half-sent"], "desk"],
     ["partial", "Track stitching", "Trackers sometimes split one vehicle into several tracks. Fragments that clearly carry the same plate are joined.",
       ["Merge only if the plates agree on 6 or more characters and clash on none", "A group grows only if every pair in it is compatible", "Honest gap: on one real clip nothing needed merging, and unreadable fragments stay separate"], "stitch"],
     ["built", "Too small to read", "A vehicle with a tiny plate is not forced into a read. It is listed with the reason.",

@@ -15,6 +15,7 @@
     "ExLex · AIML-01 · Vehicle identification and traceability from CCTV footage. © 2026 Team Quicksort.": "ExLex · AIML-01 · सीसीटीवी फुटेज से वाहन की पहचान और ट्रेसबिलिटी। © 2026 Team Quicksort।",
     "Confidence scores are uncalibrated estimates. Candidates are leads for an investigator to verify, not identifications. Characters that cannot be read are shown as ? and are never guessed.":
       "विश्वास-अंक अंशांकित अनुमान नहीं, मोटे अनुमान हैं। उम्मीदवार जाँचकर्ता के सत्यापन के लिए सुराग हैं, पहचान नहीं। जो अक्षर पढ़े नहीं जा सकते उन्हें ? दिखाया जाता है और अंदाज़े से कभी नहीं भरा जाता।",
+    "You are offline. You can fill in the form, but a report can only be sent when you are back online.": "आप ऑफ़लाइन हैं। आप फ़ॉर्म भर सकते हैं, पर शिकायत तभी भेजी जा सकती है जब आप फिर से ऑनलाइन हों।",
     /* agencies */
     "Police": "पुलिस", "Ministry of Road Transport and Highways / NHAI": "सड़क परिवहन एवं राजमार्ग मंत्रालय / NHAI", "Border Security Force": "सीमा सुरक्षा बल",
     "Sashastra Seema Bal": "सशस्त्र सीमा बल", "Customs": "सीमा शुल्क",

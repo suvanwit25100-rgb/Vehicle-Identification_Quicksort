@@ -51,6 +51,8 @@ if os.environ.get("EXLEX_CORS_ORIGINS"):
 async def count_requests(request: Request, call_next):
     response = await call_next(request)
     metrics.record(request.url.path, response.status_code)
+    if request.url.path in ("/sw.js", "/manifest.webmanifest"):
+        response.headers["Cache-Control"] = "no-cache"                    # so an updated service worker is picked up straight away
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("Referrer-Policy", "no-referrer")
     response.headers.setdefault("X-Frame-Options", "DENY")
