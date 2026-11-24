@@ -61,3 +61,33 @@ def test_the_map_only_has_reports_with_a_location_and_respects_agencies(client, 
     client.post("/api/officer/team", json={"username": "bor", "name": "Bor Der", "role": "officer", "password": "Strong-Pass-123", "agencies": ["bsf"]}, headers=KEY)
     tok = client.post("/api/officer/login", json={"username": "bor", "password": "Strong-Pass-123"}).json()["token"]
     assert all(p["department"] == "bsf" for p in client.get("/api/desk/map", headers=bearer(tok)).json())
+
+
+# ---------------------------------------------------------------- going online: client address, upload cap, headers
+def test_the_visitor_address_comes_from_the_proxy_only_when_the_connection_is_local():
+    from types import SimpleNamespace
+
+    def req(host, headers):
+        return SimpleNamespace(client=SimpleNamespace(host=host), headers=headers)
+
+    assert main._client_id(req("127.0.0.1", {"cf-connecting-ip": "203.0.113.9"})) == "203.0.113.9"
+    assert main._client_id(req("127.0.0.1", {"x-forwarded-for": "198.51.100.4, 10.0.0.1"})) == "198.51.100.4"
+    assert main._client_id(req("127.0.0.1", {})) == "127.0.0.1"
+    assert main._client_id(req("203.0.113.50", {"cf-connecting-ip": "1.2.3.4"})) == "203.0.113.50"      # a remote caller cannot forge it
+
+
+def test_security_headers_are_sent_and_robots_asks_not_to_be_indexed(client):
+    r = client.get("/api/health")
+    assert r.headers["x-content-type-options"] == "nosniff" and r.headers["x-frame-options"] == "DENY" and r.headers["referrer-policy"] == "no-referrer"
+    assert "Disallow: /" in client.get("/robots.txt").text
+
+
+def test_an_oversized_or_over_limit_upload_is_refused_before_any_analysis(client, monkeypatch):
+    monkeypatch.setattr(main, "MAX_UPLOAD_MB", 0)
+    r = client.post("/api/analyze", files={"file": ("clip.mp4", b"x" * 2048, "video/mp4")}, data={"department": "police"})
+    assert r.status_code == 413 and "MB" in r.json()["detail"]
+    monkeypatch.setattr(main, "MAX_UPLOAD_MB", 300)
+    main.limiter.reset()
+    codes = {client.post("/api/analyze", files={"file": ("clip.txt", b"x", "text/plain")}, data={"department": "police"}).status_code for _ in range(32)}
+    assert 429 in codes and 415 in codes
+    main.limiter.reset()

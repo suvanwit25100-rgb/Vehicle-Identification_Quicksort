@@ -30,6 +30,7 @@ from .schemas import AnalysisResult, Evidence, FusedPlate, MatchResult
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 ALLOWED_EXT = {".mp4", ".avi", ".mov", ".mkv"}
+MAX_UPLOAD_MB = 300
 JOB_ID_RE = re.compile(r"[0-9a-f]{12}")
 CROP_RE = re.compile(r"track\d+_(?:plate\d+|vehicle|evidence)\.jpg")
 
@@ -40,6 +41,10 @@ app = FastAPI(title="ExLex API")
 async def count_requests(request: Request, call_next):
     response = await call_next(request)
     metrics.record(request.url.path, response.status_code)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Permissions-Policy", "camera=(self), geolocation=(self), microphone=()")
     return response
 
 
@@ -75,8 +80,13 @@ def brains():
 
 
 @app.post("/api/analyze", response_model=AnalysisResult)
-def analyze(file: UploadFile = File(...), department: str = Form("police")):
+def analyze(request: Request, file: UploadFile = File(...), department: str = Form("police")):
     from .vision.pipeline import analyze_video
+
+    if not limiter.allow(_client_id(request), "analyze", 30):
+        raise HTTPException(status_code=429, detail="Too many analyses from this connection this hour. Try again later.")
+    if file.size is not None and file.size > MAX_UPLOAD_MB * 1024 * 1024:
+        raise HTTPException(status_code=413, detail=f"That video is over {MAX_UPLOAD_MB} MB. Trim it or lower its resolution.")
 
     try:
         get_department(department)
@@ -91,6 +101,9 @@ def analyze(file: UploadFile = File(...), department: str = Form("police")):
     dest = upload_dir / f"{uuid.uuid4().hex}{ext}"
     with dest.open("wb") as fh:
         shutil.copyfileobj(file.file, fh)
+    if dest.stat().st_size > MAX_UPLOAD_MB * 1024 * 1024:                # a client that did not declare its size
+        dest.unlink(missing_ok=True)
+        raise HTTPException(status_code=413, detail=f"That video is over {MAX_UPLOAD_MB} MB. Trim it or lower its resolution.")
 
     tracker, plate_detector, clip = _models()
     result = analyze_video(dest, department, tracker, plate_detector, out_dir=DATA_DIR / "jobs", body_classifier=clip,
@@ -257,7 +270,14 @@ def _store() -> cm.ComplaintStore:
 
 
 def _client_id(request: Request) -> str:
-    return request.client.host if request.client else "unknown"
+    """Who is calling, for rate limits. Behind a tunnel or proxy on this machine every request comes from 127.0.0.1, so the visitor's real
+    address is taken from the proxy's header, but only when the connection itself is local (so a remote caller cannot forge it)."""
+    host = request.client.host if request.client else "unknown"
+    if host in ("127.0.0.1", "::1", "localhost"):
+        real = request.headers.get("cf-connecting-ip") or request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+        if real:
+            return real[:64]
+    return host
 
 
 @lru_cache
