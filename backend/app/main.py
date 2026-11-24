@@ -344,6 +344,7 @@ def submit_complaint(body: ComplaintIn, request: Request):
     except KeyError:
         raise HTTPException(status_code=404, detail="That photo was not found or was already submitted. Upload it again.")
     dept = get_department(cm.CATEGORIES[body.category][1])
+    _store().queue_message(cid, body.contact, f"ExLex: we received your report {cid}. Use this ID to check its status. It is a lead for an officer to review.")
     return {"complaint_id": cid, "status": "new", "department": dept.name,
             "message": "Your report was received. It is a lead for an officer to review, not a verdict on anyone."}
 
@@ -488,6 +489,7 @@ def desk_update(cid: str, body: DeskUpdate, who: dict = Depends(require_officer)
     store.update(cid, body.status, body.note)
     if row["status"] != body.status:
         store.add_event(cid, who["username"], "status", f"{row['status']} -> {body.status}")
+        store.queue_message(cid, row["contact"], f"ExLex: your report {cid} is now \"{body.status.replace('_', ' ')}\". Check the status any time with this ID.")
         _officers().log(who, "report.status", cid, f"{row['status']} -> {body.status}")
     if body.note and body.note.strip() != (row["officer_note"] or "").strip():
         store.add_event(cid, who["username"], "note", body.note.strip())
@@ -534,6 +536,19 @@ def desk_related(cid: str, who: dict = Depends(require_officer)):
     rows = _store().list(limit=5000, departments=who.get("agencies") or None)
     ids = set(related_map(rows).get(cid, []))
     return [_summary(r) for r in rows if r["id"] in ids]
+
+
+@app.get("/api/desk/complaints/{cid}/messages")
+def desk_messages(cid: str, who: dict = Depends(require_officer)):
+    """Messages queued for the citizen who filed this report. Demo: queued and shown here, never sent."""
+    _case(who, cid)
+    return _store().messages(cid)
+
+
+@app.get("/api/desk/outbox")
+def desk_outbox(who: dict = Depends(require_officer)):
+    return {"messages": _store().outbox(who.get("agencies") or None),
+            "note": "Demo build: messages are queued and listed here, nothing is sent by email or SMS. A real deployment would connect a sender."}
 
 
 @app.get("/api/desk/complaints/{cid}/timeline")
@@ -805,6 +820,80 @@ def session_revoke(sid: str, who: dict = Depends(require_admin)):
         raise HTTPException(status_code=404, detail="No such session.")
     _officers().log(who, "session.revoke", sid)
     return {"revoked": sid}
+
+
+class RetentionIn(BaseModel):
+    what: str                      # "analyses" or "reports"
+    days: int = Field(ge=1, le=3650)
+    confirm: bool = False
+    expect: int | None = None      # the number the preview showed; the delete is refused if it has changed
+
+
+def _retention_targets(what: str, days: int) -> list[dict]:
+    from datetime import datetime, timedelta, timezone
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    if what == "reports":
+        return [{"id": r["id"], "when": r["updated_at"], "label": f"{r['category']} · {r['status']}"} for r in _store().reports_older_than(days)]
+    if what == "analyses":
+        out = []
+        for f in (DATA_DIR / "jobs").glob("*/result.json") if (DATA_DIR / "jobs").exists() else []:
+            r = _load_result(f)
+            when = r.created_at if r and r.created_at else datetime.fromtimestamp(f.stat().st_mtime, timezone.utc).isoformat(timespec="seconds")
+            try:
+                old = datetime.fromisoformat(when) < cutoff
+            except ValueError:
+                old = False
+            if old:
+                out.append({"id": f.parent.name, "when": when, "label": (r.source_filename if r else None) or "(unnamed)"})
+        return sorted(out, key=lambda x: x["when"])
+    raise HTTPException(status_code=422, detail='what must be "analyses" or "reports"')
+
+
+def _load_result(path):
+    try:
+        return AnalysisResult.model_validate_json(path.read_text())
+    except Exception:  # noqa: BLE001
+        return None
+
+
+@app.post("/api/officer/retention/preview")
+def retention_preview(body: RetentionIn, who: dict = Depends(require_admin)):
+    """What a clean-up would delete. Reports are only ever closed or rejected ones; open reports are never touched. Nothing is deleted here."""
+    t = _retention_targets(body.what, body.days)
+    return {"what": body.what, "days": body.days, "count": len(t), "sample": t[:10],
+            "note": "Deleting is permanent. Analyses lose their video, images and data; flagged reports keep their own evidence copy." if body.what == "analyses"
+                    else "Deleting is permanent. Only closed and rejected reports are included."}
+
+
+@app.post("/api/officer/retention/apply")
+def retention_apply(body: RetentionIn, who: dict = Depends(require_admin)):
+    import shutil as _sh
+
+    if not body.confirm:
+        raise HTTPException(status_code=422, detail="Set confirm to true to delete. This cannot be undone.")
+    t = _retention_targets(body.what, body.days)
+    if body.expect is None or body.expect != len(t):
+        raise HTTPException(status_code=409, detail=f"The list changed: {len(t)} would be deleted now. Preview again and confirm.")
+    for x in t:
+        if body.what == "reports":
+            _store().delete_report(x["id"])
+        else:
+            _sh.rmtree(DATA_DIR / "jobs" / x["id"], ignore_errors=True)
+    _officers().log(who, f"retention.{body.what}", None, f"deleted {len(t)} older than {body.days} days")
+    return {"deleted": len(t)}
+
+
+@app.delete("/api/officer/analyses/{job_id}")
+def delete_analysis(job_id: str, confirm: bool = False, who: dict = Depends(require_admin)):
+    import shutil as _sh
+
+    d = _job_dir(job_id)
+    if not confirm:
+        raise HTTPException(status_code=422, detail="Add ?confirm=true to delete this analysis. This cannot be undone.")
+    _sh.rmtree(d, ignore_errors=True)
+    _officers().log(who, "analysis.delete", job_id)
+    return {"deleted": job_id}
 
 
 @app.get("/api/officer/audit", dependencies=[Depends(require_admin)])

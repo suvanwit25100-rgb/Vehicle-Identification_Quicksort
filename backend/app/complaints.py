@@ -17,7 +17,7 @@ import time
 import uuid
 from collections import defaultdict, deque
 from contextlib import contextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from io import BytesIO
 from pathlib import Path
 
@@ -172,6 +172,9 @@ class ComplaintStore:
         with self.db() as c:
             c.execute(SCHEMA)
             have = {r[1] for r in c.execute("PRAGMA table_info(complaints)")}
+            c.execute("""CREATE TABLE IF NOT EXISTS outbox (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, complaint_id TEXT NOT NULL, at TEXT NOT NULL, channel TEXT NOT NULL,
+                destination TEXT NOT NULL, message TEXT NOT NULL, state TEXT NOT NULL)""")
             c.execute("""CREATE TABLE IF NOT EXISTS case_events (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, complaint_id TEXT NOT NULL, at TEXT NOT NULL, actor TEXT NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL)""")
             for col, ddl in (("source", "TEXT NOT NULL DEFAULT 'citizen'"), ("job_id", "TEXT"), ("track_id", "INTEGER"), ("assigned_to", "TEXT")):
@@ -257,6 +260,59 @@ class ComplaintStore:
             return None
         with self.db() as c:
             return c.execute("SELECT * FROM complaints WHERE id=?", (cid,)).fetchone()
+
+    # ---- messages to the citizen. Demo: they are queued and shown, nothing is sent anywhere.
+    @staticmethod
+    def contact_channel(contact: str | None) -> tuple[str, str] | None:
+        """("email" | "sms", masked destination) for a contact the citizen gave, or None when it is neither."""
+        c = (contact or "").strip()
+        if re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", c):
+            user, dom = c.split("@", 1)
+            return "email", f"{user[:1]}***@{dom}"
+        digits = re.sub(r"\D", "", c)
+        if 8 <= len(digits) <= 13:
+            return "sms", f"•••••{digits[-4:]}"
+        return None
+
+    def queue_message(self, cid: str, contact: str | None, text: str) -> bool:
+        ch = self.contact_channel(contact)
+        if not ch:
+            return False
+        with self.db() as c:
+            c.execute("INSERT INTO outbox (complaint_id, at, channel, destination, message, state) VALUES (?,?,?,?,?,?)",
+                      (cid, now_iso(), ch[0], ch[1], text[:300], "queued (demo: not sent)"))
+        return True
+
+    def messages(self, cid: str) -> list[dict]:
+        with self.db() as c:
+            return [dict(r) for r in c.execute("SELECT at, channel, destination, message, state FROM outbox WHERE complaint_id=? ORDER BY id", (cid,))]
+
+    def outbox(self, departments: list[str] | None = None, limit: int = 200) -> list[dict]:
+        q = "SELECT o.*, c.department FROM outbox o JOIN complaints c ON c.id=o.complaint_id"
+        args: list = []
+        if departments:
+            q += f" WHERE c.department IN ({','.join('?' * len(departments))})"
+            args += list(departments)
+        with self.db() as c:
+            return [dict(r) for r in c.execute(q + " ORDER BY o.id DESC LIMIT ?", (*args, limit))]
+
+    # ---- deletion (retention)
+    def delete_report(self, cid: str) -> bool:
+        if not ID_RE.fullmatch(cid):
+            return False
+        with self.db() as c:
+            n = c.execute("DELETE FROM complaints WHERE id=?", (cid,)).rowcount
+            c.execute("DELETE FROM case_events WHERE complaint_id=?", (cid,))
+            c.execute("DELETE FROM outbox WHERE complaint_id=?", (cid,))
+        for suffix in ("", "_plate"):
+            (self.dir / f"{cid}{suffix}.jpg").unlink(missing_ok=True)
+        return bool(n)
+
+    def reports_older_than(self, days: int, states: tuple[str, ...] = ("closed", "rejected")) -> list[sqlite3.Row]:
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat(timespec="seconds")
+        with self.db() as c:
+            return c.execute(f"SELECT * FROM complaints WHERE status IN ({','.join('?' * len(states))}) AND updated_at < ? ORDER BY updated_at",
+                             (*states, cutoff)).fetchall()
 
     def add_event(self, cid: str, actor: str, kind: str, text: str) -> None:
         with self.db() as c:

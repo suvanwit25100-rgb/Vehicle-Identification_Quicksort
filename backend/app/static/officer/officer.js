@@ -80,7 +80,8 @@ $("#signout").addEventListener("click", async () => { try { await call("/api/off
 /* ---------- router ---------- */
 const ROUTES = {
   dashboard: ["Dashboard", viewDashboard], reports: ["Reports", viewReports], analyses: ["Analyses", viewAnalyses], watchlist: ["Watch-list", viewWatchlist],
-  sightings: ["Repeat sightings", viewSightings], audit: ["Audit trail", viewAudit, true], team: ["Team", viewTeam, true], account: ["My account", viewAccount],
+  sightings: ["Repeat sightings", viewSightings], outbox: ["Citizen messages", viewOutbox], audit: ["Audit trail", viewAudit, true], team: ["Team", viewTeam, true],
+  retention: ["Retention", viewRetention, true], account: ["My account", viewAccount],
 };
 function route() {
   if (!me) return;
@@ -162,7 +163,7 @@ async function viewReports(view, openId) {
     selected = id; history.replaceState(null, "", `#/reports/${id}`);
     blobs.splice(0).forEach(URL.revokeObjectURL);
     detail.replaceChildren(h("p", { class: "empty" }, h("span", { class: "spinner" }), "Loading…"));
-    const [d, tl, rel] = await Promise.all([call(`/api/desk/complaints/${id}`), call(`/api/desk/complaints/${id}/timeline`), call(`/api/desk/complaints/${id}/related`)]);
+    const [d, tl, rel, msgs] = await Promise.all([call(`/api/desk/complaints/${id}`), call(`/api/desk/complaints/${id}/timeline`), call(`/api/desk/complaints/${id}/related`), call(`/api/desk/complaints/${id}/messages`)]);
     const [photo, crop] = await Promise.all([blobUrl(`/api/desk/complaints/${id}/photo`), d.plate_found ? blobUrl(`/api/desk/complaints/${id}/plate`) : null]);
     const m = d.match;
     const status = h("select", { "aria-label": "Status" }, d.statuses.map((s) => h("option", { value: s, selected: s === d.status }, STATUS_LABEL[s])));
@@ -190,6 +191,8 @@ async function viewReports(view, openId) {
       h("div", { class: "inline-form" }, field("Assigned to", who), h("button", { class: "btn sm", type: "button", onclick: () => act(() => call(`/api/desk/complaints/${id}/assign`, json("POST", { to: who.value || null })), "Assignment saved.") }, "Assign"),
         field("Status", status), h("button", { class: "btn sm", type: "button", onclick: () => act(() => call(`/api/desk/complaints/${id}`, json("PATCH", { status: status.value })), "Status saved.") }, "Update status"),
         h("button", { class: "btn sm", type: "button", onclick: () => act(() => call(`/api/desk/complaints/${id}/assign`, json("POST", { to: me.username })), "Assigned to you.") }, "Take it")),
+      msgs.length ? h("div", {}, h("h4", { style: "margin-top:24px" }, "Messages to the citizen (demo: queued, not sent)"),
+        h("div", { class: "thread" }, msgs.map((m) => h("div", { class: "ev" }, h("small", {}, `${when(m.at)} · ${m.channel} to ${m.destination} · ${m.state}`), m.message)))) : null,
       h("h4", { style: "margin-top:24px" }, "File history"),
       h("div", { class: "thread" }, tl.map((e) => h("div", { class: `ev ${e.kind}` }, h("small", {}, `${when(e.at)} · ${e.actor} · ${e.kind}`), e.text))),
       note, h("div", { class: "row-btns" }, h("button", { class: "btn primary sm", type: "button", onclick: () => { if (!note.value.trim()) return say(msg, "Write a note first.", true); act(() => call(`/api/desk/complaints/${id}/notes`, json("POST", { text: note.value })), "Note added."); } }, "Add note"), msg));
@@ -213,7 +216,9 @@ async function viewAnalyses(view) {
       h("td", {}, AGENCY[j.department] || j.department),
       h("td", {}, j.plates.length ? h("div", { class: "platechips" }, j.plates.map((p) => h("span", { class: j.matched_plates.includes(p) ? "hit" : "" }, p))) : h("span", { class: "muted" }, `none of ${j.vehicles}`)),
       h("td", {}, h("div", { class: "actions" }, h("a", { class: "btn sm", href: `/console/?job=${j.job_id}` }, "Open"), h("a", { class: "btn sm", href: `/api/jobs/${j.job_id}/report.pdf`, target: "_blank", rel: "noopener" }, "PDF"),
-        h("a", { class: "btn sm", href: `/api/jobs/${j.job_id}/download`, download: `case-${j.job_id}.zip` }, "ZIP"))))), q.value.trim() ? "No stored video has a plate that fits that." : "Nothing analysed yet."));
+        h("a", { class: "btn sm", href: `/api/jobs/${j.job_id}/download`, download: `case-${j.job_id}.zip` }, "ZIP"),
+        me.role === "admin" ? h("button", { class: "btn sm", type: "button", onclick: async () => { if (!confirm(`Delete analysis ${j.job_id} permanently, with its video, images and data? This cannot be undone.`)) return;
+          try { await call(`/api/officer/analyses/${j.job_id}?confirm=true`, { method: "DELETE" }); load(); } catch (e) { alert(e.message); } } }, "Delete") : null)))), q.value.trim() ? "No stored video has a plate that fits that." : "Nothing analysed yet."));
   }
   q.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(load, 280); });
   await load();
@@ -317,6 +322,42 @@ async function viewTeam(view) {
     try { await call("/api/officer/team", json("POST", { username: u.value, name: n.value, role: role.value, password: pw.value, agencies: boxes.map((b) => b.firstChild).filter((i) => i.checked).map((i) => i.value) })); u.value = n.value = pw.value = ""; say(msg, "Account created."); load(); } catch (e) { say(msg, e.message, true); }
   });
   await load();
+}
+
+/* ---------- citizen messages (demo outbox) ---------- */
+async function viewOutbox(view) {
+  const d = await call("/api/desk/outbox");
+  view.replaceChildren(head("Citizen messages", d.note),
+    h("section", { class: "panel" }, table(["When", "Report", "To", "Message", "State"], d.messages.map((m) => h("tr", {}, h("td", { style: "white-space:nowrap" }, when(m.at)),
+      h("td", {}, h("a", { href: `#/reports/${m.complaint_id}`, class: "mono-s" }, m.complaint_id)), h("td", {}, `${m.channel} · ${m.destination}`), h("td", { style: "white-space:normal;min-width:260px" }, m.message), h("td", {}, m.state))),
+      "No messages yet. A message is queued when a report is filed or its status changes, if the citizen left an email or phone number.")));
+}
+
+/* ---------- retention (admin) ---------- */
+async function viewRetention(view) {
+  const what = h("select", { "aria-label": "What to clean up" }, h("option", { value: "reports" }, "Closed and rejected reports"), h("option", { value: "analyses" }, "Analyses (video, images, data)"));
+  const days = h("input", { type: "number", min: 1, max: 3650, value: 90, "aria-label": "Older than (days)" });
+  const out = h("div", {}), msg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+  const go = h("button", { class: "btn sm", type: "button" }, "Preview");
+  go.addEventListener("click", async () => {
+    say(msg, "Checking…"); out.replaceChildren();
+    try {
+      const body = { what: what.value, days: +days.value };
+      const p = await call("/api/officer/retention/preview", json("POST", body));
+      say(msg, "");
+      const del = h("button", { class: "btn primary sm", type: "button", disabled: !p.count }, `Delete ${p.count} permanently`);
+      del.addEventListener("click", async () => {
+        if (!confirm(`Delete ${p.count} ${p.what} older than ${p.days} days? This cannot be undone.`)) return;
+        try { const r = await call("/api/officer/retention/apply", json("POST", { ...body, confirm: true, expect: p.count })); say(msg, `Deleted ${r.deleted}.`); out.replaceChildren(); }
+        catch (e) { say(msg, e.message, true); }
+      });
+      out.replaceChildren(h("p", {}, h("b", {}, `${p.count}`), ` ${p.what} older than ${p.days} days would be deleted.`), h("p", { class: "hint-s" }, p.note),
+        p.sample.length ? table(["Id", "Last change", "What"], p.sample.map((x) => h("tr", {}, h("td", { class: "mono-s" }, x.id), h("td", {}, when(x.when)), h("td", {}, x.label))), "") : null,
+        p.count > p.sample.length ? h("p", { class: "hint-s" }, `Showing the oldest ${p.sample.length}.`) : null, h("div", { class: "row-btns" }, del));
+    } catch (e) { say(msg, e.message, true); }
+  });
+  view.replaceChildren(head("Retention", "Delete old data on purpose. Nothing is deleted without a preview and a confirmation, and every deletion is written to the audit trail. Open reports are never touched."),
+    h("section", { class: "panel" }, h("div", { class: "op-tools" }, field("Clean up", what), field("Older than (days)", days), go), msg, out));
 }
 
 /* ---------- my account ---------- */
