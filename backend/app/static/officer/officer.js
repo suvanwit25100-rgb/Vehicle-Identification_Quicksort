@@ -119,7 +119,7 @@ $("#signout").addEventListener("click", async () => { stopAlerts(); try { await 
 
 /* ---------- router ---------- */
 const ROUTES = {
-  dashboard: ["Dashboard", viewDashboard], reports: ["Reports", viewReports], map: ["Map", viewMap], analyses: ["Analyses", viewAnalyses], watchlist: ["Watch-list", viewWatchlist],
+  dashboard: ["Dashboard", viewDashboard], reports: ["Reports", viewReports], map: ["Map", viewMap], registry: ["Registry search", viewRegistry], analyses: ["Analyses", viewAnalyses], watchlist: ["Watch-list", viewWatchlist],
   sightings: ["Repeat sightings", viewSightings], outbox: ["Citizen messages", viewOutbox], audit: ["Audit trail", viewAudit, true], team: ["Team", viewTeam, true],
   retention: ["Retention", viewRetention, true], mail: ["Mail queue", viewMail, true], alerts: ["Alerts", viewAlerts], account: ["My account", viewAccount],
 };
@@ -412,6 +412,32 @@ async function viewTeam(view) {
     try { await call("/api/officer/team", json("POST", { username: u.value, name: n.value, role: role.value, password: pw.value, email: mail.value, agencies: boxes.map((b) => b.firstChild).filter((i) => i.checked).map((i) => i.value) })); u.value = n.value = pw.value = ""; say(msg, "Account created."); load(); } catch (e) { say(msg, e.message, true); }
   });
   await load();
+}
+
+/* ---------- registry search ---------- */
+async function viewRegistry(view) {
+  const f = await call("/api/desk/registry/facets");
+  const plate = h("input", { class: "plate-input", maxlength: 14, placeholder: "UP14????14  or  DL8C", autocomplete: "off", spellcheck: "false", "aria-label": "Plate" });
+  const colour = h("select", { "aria-label": "Colour" }, h("option", { value: "" }, "Any colour"), ...f.colours.map((c) => h("option", { value: c }, c)));
+  const body = h("select", { "aria-label": "Body type" }, h("option", { value: "" }, "Any body type"), ...f.body_types.map((c) => h("option", { value: c }, pretty(c))));
+  const make = h("input", { maxlength: 30, placeholder: "e.g. Tata, Swift", autocomplete: "off", "aria-label": "Make or model" });
+  const out = h("div", {}), msg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+  const form = h("form", { class: "op-tools" }, field("Plate (? for unknown characters)", plate), field("Colour", colour), field("Body type", body), field("Make or model", make), h("button", { class: "btn primary sm", type: "submit" }, "Search"));
+  view.replaceChildren(head("Registry search", `Find registry rows by partial plate, colour, body type and make. ${f.note} Every search is recorded in the audit trail.`),
+    h("section", { class: "panel" }, form, msg, out));
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const p = new URLSearchParams({ plate: plate.value, colour: colour.value, body_type: body.value, make: make.value });
+    say(msg, "Searching…"); out.replaceChildren();
+    try {
+      const r = await call("/api/desk/registry/search?" + p);
+      say(msg, `${r.total} row${r.total === 1 ? "" : "s"} fit${r.total === 1 ? "s" : ""}${r.total > r.shown ? `, showing the first ${r.shown}` : ""}.`);
+      out.replaceChildren(table(["Plate", "Vehicle", "Flags", "Why it is listed"], r.results.map((x) => h("tr", {}, h("td", { class: "mono" }, x.plate),
+        h("td", {}, `${x.make} ${x.model}, ${x.colour}, ${pretty(x.body_type)}`, h("small", { style: "display:block;color:var(--dim);font-size:11px" }, x.reg_id)),
+        h("td", {}, x.flags.length ? x.flags.map((g) => h("span", { class: "flag", style: "margin-right:6px" }, pretty(g))) : h("span", { class: "muted" }, "none")),
+        h("td", { style: "white-space:normal;min-width:220px;color:var(--muted);font-size:13px" }, x.reasons.join(". ")))), "Nothing in the registry fits that."));
+    } catch (e) { say(msg, e.message, true); }
+  });
 }
 
 /* ---------- citizen messages (demo outbox) ---------- */

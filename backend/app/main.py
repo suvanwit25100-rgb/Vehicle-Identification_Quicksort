@@ -1176,6 +1176,26 @@ def demo_remove(who: dict = Depends(require_admin)):
     return {"removed": n}
 
 
+@app.get("/api/desk/registry/facets")
+def registry_facets(who: dict = Depends(require_officer)):
+    from . import registry_search as rs
+
+    return {**rs.facets(load_registry()), "note": "The demo registry is synthetic data, not real vehicle records."}
+
+
+@app.get("/api/desk/registry/search")
+def registry_lookup(plate: str = "", colour: str = "", body_type: str = "", make: str = "", who: dict = Depends(require_officer)):
+    """List registry rows that fit a partial plate and/or colour, body type and make, with the reasons. Officer sign-in only; every search is audited."""
+    from . import registry_search as rs
+
+    try:
+        found = rs.search(load_registry(), plate[:14], colour[:20], body_type[:20], make[:30])
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    _officers().log(who, "registry.search", None, f"plate={plate[:14]!r} colour={colour[:20]!r} body={body_type[:20]!r} make={make[:30]!r} -> {found['total']}")
+    return {**found, "note": "The demo registry is synthetic data. A row listed here fits what you typed; it is a lead, not an identification."}
+
+
 @app.get("/api/desk/map")
 def desk_map(who: dict = Depends(require_officer)):
     """Reports that carry a location, as pins. Citizen photos with GPS and demo reports have one; console flags do not."""
