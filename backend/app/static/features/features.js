@@ -118,7 +118,7 @@ const V = {
       cap(tot ? `Live: ${tot} vehicle${tot === 1 ? "" : "s"} with a readable plate cross-checked so far.` : "No plates cross-checked yet. Analyse a clip to see it.")];
   }),
 
-  casefile: () => slot(monitor(), (m) => [...[["report.html", "printable, self-contained"], ["manifest.json", "hashes, models, settings"], ["data/*.csv", "vehicles, frames, candidates"], ["media/", "plates, vehicles, evidence frames"], ["source/", "the original video"]]
+  casefile: () => slot(monitor(), (m) => [...[["report.html", "printable, self-contained"], ["report.pdf", "the same report as a PDF"], ["manifest.json", "hashes, models, settings"], ["data/*.csv", "vehicles, frames, candidates"], ["media/", "plates, vehicles, evidence frames"], ["source/", "the original video"]]
     .map(([a, b]) => h("div", { class: "mini", style: "padding:4px 0" }, h("b", { class: "mono", style: "font-weight:500" }, a), h("span", {}, b))),
     m.jobs.recent[0] ? h("a", { class: "btn sm", style: "justify-self:start;margin-top:10px", href: `/api/jobs/${m.jobs.recent[0].job_id}/download`, download: `case-${m.jobs.recent[0].job_id}.zip` }, "Download a real case file ↓") : null]),
 

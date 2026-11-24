@@ -33,6 +33,7 @@ README = """CASE FILE {case}
 This archive holds everything the system stored about one analysed video.
 
 report.html            The printable report. Open it in a browser (it prints to PDF). It is self-contained.
+report.pdf             The same report as a PDF, ready to attach to a file (present when the PDF library is installed).
 result.json            The complete analysis as structured data.
 manifest.json          Who/what/when, the models and settings used, and the SHA-256 of every file here.
 data/tracks.csv        One row per vehicle: recovered plate, status, top candidate, colour, body type, second-reader verdict.
@@ -152,6 +153,10 @@ def build_case_zip(result: AnalysisResult, job_dir: Path, include_video: bool = 
         add_bytes("data/frame_reads.csv", frame_reads_csv(result))
         add_bytes("data/candidates.csv", candidates_csv(result))
         add_bytes("report.html", render_report(result, job_dir).encode("utf-8"))
+        from . import pdf_report
+
+        if pdf_report.available():
+            add_bytes("report.pdf", pdf_report.render_pdf(result, job_dir))
         add_bytes("result.json", result.model_dump_json(indent=2).encode("utf-8"))
 
         source = next(iter(sorted(job_dir.glob("source.*"))), None)

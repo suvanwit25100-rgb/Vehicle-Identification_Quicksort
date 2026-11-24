@@ -10,7 +10,7 @@ from pathlib import Path
 
 import cv2
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from starlette.background import BackgroundTask
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -148,6 +148,18 @@ def job_report(job_id: str):
     d = _job_dir(job_id)
     result = AnalysisResult.model_validate_json((d / "result.json").read_text())
     return render_report(result, d)
+
+
+@app.get("/api/jobs/{job_id}/report.pdf")
+def job_report_pdf(job_id: str):
+    from . import pdf_report
+
+    d = _job_dir(job_id)
+    if not pdf_report.available():
+        raise HTTPException(status_code=501, detail="PDF export needs the reportlab package (pip install reportlab). The HTML report still works.")
+    result = AnalysisResult.model_validate_json((d / "result.json").read_text())
+    return Response(pdf_report.render_pdf(result, d), media_type="application/pdf",
+                    headers={"Content-Disposition": f'inline; filename="report-{job_id}.pdf"'})
 
 
 @app.get("/api/jobs/{job_id}/crops/{name}")

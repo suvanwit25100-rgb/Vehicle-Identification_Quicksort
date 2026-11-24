@@ -363,6 +363,13 @@ All use the existing pretrained models; nothing was trained.
 - **Not done:** hits are shown on the desk on request, not pushed as notifications; citizen-report plates are not checked against the list; one shared officer key.
 - 199 tests pass (13 new in `test_watchlist.py`).
 
+### Feature 4: PDF export (`app/pdf_report.py`, reportlab)
+- `GET /api/jobs/{id}/report.pdf` and `report.pdf` inside the case-file ZIP (hash in the manifest). Same content as the HTML report: recovered plate with per-slot confidence, second-reader verdict, vehicle crop, plate crops,
+  evidence frame, ranked candidates with reasons, per-frame reads (first 12 frames), unreadable vehicles, models and settings, honesty notes. Images are downscaled to about 150 dpi (real 11-page report: 2.3 MB).
+- If `reportlab` is missing the endpoint answers 501 with the install hint and the ZIP simply omits the PDF; everything else still works. `reportlab` and `pypdf` (tests) are in `requirements.txt`.
+- Checked by extracting the text of the generated PDF (tests) and of a real job; not looked at page by page as images (no PDF rasteriser here). Core Latin-1 font: non-Latin characters in a file name print as `?`.
+- 204 tests pass (5 new in `test_pdf_report.py`).
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

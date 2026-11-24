@@ -29,6 +29,7 @@ function render(rows, query) {
       h("td", {}, h("div", { class: "actions" },
         h("a", { class: "btn sm", href: `/console/?job=${j.job_id}` }, "Open"),
         h("a", { class: "btn sm", href: `/api/jobs/${j.job_id}/report`, target: "_blank", rel: "noopener" }, "Report"),
+        h("a", { class: "btn sm", href: `/api/jobs/${j.job_id}/report.pdf`, target: "_blank", rel: "noopener" }, "PDF"),
         h("a", { class: "btn primary sm", href: `/api/jobs/${j.job_id}/download`, download: `case-${j.job_id}.zip` }, "ZIP")))))))));
 }
 
