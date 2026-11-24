@@ -22,7 +22,7 @@ from .config import get_department, load_departments
 from .fusion import fuse_frames
 from .matcher import match_registry
 from .monitor import calibration_summary, host_stats, job_summary, list_jobs, metrics
-from .registry import load_registry
+from .registry import load_registry, registry_source
 from .export import build_case_zip
 from .report import render_report
 from .schemas import AnalysisResult, Evidence, FusedPlate, MatchResult
@@ -252,7 +252,7 @@ def job_actions(job_id: str):
     d = _job_dir(job_id)
     result = AnalysisResult.model_validate_json((d / "result.json").read_text())
     return {"department": result.department, "actions": at.actions_for(result),
-            "note": "Suggestions follow the registry flags, and the demo registry is synthetic. They are leads for an officer, not decisions."}
+            "note": f"Suggestions follow the registry flags. Registry: {registry_source()}. They are leads for an officer, not decisions."}
 
 
 @app.get("/api/jobs/{job_id}/crops/{name}")
@@ -265,7 +265,7 @@ def job_crop(job_id: str, name: str):
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "registry_rows": len(load_registry())}
+    return {"status": "ok", "registry_rows": len(load_registry()), "registry_source": registry_source()}
 
 
 @app.get("/api/departments")
@@ -1218,7 +1218,7 @@ def demo_remove(who: dict = Depends(require_admin)):
 def registry_facets(who: dict = Depends(require_officer)):
     from . import registry_search as rs
 
-    return {**rs.facets(load_registry()), "note": "The demo registry is synthetic data, not real vehicle records."}
+    return {**rs.facets(load_registry()), "note": f"Registry: {registry_source()}."}
 
 
 @app.get("/api/desk/registry/search")
@@ -1231,7 +1231,7 @@ def registry_lookup(plate: str = "", colour: str = "", body_type: str = "", make
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
     _officers().log(who, "registry.search", None, f"plate={plate[:14]!r} colour={colour[:20]!r} body={body_type[:20]!r} make={make[:30]!r} -> {found['total']}")
-    return {**found, "note": "The demo registry is synthetic data. A row listed here fits what you typed; it is a lead, not an identification."}
+    return {**found, "note": f"Registry: {registry_source()}. A row listed here fits what you typed; it is a lead, not an identification."}
 
 
 @app.get("/api/desk/map")

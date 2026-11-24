@@ -1,0 +1,8 @@
+reg_id,plate,colour,body_type,make,model,flags
+TEST0001,UP14CA0914,silver,tempo,-,-,
+TEST0002,DL8CAY4767,black,auto_rickshaw,-,-,
+TEST0003,DL1LAJ2850,grey,truck,-,-,
+TEST0004,DL14SZ8550,silver,two_wheeler,-,-,
+TEST0005,OD14YU8854,black,car,-,-,
+TEST0006,DL1LR2711,black,truck,-,-,
+TEST0007,BR26RH4022,black,car,-,-,
