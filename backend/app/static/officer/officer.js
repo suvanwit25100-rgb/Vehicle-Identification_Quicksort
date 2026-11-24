@@ -145,7 +145,7 @@ async function viewReports(view, openId) {
   view.replaceChildren(head("Reports", "Citizen reports and vehicles flagged from the console. A registry match is a lead to verify, never a conclusion.", csv),
     h("div", { class: "op-tools" },
       field("Status", sel("rf-s", [["", "All statuses"], ...STATES.map((s) => [s, STATUS_LABEL[s]])], rf.status, (v) => { rf.status = v; load(); })),
-      field("Agency", sel("rf-d", [["", "All agencies"], ...Object.entries(AGENCY)], rf.department, (v) => { rf.department = v; load(); })),
+      field("Agency", sel("rf-d", [["", "All agencies"], ...Object.entries(AGENCY).filter(([k]) => !me.agencies?.length || me.agencies.includes(k))], rf.department, (v) => { rf.department = v; load(); })),
       field("Assigned", sel("rf-a", [["", "Anyone"], ["me", "To me"], ["unassigned", "Unassigned"], ...team.map((t) => [t.username, t.name])], rf.assigned, (v) => { rf.assigned = v; load(); })),
       h("label", { class: "f grow" }, "Search", q)),
     h("div", { class: "desk-grid" }, list, detail));
@@ -272,23 +272,35 @@ async function viewTeam(view) {
   const u = h("input", { placeholder: "e.g. asha.rao", autocomplete: "off", spellcheck: "false", "aria-label": "Username" }), n = h("input", { placeholder: "Full name", autocomplete: "off", "aria-label": "Name" });
   const role = h("select", { "aria-label": "Role" }, h("option", { value: "officer" }, "Officer"), h("option", { value: "admin" }, "Administrator"));
   const pw = h("input", { type: "text", placeholder: "At least 10 characters, mixed case, a digit", autocomplete: "off", "aria-label": "Temporary password" });
-  const form = h("form", { class: "inline-form" }, field("Username", u), field("Name", n), field("Role", role), field("Temporary password", pw), h("button", { class: "btn primary sm", type: "submit" }, "Create account"));
+  const boxes = Object.entries(AGENCY).map(([k, v]) => h("label", { class: "chk" }, h("input", { type: "checkbox", value: k }), v));
+  const form = h("form", { class: "inline-form" }, field("Username", u), field("Name", n), field("Role", role), field("Temporary password", pw),
+    h("fieldset", { class: "agencies" }, h("legend", {}, "Agencies (none ticked = all)"), boxes),
+    h("button", { class: "btn primary sm", type: "submit" }, "Create account"));
+  const sess = h("div", {});
   view.replaceChildren(head("Team", "One account per officer, so every action is recorded under a person. Give the temporary password in person; they can change it under My account."),
-    h("section", { class: "panel" }, form, msg), h("section", { class: "panel" }, h("h3", {}, "Accounts"), list));
+    h("section", { class: "panel" }, form, msg), h("section", { class: "panel" }, h("h3", {}, "Accounts"), list),
+    h("section", { class: "panel" }, h("h3", {}, "Signed-in sessions"), sess));
+  async function loadSessions() {
+    const rows = await call("/api/officer/sessions");
+    sess.replaceChildren(table(["Who", "Role", "Signed in", "Expires", ""], rows.map((s) => h("tr", {}, h("td", {}, s.name, s.current ? h("span", { class: "chip built", style: "margin-left:8px" }, "you") : null), h("td", {}, s.role), h("td", {}, when(s.created_at)), h("td", {}, when(s.expires_at)),
+      h("td", {}, s.current ? null : h("button", { class: "btn sm", type: "button", onclick: async () => { try { await call(`/api/officer/sessions/${s.id}`, { method: "DELETE" }); say(msg, "Session ended."); loadSessions(); } catch (e) { say(msg, e.message, true); } } }, "Sign out")))), "No active sessions."));
+  }
   async function load() {
+    loadSessions().catch(() => {});
     const rows = await call("/api/officer/team/all");
     team = rows.filter((o) => o.active).map((o) => ({ username: o.username, name: o.name, role: o.role }));
-    list.replaceChildren(table(["Name", "Username", "Role", "Last sign-in", ""], rows.map((o) => h("tr", { class: o.active ? "" : "off" }, h("td", {}, o.name), h("td", { class: "mono-s" }, o.username),
-      h("td", {}, o.role), h("td", {}, o.last_login ? when(o.last_login) : "never"),
+    list.replaceChildren(table(["Name", "Username", "Role", "Agencies", "Last sign-in", ""], rows.map((o) => h("tr", { class: o.active ? "" : "off" }, h("td", {}, o.name), h("td", { class: "mono-s" }, o.username),
+      h("td", {}, o.role), h("td", {}, o.agencies.length ? o.agencies.map((a) => AGENCY[a] || a).join(", ") : "all"), h("td", {}, o.last_login ? when(o.last_login) : "never"),
       h("td", {}, h("div", { class: "act-row" },
         h("button", { class: "btn sm", type: "button", disabled: o.id === me.id, onclick: () => patch(o, { active: !o.active }, o.active ? "Account switched off and signed out." : "Account switched on.") }, o.active ? "Switch off" : "Switch on"),
         h("button", { class: "btn sm", type: "button", disabled: o.id === me.id, onclick: () => patch(o, { role: o.role === "admin" ? "officer" : "admin" }, "Role changed; they are signed out.") }, o.role === "admin" ? "Make officer" : "Make admin"),
+        h("button", { class: "btn sm", type: "button", onclick: () => { const p = prompt(`Agencies for ${o.name}, comma separated from: ${Object.keys(AGENCY).join(", ")}. Leave empty for all.`, o.agencies.join(", ")); if (p !== null) patch(o, { agencies: p.split(",").map((x) => x.trim()).filter(Boolean) }, "Agencies saved; they are signed out."); } }, "Agencies"),
         h("button", { class: "btn sm", type: "button", onclick: () => { const p = prompt(`New temporary password for ${o.name} (10+ characters, mixed case, a digit):`); if (p) patch(o, { password: p }, "Password reset; they are signed out."); } }, "Reset password"))))), "No accounts yet. Create the first officer above."));
   }
   async function patch(o, body, ok) { try { await call(`/api/officer/team/${o.id}`, json("PATCH", body)); say(msg, ok); load(); } catch (e) { say(msg, e.message, true); } }
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    try { await call("/api/officer/team", json("POST", { username: u.value, name: n.value, role: role.value, password: pw.value })); u.value = n.value = pw.value = ""; say(msg, "Account created."); load(); } catch (e) { say(msg, e.message, true); }
+    try { await call("/api/officer/team", json("POST", { username: u.value, name: n.value, role: role.value, password: pw.value, agencies: boxes.map((b) => b.firstChild).filter((i) => i.checked).map((i) => i.value) })); u.value = n.value = pw.value = ""; say(msg, "Account created."); load(); } catch (e) { say(msg, e.message, true); }
   });
   await load();
 }
@@ -303,7 +315,7 @@ async function viewAccount(view) {
     try { await call("/api/officer/password", json("POST", { current: cur.value, new: nw.value })); cur.value = nw.value = ""; say(msg, "Password changed."); } catch (e) { say(msg, e.message, true); }
   });
   view.replaceChildren(head("My account", "Signed in sessions last 12 hours."),
-    h("section", { class: "panel" }, h("dl", { class: "dl" }, h("dt", {}, "Name"), h("dd", {}, me.name), h("dt", {}, "Username"), h("dd", { class: "mono" }, me.username), h("dt", {}, "Role"), h("dd", {}, me.role))),
+    h("section", { class: "panel" }, h("dl", { class: "dl" }, h("dt", {}, "Name"), h("dd", {}, me.name), h("dt", {}, "Username"), h("dd", { class: "mono" }, me.username), h("dt", {}, "Role"), h("dd", {}, me.role), h("dt", {}, "Agencies"), h("dd", {}, me.agencies?.length ? me.agencies.map((a) => AGENCY[a] || a).join(", ") : "all"))),
     me.id === "key" ? h("section", { class: "panel" }, h("p", { class: "muted" }, "You are signed in with the master key, which has no password. Create your own administrator account under Team and use that day to day; keep the key for emergencies.")) :
       h("section", { class: "panel" }, h("h3", {}, "Change password"), form, msg));
 }

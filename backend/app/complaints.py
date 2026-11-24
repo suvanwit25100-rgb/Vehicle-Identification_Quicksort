@@ -271,8 +271,11 @@ class ComplaintStore:
             return c.execute("UPDATE complaints SET assigned_to=?, updated_at=? WHERE id=?", (username, now_iso(), cid)).rowcount > 0
 
     def list(self, status: str | None = None, department: str | None = None, limit: int = 200,
-             assigned: str | None = None, q_text: str | None = None) -> list[sqlite3.Row]:
+             assigned: str | None = None, q_text: str | None = None, departments: list[str] | None = None) -> list[sqlite3.Row]:
         q, args = "SELECT * FROM complaints WHERE 1=1", []
+        if departments:
+            q += f" AND department IN ({','.join('?' * len(departments))})"
+            args += list(departments)
         if status:
             q += " AND status=?"
             args.append(status)

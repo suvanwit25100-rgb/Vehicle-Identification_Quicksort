@@ -409,6 +409,19 @@ def require_officer(x_officer_key: str | None = Header(None), authorization: str
     raise HTTPException(status_code=401, detail="Sign in as an officer to continue.")
 
 
+def allowed(who: dict, department: str) -> bool:
+    """An officer with agencies listed sees only those; no agencies listed means all (administrators and the master key)."""
+    return not who.get("agencies") or department in who["agencies"]
+
+
+def _case(who: dict, cid: str):
+    """A report this officer may work on. One outside their agencies is reported as missing, so its existence is not revealed."""
+    row = _store().get(cid)
+    if row is None or not allowed(who, row["department"]):
+        raise HTTPException(status_code=404, detail="report not found")
+    return row
+
+
 def require_admin(who: dict = Depends(require_officer)) -> dict:
     if who["role"] != "admin":
         raise HTTPException(status_code=403, detail="Only an administrator can do that.")
@@ -431,14 +444,14 @@ def desk_list(status: str | None = None, department: str | None = None, assigned
         raise HTTPException(status_code=422, detail=f"status must be one of {cm.STATUSES}")
     if assigned == "me":
         assigned = who["username"]
-    return [_summary(r) for r in _store().list(status, department, assigned=assigned, q_text=(q or "")[:60] or None)]
+    if department and not allowed(who, department):
+        return []
+    return [_summary(r) for r in _store().list(status, department, assigned=assigned, q_text=(q or "")[:60] or None, departments=who.get("agencies") or None)]
 
 
-@app.get("/api/desk/complaints/{cid}", dependencies=[Depends(require_officer)])
-def desk_detail(cid: str):
-    row = _store().get(cid)
-    if row is None:
-        raise HTTPException(status_code=404, detail="report not found")
+@app.get("/api/desk/complaints/{cid}")
+def desk_detail(cid: str, who: dict = Depends(require_officer)):
+    row = _case(who, cid)
     cfg = get_department(row["department"])
     read = FusedPlate.model_validate(json.loads(row["fused_json"]))
     typed = row["plate_confirmed"]
@@ -458,9 +471,7 @@ def desk_update(cid: str, body: DeskUpdate, who: dict = Depends(require_officer)
     if body.status not in cm.STATUSES:
         raise HTTPException(status_code=422, detail=f"status must be one of {cm.STATUSES}")
     store = _store()
-    row = store.get(cid)
-    if row is None:
-        raise HTTPException(status_code=404, detail="report not found")
+    row = _case(who, cid)
     store.update(cid, body.status, body.note)
     if row["status"] != body.status:
         store.add_event(cid, who["username"], "status", f"{row['status']} -> {body.status}")
@@ -482,8 +493,7 @@ class NoteIn(BaseModel):
 @app.post("/api/desk/complaints/{cid}/assign")
 def desk_assign(cid: str, body: AssignIn, who: dict = Depends(require_officer)):
     store = _store()
-    if store.get(cid) is None:
-        raise HTTPException(status_code=404, detail="report not found")
+    _case(who, cid)
     to = (body.to or "").strip().lower() or None
     if to and to != "key" and not (_officers().by_username(to) or {}).get("active"):
         raise HTTPException(status_code=422, detail="No active officer with that username.")
@@ -496,19 +506,16 @@ def desk_assign(cid: str, body: AssignIn, who: dict = Depends(require_officer)):
 @app.post("/api/desk/complaints/{cid}/notes")
 def desk_note(cid: str, body: NoteIn, who: dict = Depends(require_officer)):
     store = _store()
-    if store.get(cid) is None:
-        raise HTTPException(status_code=404, detail="report not found")
+    _case(who, cid)
     store.add_event(cid, who["username"], "note", body.text.strip())
     _officers().log(who, "report.note", cid)
     return {"ok": True}
 
 
-@app.get("/api/desk/complaints/{cid}/timeline", dependencies=[Depends(require_officer)])
-def desk_timeline(cid: str):
+@app.get("/api/desk/complaints/{cid}/timeline")
+def desk_timeline(cid: str, who: dict = Depends(require_officer)):
     store = _store()
-    row = store.get(cid)
-    if row is None:
-        raise HTTPException(status_code=404, detail="report not found")
+    row = _case(who, cid)
     filed = "flagged from the console" if row["source"] == "console" else "filed by a citizen"
     return [{"at": row["created_at"], "actor": "system", "kind": "filed", "text": filed}, *store.events(cid)]
 
@@ -521,7 +528,7 @@ def desk_csv(who: dict = Depends(require_officer)):
     buf = io.StringIO()
     w = csv.writer(buf)
     w.writerow(["id", "filed", "source", "category", "agency", "status", "assigned_to", "plate_read", "plate_typed", "location", "observed_at", "analysis", "vehicle"])
-    for r in _store().list(limit=5000):
+    for r in _store().list(limit=5000, departments=who.get("agencies") or None):
         w.writerow([r["id"], r["created_at"], r["source"], r["category"], r["department"], r["status"], r["assigned_to"] or "", r["plate_read"].replace("-", ""),
                     r["plate_confirmed"] or "", r["location_text"], r["observed_at"] or "", r["job_id"] or "", r["track_id"] if r["track_id"] is not None else ""])
     _officers().log(who, "report.export", None, "csv")
@@ -530,9 +537,9 @@ def desk_csv(who: dict = Depends(require_officer)):
 
 @app.get("/api/desk/complaints/{cid}/photo", dependencies=[Depends(require_officer)])
 @app.get("/api/desk/complaints/{cid}/plate", dependencies=[Depends(require_officer)])
-def desk_image(cid: str, request: Request):
+def desk_image(cid: str, request: Request, who: dict = Depends(require_officer)):
     store = _store()
-    if store.get(cid) is None:
+    if not store.get(cid) or not allowed(who, store.get(cid)["department"]):
         raise HTTPException(status_code=404, detail="report not found")
     p = store.dir / (f"{cid}_plate.jpg" if request.url.path.endswith("/plate") else f"{cid}.jpg")
     if not p.exists():
@@ -677,12 +684,20 @@ class NewOfficer(BaseModel):
     name: str = Field(max_length=100)
     role: str = "officer"
     password: str = Field(max_length=200)
+    agencies: list[str] = []
 
 
 class OfficerPatch(BaseModel):
     role: str | None = None
     active: bool | None = None
     password: str | None = Field(None, max_length=200)
+    agencies: list[str] | None = None
+
+
+def _check_agencies(agencies: list[str] | None) -> None:
+    bad = [a for a in (agencies or []) if a not in load_departments()]
+    if bad:
+        raise HTTPException(status_code=422, detail=f"Unknown agency: {', '.join(bad)}.")
 
 
 @app.get("/api/officer/team", dependencies=[Depends(require_officer)])
@@ -698,8 +713,9 @@ def team_all():
 
 @app.post("/api/officer/team")
 def team_create(body: NewOfficer, who: dict = Depends(require_admin)):
+    _check_agencies(body.agencies)
     try:
-        o = _officers().create(body.username, body.name, body.role, body.password)
+        o = _officers().create(body.username, body.name, body.role, body.password, body.agencies)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
     _officers().log(who, "team.create", o["username"], o["role"])
@@ -716,13 +732,27 @@ def team_update(oid: str, body: OfficerPatch, who: dict = Depends(require_admin)
         raise HTTPException(status_code=404, detail="No such officer.")
     if target["role"] == "admin" and (body.active is False or body.role == "officer") and store.admins_active() <= 1:
         raise HTTPException(status_code=409, detail="That is the last active administrator.")
+    _check_agencies(body.agencies)
     try:
-        o = store.update(oid, role=body.role, active=body.active, password=body.password)
+        o = store.update(oid, role=body.role, active=body.active, password=body.password, agencies=body.agencies)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
-    what = ", ".join(k for k, v in (("role", body.role), ("active", body.active), ("password reset", body.password)) if v is not None)
+    what = ", ".join(k for k, v in (("role", body.role), ("active", body.active), ("password reset", body.password), ("agencies", body.agencies)) if v is not None)
     store.log(who, "team.update", target["username"], what)
     return o
+
+
+@app.get("/api/officer/sessions")
+def sessions_list(authorization: str | None = Header(None), who: dict = Depends(require_admin)):
+    return _officers().sessions(_bearer(authorization))
+
+
+@app.delete("/api/officer/sessions/{sid}")
+def session_revoke(sid: str, who: dict = Depends(require_admin)):
+    if not _officers().revoke(sid):
+        raise HTTPException(status_code=404, detail="No such session.")
+    _officers().log(who, "session.revoke", sid)
+    return {"revoked": sid}
 
 
 @app.get("/api/officer/audit", dependencies=[Depends(require_admin)])
@@ -738,7 +768,7 @@ def officer_dashboard(who: dict = Depends(require_officer)):
     from . import watchlist as wl
 
     store = _store()
-    rows = store.list(limit=5000)
+    rows = store.list(limit=5000, departments=who.get("agencies") or None)
     now = datetime.now(timezone.utc)
     open_states = {"new", "under_review"}
     aging = 0
@@ -757,7 +787,7 @@ def officer_dashboard(who: dict = Depends(require_officer)):
     entries = _watch().entries()
     alerts = wl.alerts(DATA_DIR, entries) if entries else []
     jobs = job_summary(DATA_DIR)
-    counts = store.counts()
+    counts = {"total": len(rows), "by_status": dict(Counter(r["status"] for r in rows)), "by_department": dict(Counter(r["department"] for r in rows))}
     return {
         "reports": {"total": counts["total"], "by_status": counts["by_status"], "by_agency": counts["by_department"],
                     "unassigned_open": sum(1 for r in rows if r["assigned_to"] is None and r["status"] in open_states),

@@ -51,3 +51,7 @@ a.kpi:hover { border-color: var(--red); transform: translateY(-2px); }
 .act-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .mono-s { font: 500 12px var(--mono); }
 tr.off td { opacity: .5; }
+
+fieldset.agencies { border: 1px solid var(--rule); border-radius: 12px; padding: 8px 14px 12px; flex: 2 1 320px; }
+fieldset.agencies legend { font-size: 12px; color: var(--muted); padding: 0 6px; }
+.chk { display: inline-flex; align-items: center; gap: 6px; margin: 4px 14px 0 0; font-size: 13.5px; }

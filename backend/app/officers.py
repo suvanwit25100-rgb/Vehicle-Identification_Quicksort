@@ -37,7 +37,7 @@ SCHEMA = [
         action TEXT NOT NULL, target TEXT, detail TEXT)""",
 ]
 
-KEY_IDENTITY = {"id": "key", "username": "key", "name": "Key holder", "role": "admin"}
+KEY_IDENTITY = {"id": "key", "username": "key", "name": "Key holder", "role": "admin", "agencies": []}   # no agencies listed = all of them
 
 
 def now() -> datetime:
@@ -88,6 +88,8 @@ class OfficerStore:
         with self.db() as c:
             for ddl in SCHEMA:
                 c.execute(ddl)
+            if "agencies" not in {r[1] for r in c.execute("PRAGMA table_info(officers)")}:
+                c.execute("ALTER TABLE officers ADD COLUMN agencies TEXT NOT NULL DEFAULT ''")
 
     @contextmanager
     def db(self):
@@ -100,7 +102,11 @@ class OfficerStore:
             conn.close()
 
     # ---- accounts
-    def create(self, username: str, name: str, role: str, password: str) -> dict:
+    @staticmethod
+    def _agencies(value) -> str:
+        return ",".join(sorted({a.strip() for a in (value or []) if a.strip()}))
+
+    def create(self, username: str, name: str, role: str, password: str, agencies: list[str] | None = None) -> dict:
         username = username.strip().lower()
         if not USERNAME_RE.fullmatch(username):
             raise ValueError("Username: 3 to 32 characters, lower-case letters, digits, dot, dash or underscore.")
@@ -116,8 +122,8 @@ class OfficerStore:
         oid = uuid.uuid4().hex[:10]
         try:
             with self.db() as c:
-                c.execute("INSERT INTO officers (id, username, name, role, pw_salt, pw_hash, created_at) VALUES (?,?,?,?,?,?,?)",
-                          (oid, username, name, role, salt, h, iso(now())))
+                c.execute("INSERT INTO officers (id, username, name, role, pw_salt, pw_hash, created_at, agencies) VALUES (?,?,?,?,?,?,?,?)",
+                          (oid, username, name, role, salt, h, iso(now()), self._agencies(agencies)))
         except sqlite3.IntegrityError:
             raise ValueError("That username is taken.")
         return self.get(oid)
@@ -125,7 +131,7 @@ class OfficerStore:
     @staticmethod
     def _public(r) -> dict:
         return {"id": r["id"], "username": r["username"], "name": r["name"], "role": r["role"], "active": bool(r["active"]),
-                "created_at": r["created_at"], "last_login": r["last_login"]}
+                "created_at": r["created_at"], "last_login": r["last_login"], "agencies": [a for a in r["agencies"].split(",") if a]}
 
     def get(self, oid: str) -> dict | None:
         with self.db() as c:
@@ -141,7 +147,8 @@ class OfficerStore:
         with self.db() as c:
             return [self._public(r) for r in c.execute("SELECT * FROM officers ORDER BY created_at")]
 
-    def update(self, oid: str, *, role: str | None = None, active: bool | None = None, password: str | None = None) -> dict | None:
+    def update(self, oid: str, *, role: str | None = None, active: bool | None = None, password: str | None = None,
+               agencies: list[str] | None = None) -> dict | None:
         cur = self.get(oid)
         if cur is None:
             return None
@@ -152,6 +159,8 @@ class OfficerStore:
             sets.append("role=?"); args.append(role)
         if active is not None:
             sets.append("active=?"); args.append(int(active))
+        if agencies is not None:
+            sets.append("agencies=?"); args.append(self._agencies(agencies))
         if password is not None:
             problem = password_problem(password)
             if problem:
@@ -161,7 +170,7 @@ class OfficerStore:
         if sets:
             with self.db() as c:
                 c.execute(f"UPDATE officers SET {', '.join(sets)} WHERE id=?", (*args, oid))
-                if active is False or password is not None or role is not None:
+                if active is False or password is not None or role is not None or agencies is not None:
                     c.execute("DELETE FROM sessions WHERE officer_id=?", (oid,))      # a changed account signs out everywhere
         return self.get(oid)
 
@@ -183,7 +192,7 @@ class OfficerStore:
             return None
         with self.db() as c:
             c.execute("UPDATE officers SET last_login=? WHERE id=?", (iso(now()), r["id"]))
-        ident = {"id": r["id"], "username": r["username"], "name": r["name"], "role": r["role"]}
+        ident = {"id": r["id"], "username": r["username"], "name": r["name"], "role": r["role"], "agencies": [a for a in r["agencies"].split(",") if a]}
         return self.open_session(ident), ident
 
     def open_session(self, ident: dict) -> str:
@@ -201,13 +210,28 @@ class OfficerStore:
             if not r or r["expires_at"] < iso(now()):
                 return None
             if r["officer_id"] != "key":
-                o = c.execute("SELECT role, active FROM officers WHERE id=?", (r["officer_id"],)).fetchone()
+                o = c.execute("SELECT role, active, agencies FROM officers WHERE id=?", (r["officer_id"],)).fetchone()
                 if not o or not o["active"]:
                     return None
-                role = o["role"]
+                role, agencies = o["role"], [a for a in o["agencies"].split(",") if a]
             else:
-                role = r["role"]
-        return {"id": r["officer_id"], "username": r["username"], "name": r["name"], "role": role}
+                role, agencies = r["role"], []
+        return {"id": r["officer_id"], "username": r["username"], "name": r["name"], "role": role, "agencies": agencies}
+
+    def sessions(self, current_token: str | None = None) -> list[dict]:
+        """Active sign-ins. The id is a short prefix of the stored hash: enough to revoke one, useless as a credential."""
+        cur = hashlib.sha256(current_token.encode()).hexdigest() if current_token else None
+        with self.db() as c:
+            c.execute("DELETE FROM sessions WHERE expires_at < ?", (iso(now()),))
+            rows = c.execute("SELECT * FROM sessions ORDER BY created_at DESC").fetchall()
+        return [{"id": r["token_hash"][:12], "username": r["username"], "name": r["name"], "role": r["role"], "created_at": r["created_at"],
+                 "expires_at": r["expires_at"], "current": r["token_hash"] == cur} for r in rows]
+
+    def revoke(self, sid: str) -> bool:
+        if not re.fullmatch(r"[0-9a-f]{12}", sid):
+            return False
+        with self.db() as c:
+            return c.execute("DELETE FROM sessions WHERE substr(token_hash,1,12)=?", (sid,)).rowcount > 0
 
     def logout(self, token: str) -> None:
         with self.db() as c:

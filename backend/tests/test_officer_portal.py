@@ -187,3 +187,52 @@ def test_every_desk_route_accepts_a_session_and_refuses_strangers(client, tmp_pa
                  "/api/desk/watchlist", "/api/desk/complaints.csv", "/api/officer/dashboard"):
         assert client.get(path).status_code == 401, path
         assert client.get(path, headers=bearer(tok)).status_code == 200, path
+
+
+# ---------------------------------------------------------------- per-agency permissions and sessions
+def officer_for(client, username, agencies):
+    r = client.post("/api/officer/team", json={"username": username, "name": username.title() + " Test", "role": "officer", "password": PW, "agencies": agencies}, headers=KEY)
+    assert r.status_code == 200, r.text
+    return client.post("/api/officer/login", json={"username": username, "password": PW}).json()["token"]
+
+
+def test_an_officer_sees_only_their_agencies(client, tmp_path):
+    cid = a_report(client, tmp_path)                 # a police report
+    police, bsf = officer_for(client, "pol", ["police"]), officer_for(client, "bor", ["bsf"])
+    assert [r["id"] for r in client.get("/api/desk/complaints", headers=bearer(police)).json()] == [cid]
+    assert client.get("/api/desk/complaints", headers=bearer(bsf)).json() == []
+    assert client.get("/api/desk/complaints?department=police", headers=bearer(bsf)).json() == []
+    for path in (f"/api/desk/complaints/{cid}", f"/api/desk/complaints/{cid}/timeline", f"/api/desk/complaints/{cid}/photo"):
+        assert client.get(path, headers=bearer(police)).status_code == 200, path
+        assert client.get(path, headers=bearer(bsf)).status_code == 404, path          # outside their agencies: reported as missing
+    assert client.post(f"/api/desk/complaints/{cid}/notes", json={"text": "x"}, headers=bearer(bsf)).status_code == 404
+    assert client.patch(f"/api/desk/complaints/{cid}", json={"status": "closed"}, headers=bearer(bsf)).status_code == 404
+    assert client.post(f"/api/desk/complaints/{cid}/assign", json={"to": None}, headers=bearer(bsf)).status_code == 404
+    assert cid not in client.get("/api/desk/complaints.csv", headers=bearer(bsf)).text and cid in client.get("/api/desk/complaints.csv", headers=bearer(police)).text
+    assert client.get("/api/officer/dashboard", headers=bearer(bsf)).json()["reports"]["total"] == 0
+    assert client.get("/api/officer/dashboard", headers=bearer(police)).json()["reports"]["total"] == 1
+    assert client.get("/api/desk/complaints", headers=KEY).json()[0]["id"] == cid         # the key and admins see everything
+
+
+def test_agencies_are_validated_and_editable(client):
+    bad = client.post("/api/officer/team", json={"username": "zed", "name": "Zed Z", "role": "officer", "password": PW, "agencies": ["mars"]}, headers=KEY)
+    assert bad.status_code == 422
+    officer_for(client, "lee", ["police"])
+    oid = next(o["id"] for o in client.get("/api/officer/team/all", headers=KEY).json() if o["username"] == "lee")
+    assert client.patch(f"/api/officer/team/{oid}", json={"agencies": ["bsf", "customs"]}, headers=KEY).json()["agencies"] == ["bsf", "customs"]
+    assert client.patch(f"/api/officer/team/{oid}", json={"agencies": ["nope"]}, headers=KEY).status_code == 422
+    assert client.patch(f"/api/officer/team/{oid}", json={"agencies": []}, headers=KEY).json()["agencies"] == []
+
+
+def test_admins_can_list_and_end_sessions(client):
+    tok = officer_for(client, "ann", [])
+    admin = key_login(client)
+    rows = client.get("/api/officer/sessions", headers=bearer(admin)).json()
+    assert {r["username"] for r in rows} == {"ann", "key"} and [r["current"] for r in rows if r["username"] == "key"] == [True]
+    assert "token" not in str(rows) and all(len(r["id"]) == 12 for r in rows)
+    ann = next(r for r in rows if r["username"] == "ann")
+    assert client.get("/api/officer/sessions", headers=bearer(tok)).status_code == 403
+    assert client.delete(f"/api/officer/sessions/{ann['id']}", headers=bearer(admin)).status_code == 200
+    assert client.get("/api/officer/me", headers=bearer(tok)).status_code == 401           # that sign-in is gone
+    assert client.delete(f"/api/officer/sessions/{ann['id']}", headers=bearer(admin)).status_code == 404
+    assert client.delete("/api/officer/sessions/not-an-id", headers=bearer(admin)).status_code == 404
