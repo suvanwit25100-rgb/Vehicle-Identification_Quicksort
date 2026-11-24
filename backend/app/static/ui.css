@@ -315,3 +315,7 @@ html[lang="hi"] * { letter-spacing: normal !important; }
 
 .banner .stat.rto.match .num { color: var(--green, #3ddc97); }
 .banner .stat.rto.unknown_code .lab, .banner .stat.rto.unreadable .lab { color: var(--amber, #ffb454); }
+
+.banner .region { flex-basis: 100%; display: flex; flex-direction: column; gap: 2px; }
+.banner .region .k { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--soft, #aab3c6); }
+.banner .region .v { font-family: "Unbounded", sans-serif; font-weight: 300; font-size: 22px; line-height: 1.25; color: var(--green, #3ddc97); }

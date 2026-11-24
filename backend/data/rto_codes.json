@@ -1,59 +1,106 @@
 {
-"source": "Wikipedia: List of Regional Transport Office districts in India (CC BY-SA 4.0), fetched 2026-11-24",
+"source": "Team rto_codes.csv (primary), gaps filled from Wikipedia 'List of Regional Transport Office districts in India' (CC BY-SA 4.0, volunteer-edited), merged 2026-11-24",
 "states": {
+"AN": {
+"codes": {
+"01": {
+"place": "Port Blair / Sri Vijaya Puram (South Andaman district; includes Ferrargunj sub-office)",
+"source": "team csv"
+},
+"02": {
+"place": "Car Nicobar (Nicobar district)",
+"source": "team csv"
+}
+},
+"name": "Andaman and Nicobar Islands"
+},
 "AP": {
 "codes": {
 "02": {
 "area": "",
-"office": "Ananthapuramu District"
+"office": "Ananthapuramu District",
+"place": " (Ananthapuramu District)",
+"source": "wikipedia"
 },
 "03": {
 "area": "",
-"office": "Chittoor District"
+"office": "Chittoor District",
+"place": " (Chittoor District)",
+"source": "wikipedia"
 },
 "04": {
 "area": "",
-"office": "YSR Kadapa District"
+"office": "YSR Kadapa District",
+"place": " (YSR Kadapa District)",
+"source": "wikipedia"
 },
 "05": {
 "area": "RTO was located in Kakinada, former district headquarters of undivided East Godavari District",
-"office": "East Godavari District"
+"office": "East Godavari District",
+"place": "RTO was located in Kakinada, former district headquarters of undivided East Godavari District (East Godavari District)",
+"source": "wikipedia"
 },
 "07": {
 "area": "",
-"office": "Guntur district"
+"office": "Guntur district",
+"place": " (Guntur district)",
+"source": "wikipedia"
 },
 "16": {
 "area": "RTO was located in Vijayawada, former district headquarters of undivided Krishna District",
-"office": "Krishna District"
+"office": "Krishna District",
+"place": "RTO was located in Vijayawada, former district headquarters of undivided Krishna District (Krishna District)",
+"source": "wikipedia"
 },
 "21": {
 "area": "",
-"office": "Kurnool District"
+"office": "Kurnool District",
+"place": " (Kurnool District)",
+"source": "wikipedia"
 },
 "26": {
 "area": "",
-"office": "Nellore District"
+"office": "Nellore District",
+"place": " (Nellore District)",
+"source": "wikipedia"
 },
 "27": {
 "area": "",
-"office": "Prakasam District"
+"office": "Prakasam District",
+"place": " (Prakasam District)",
+"source": "wikipedia"
 },
 "30": {
 "area": "",
-"office": "Srikakulam District"
+"office": "Srikakulam District",
+"place": " (Srikakulam District)",
+"source": "wikipedia"
 },
 "31": {
 "area": "AP 32, AP 33, and AP 34 were also reserved for Vishakhapatnam, with only few vehicles getting these registrations.",
-"office": "Vishakhapatnam District"
+"office": "Vishakhapatnam District",
+"place": "AP 32, AP 33, and AP 34 were also reserved for Vishakhapatnam, with only few vehicles getting these registrations. (Vishakhapatnam District)",
+"source": "wikipedia"
 },
 "35": {
 "area": "",
-"office": "Vizianagaram District"
+"office": "Vizianagaram District",
+"place": " (Vizianagaram District)",
+"source": "wikipedia"
 },
 "37": {
 "area": "RTO was located in Eluru, former district headquarters of undivided West Godavari District",
-"office": "West Godavari District"
+"office": "West Godavari District",
+"place": "RTO was located in Eluru, former district headquarters of undivided West Godavari District (West Godavari District)",
+"source": "wikipedia"
+},
+"39": {
+"place": "Tirupati district (RTA); Krishna district (RTA); NTR district (RTA); Vizianagaram district (RTA); Visakhapatnam district (RTA); Alluri Sitharama Raju district (RTA); Anakapalli district (RTA); Kakinada district (RTA); East Godavari (RTA); Konaseema district (RTA); Eluru district (RTA); West Godavari district (RTA); Palnadu district (RTA); Guntur district (RTA); Bapatla district (RTA); Polavaram district (RTA); Prakasam district (RTA); Sri Potti Sriramulu Nellore district (RTA); Kurnool district (RTA); Nandyal district (RTA); Anantapur district (RTA); Sri Sathya Sai district (RTA); YSR district (RTA); Annamayya district (RTA); Parvathipuram Manyam district (RTA); Srikakulam district (RTA); Chittoor district (RTA)",
+"source": "team csv"
+},
+"40": {
+"place": "Tirupati district (RTA); Krishna district (RTA); NTR district (RTA); Vizianagaram district (RTA); Visakhapatnam district (RTA); Alluri Sitharama Raju district (RTA); Anakapalli district (RTA); Kakinada district (RTA); East Godavari (RTA); Konaseema district (RTA); Eluru district (RTA); West Godavari district (RTA); Palnadu district (RTA); Guntur district (RTA); Bapatla district (RTA); Polavaram district (RTA); Prakasam district (RTA); Sri Potti Sriramulu Nellore district (RTA); Kurnool district (RTA); Nandyal district (RTA); Anantapur district (RTA); Sri Sathya Sai district (RTA); YSR district (RTA); Annamayya district (RTA); Parvathipuram Manyam district (RTA); Srikakulam district (RTA); Chittoor district (RTA)",
+"source": "team csv"
 }
 },
 "name": "Andhra Pradesh"
@@ -61,84 +108,84 @@
 "AR": {
 "codes": {
 "01": {
-"area": "Papum Pare district",
-"office": "Itanagar"
+"place": "Itanagar (Papum Pare district)",
+"source": "team csv"
 },
 "02": {
-"area": "Papum Pare district",
-"office": "Itanagar"
+"place": "Itanagar (Papum Pare district)",
+"source": "team csv"
 },
 "03": {
-"area": "Tawang district",
-"office": "Tawang"
+"place": "Tawang (Tawang district)",
+"source": "team csv"
 },
 "04": {
-"area": "West Kameng district",
-"office": "Bomdila"
+"place": "Bomdila (West Kameng district)",
+"source": "team csv"
 },
 "05": {
-"area": "East Kameng district",
-"office": "Seppa"
+"place": "Seppa (East Kameng district)",
+"source": "team csv"
 },
 "06": {
-"area": "Lower Subansiri district",
-"office": "Ziro"
+"place": "Ziro (Lower Subansiri district)",
+"source": "team csv"
 },
 "07": {
-"area": "Upper Subansiri district",
-"office": "Daporijo"
+"place": "Daporijo (Upper Subansiri district)",
+"source": "team csv"
 },
 "08": {
-"area": "West Siang district",
-"office": "Along"
+"place": "Along (West Siang district)",
+"source": "team csv"
 },
 "09": {
-"area": "East Siang district",
-"office": "Pasighat"
+"place": "Pasighat (East Siang district)",
+"source": "team csv"
 },
 "10": {
-"area": "Dibang Valley district",
-"office": "Anini"
+"place": "Anini (Dibang Valley district)",
+"source": "team csv"
 },
 "11": {
-"area": "Lohit district",
-"office": "Tezu"
+"place": "Tezu (Lohit district)",
+"source": "team csv"
 },
 "12": {
-"area": "Changlang district",
-"office": "Changlang"
+"place": "Changlang (Changlang district)",
+"source": "team csv"
 },
 "13": {
-"area": "Tirap district",
-"office": "Khonsa"
+"place": "Khonsa (Tirap district)",
+"source": "team csv"
 },
 "14": {
-"area": "Upper Siang district",
-"office": "Yingkiong"
+"place": "Yingkiong (Upper Siang district)",
+"source": "team csv"
 },
 "15": {
-"area": "Kurung Kumey district",
-"office": "Koloriang"
+"place": "Koloriang (Kurung Kumey district)",
+"source": "team csv"
 },
 "16": {
-"area": "Dibang Valley district",
-"office": "Roing"
+"place": "Roing (Dibang Valley district)",
+"source": "team csv"
 },
 "17": {
-"area": "Anjaw district",
-"office": "Hawai"
+"place": "Hawai (Anjaw district)",
+"source": "team csv"
 },
 "19": {
-"area": "Kra Daadi district",
-"office": "Palin"
+"place": "Palin (Kra Daadi district)",
+"source": "team csv"
 },
 "20": {
-"area": "Namsai district",
-"office": "Namsai"
+"place": "Namsai (Namsai district)",
+"source": "team csv"
 },
 "22": {
-"area": "Lower Siang district",
-"office": "Siji"
+"place": "Siji (Lower Siang district)",
+"source": "team csv"
 }
 },
 "name": "Arunachal Pradesh"
@@ -146,136 +193,136 @@
 "AS": {
 "codes": {
 "01": {
-"area": "Kamrup district",
-"office": "Guwahati"
+"place": "Guwahati (Kamrup district)",
+"source": "team csv"
 },
 "02": {
-"area": "Nagaon district",
-"office": "Nagaon"
+"place": "Nagaon (Nagaon district)",
+"source": "team csv"
 },
 "03": {
-"area": "Jorhat district",
-"office": "Jorhat"
+"place": "Jorhat (Jorhat district)",
+"source": "team csv"
 },
 "04": {
-"area": "Sivasagar district",
-"office": "Sivasagar"
+"place": "Sivasagar (Sivasagar district)",
+"source": "team csv"
 },
 "05": {
-"area": "Golaghat district",
-"office": "Golaghat"
+"place": "Golaghat (Golaghat district)",
+"source": "team csv"
 },
 "06": {
-"area": "Dibrugarh district",
-"office": "Dibrugarh"
+"place": "Dibrugarh (Dibrugarh district)",
+"source": "team csv"
 },
 "07": {
-"area": "Lakhimpur district",
-"office": "Lakhimpur"
+"place": "Lakhimpur (Lakhimpur district)",
+"source": "team csv"
 },
 "08": {
-"area": "Dima Hasao district",
-"office": "Haflong"
+"place": "Haflong (Dima Hasao district)",
+"source": "team csv"
 },
 "09": {
-"area": "Karbi Anglong district",
-"office": "Karbi Anglong"
+"place": "Karbi Anglong (Karbi Anglong district)",
+"source": "team csv"
 },
 "10": {
-"area": "Karimganj district",
-"office": "Karimganj"
+"place": "Karimganj (Karimganj district)",
+"source": "team csv"
 },
 "11": {
-"area": "Cachar district",
-"office": "Silchar"
+"place": "Silchar (Cachar district)",
+"source": "team csv"
 },
 "12": {
-"area": "Sonitpur district",
-"office": "Tezpur"
+"place": "Tezpur (Sonitpur district)",
+"source": "team csv"
 },
 "13": {
-"area": "Darrang district",
-"office": "Darrang"
+"place": "Darrang (Darrang district)",
+"source": "team csv"
 },
 "14": {
-"area": "Nalbari district",
-"office": "Nalbari"
+"place": "Nalbari (Nalbari district)",
+"source": "team csv"
 },
 "15": {
-"area": "Barpeta district",
-"office": "Barpeta"
+"place": "Barpeta (Barpeta district)",
+"source": "team csv"
 },
 "16": {
-"area": "Kokrajhar district",
-"office": "Kokrajhar"
+"place": "Kokrajhar (Kokrajhar district)",
+"source": "team csv"
 },
 "17": {
-"area": "Dhubri district",
-"office": "Dhubri"
+"place": "Dhubri (Dhubri district)",
+"source": "team csv"
 },
 "18": {
-"area": "Goalpara district",
-"office": "Goalpara"
+"place": "Goalpara (Goalpara district)",
+"source": "team csv"
 },
 "19": {
-"area": "Bongaigaon district",
-"office": "Bongaigaon"
+"place": "Bongaigaon (Bongaigaon district)",
+"source": "team csv"
 },
 "20": {
-"area": "entire Assam State",
-"office": ""
+"place": "entire Assam State (Assam State Transport Corporation vehicles)",
+"source": "team csv"
 },
 "21": {
-"area": "Morigaon district",
-"office": "Morigaon"
+"place": "Morigaon (Morigaon district)",
+"source": "team csv"
 },
 "22": {
-"area": "Dhemaji district",
-"office": "Dhemaji"
+"place": "Dhemaji (Dhemaji district)",
+"source": "team csv"
 },
 "23": {
-"area": "Tinsukia district",
-"office": "Tinsukia"
+"place": "Tinsukia (Tinsukia district)",
+"source": "team csv"
 },
 "24": {
-"area": "Hailakandi district",
-"office": "Hailakandi"
+"place": "Hailakandi (Hailakandi district)",
+"source": "team csv"
 },
 "25": {
-"area": "Kamrup district",
-"office": "Kamrup"
+"place": "Kamrup (Kamrup district)",
+"source": "team csv"
 },
 "26": {
-"area": "Chirang district",
-"office": "Kajalgaon"
+"place": "Kajalgaon (Chirang district)",
+"source": "team csv"
 },
 "27": {
-"area": "Udalguri district",
-"office": "Udalguri"
+"place": "Udalguri (Udalguri district)",
+"source": "team csv"
 },
 "29": {
-"area": "Majuli district",
-"office": "Majuli"
+"place": "Majuli (Majuli district)",
+"source": "team csv"
 },
 "30": {
-"area": "Assam Police",
-"office": "Assam Police"
+"place": "Assam Police",
+"source": "team csv"
 },
 "31": {
-"area": "Hojai district",
-"office": "Hojai"
+"place": "Hojai (Hojai district)",
+"source": "team csv"
 },
 "32": {
-"area": "Biswanath district",
-"office": "Biswanath Chariali"
+"place": "Biswanath Chariali (Biswanath district)",
+"source": "team csv"
 },
 "33": {
-"area": "Charaideo district",
-"office": "Charaideo"
+"place": "Charaideo (Charaideo district)",
+"source": "team csv"
 },
 "34": {
-"area": "South Salmara-Mankachar district",
-"office": "Hatsingimari"
+"place": "Hatsingimari (South Salmara-Mankachar district)",
+"source": "team csv"
 }
 },
 "name": "Assam"
@@ -283,156 +330,156 @@
 "BR": {
 "codes": {
 "01": {
-"area": "Patna district",
-"office": "Patna"
+"place": "Patna (Patna district)",
+"source": "team csv"
 },
 "02": {
-"area": "Gaya district",
-"office": "Gaya"
+"place": "Gaya (Gaya district)",
+"source": "team csv"
 },
 "03": {
-"area": "Bhojpur district",
-"office": "Arrah"
+"place": "Arrah (Bhojpur district)",
+"source": "team csv"
 },
 "04": {
-"area": "Saran district",
-"office": "Chhapra"
+"place": "Chhapra (Saran district)",
+"source": "team csv"
 },
 "05": {
-"area": "East Champaran district",
-"office": "Motihari"
+"place": "Motihari (East Champaran district)",
+"source": "team csv"
 },
 "06": {
-"area": "Muzaffarpur district",
-"office": "Muzaffarpur"
+"place": "Muzaffarpur (Muzaffarpur district)",
+"source": "team csv"
 },
 "07": {
-"area": "Darbhanga district",
-"office": "Darbhanga"
+"place": "Darbhanga (Darbhanga district)",
+"source": "team csv"
 },
 "08": {
-"area": "Munger district",
-"office": "Munger"
+"place": "Munger (Munger district)",
+"source": "team csv"
 },
 "09": {
-"area": "Begusarai district",
-"office": "Begusarai"
+"place": "Begusarai (Begusarai district)",
+"source": "team csv"
 },
 "10": {
-"area": "Bhagalpur district",
-"office": "Bhagalpur"
+"place": "Bhagalpur (Bhagalpur district)",
+"source": "team csv"
 },
 "11": {
-"area": "Purnia district",
-"office": "Purnia"
+"place": "Purnia (Purnia district)",
+"source": "team csv"
 },
 "19": {
-"area": "Saharsa district",
-"office": "Saharsa"
+"place": "Saharsa (Saharsa district)",
+"source": "team csv"
 },
 "21": {
-"area": "Nalanda district",
-"office": "Bihar Sharif"
+"place": "Bihar Sharif (Nalanda district)",
+"source": "team csv"
 },
 "22": {
-"area": "West Champaran district",
-"office": "Bettiah"
+"place": "Bettiah (West Champaran district)",
+"source": "team csv"
 },
 "24": {
-"area": "Rohtas district",
-"office": "Dehri"
+"place": "Dehri (Rohtas district)",
+"source": "team csv"
 },
 "25": {
-"area": "Jehanabad district",
-"office": "Jehanabad"
+"place": "Jehanabad (Jehanabad district)",
+"source": "team csv"
 },
 "26": {
-"area": "Aurangabad district",
-"office": "Aurangabad"
+"place": "Aurangabad (Aurangabad district)",
+"source": "team csv"
 },
 "27": {
-"area": "Nawada district",
-"office": "Nawada"
+"place": "Nawada (Nawada district)",
+"source": "team csv"
 },
 "28": {
-"area": "Gopalganj district",
-"office": "Gopalganj"
+"place": "Gopalganj (Gopalganj district)",
+"source": "team csv"
 },
 "29": {
-"area": "Siwan district",
-"office": "Siwan"
+"place": "Siwan (Siwan district)",
+"source": "team csv"
 },
 "30": {
-"area": "Sitamarhi district",
-"office": "Sitamarhi"
+"place": "Sitamarhi (Sitamarhi district)",
+"source": "team csv"
 },
 "31": {
-"area": "Vaishali district",
-"office": "Hajipur"
+"place": "Hajipur (Vaishali district)",
+"source": "team csv"
 },
 "32": {
-"area": "Madhubani district",
-"office": "Madhubani"
+"place": "Madhubani (Madhubani district)",
+"source": "team csv"
 },
 "33": {
-"area": "Samastipur district",
-"office": "Samastipur"
+"place": "Samastipur (Samastipur district)",
+"source": "team csv"
 },
 "34": {
-"area": "Khagaria district",
-"office": "Khagaria"
+"place": "Khagaria (Khagaria district)",
+"source": "team csv"
 },
 "37": {
-"area": "Kishanganj district",
-"office": "Kishanganj"
+"place": "Kishanganj (Kishanganj district)",
+"source": "team csv"
 },
 "38": {
-"area": "Araria district",
-"office": "Araria"
+"place": "Araria (Araria district)",
+"source": "team csv"
 },
 "39": {
-"area": "Katihar district",
-"office": "Katihar"
+"place": "Katihar (Katihar district)",
+"source": "team csv"
 },
 "43": {
-"area": "Madhepura district",
-"office": "Madhepura"
+"place": "Madhepura (Madhepura district)",
+"source": "team csv"
 },
 "44": {
-"area": "Buxar district",
-"office": "Buxar"
+"place": "Buxar (Buxar district)",
+"source": "team csv"
 },
 "45": {
-"area": "Kaimur district",
-"office": "Bhabua"
+"place": "Bhabua (Kaimur district)",
+"source": "team csv"
 },
 "46": {
-"area": "Jamui district",
-"office": "Jamui"
+"place": "Jamui (Jamui district)",
+"source": "team csv"
 },
 "50": {
-"area": "Supaul district",
-"office": "Supaul"
+"place": "Supaul (Supaul district)",
+"source": "team csv"
 },
 "51": {
-"area": "Banka district",
-"office": "Banka"
+"place": "Banka (Banka district)",
+"source": "team csv"
 },
 "52": {
-"area": "Sheikhpura district",
-"office": "Sheikhpura"
+"place": "Sheikhpura (Sheikhpura district)",
+"source": "team csv"
 },
 "53": {
-"area": "Lakhisarai district",
-"office": "Lakhisarai"
+"place": "Lakhisarai (Lakhisarai district)",
+"source": "team csv"
 },
 "55": {
-"area": "Sheohar district",
-"office": "Sheohar"
+"place": "Sheohar (Sheohar district)",
+"source": "team csv"
 },
 "56": {
-"area": "Arwal district",
-"office": "Arwal"
+"place": "Arwal (Arwal district)",
+"source": "team csv"
 }
 },
 "name": "Bihar"
@@ -440,124 +487,124 @@
 "CG": {
 "codes": {
 "01": {
-"area": "entire Chhattisgarh",
-"office": ""
+"place": "entire Chhattisgarh",
+"source": "team csv"
 },
 "02": {
-"area": "entire Chhattisgarh",
-"office": ""
+"place": "entire Chhattisgarh",
+"source": "team csv"
 },
 "03": {
-"area": "entire Chhattisgarh",
-"office": ""
+"place": "entire Chhattisgarh",
+"source": "team csv"
 },
 "04": {
-"area": "Raipur district",
-"office": "Raipur"
+"place": "Raipur",
+"source": "team csv"
 },
 "05": {
-"area": "Dhamtari district",
-"office": "Dhamtari"
+"place": "Dhamtari",
+"source": "team csv"
 },
 "06": {
-"area": "Mahasamund district",
-"office": "Mahasamund"
+"place": "Mahasamund",
+"source": "team csv"
 },
 "07": {
-"area": "Durg district",
-"office": "Durg"
+"place": "Durg",
+"source": "team csv"
 },
 "08": {
-"area": "Rajnandgaon district",
-"office": "Rajnandgaon"
+"place": "Rajnandgaon",
+"source": "team csv"
 },
 "09": {
-"area": "Kabirdham district",
-"office": "Kawardha"
+"place": "Kawardha",
+"source": "team csv"
 },
 "10": {
-"area": "Bilaspur district",
-"office": "Bilaspur"
+"place": "Bilaspur",
+"source": "team csv"
 },
 "11": {
-"area": "Janjgir–Champa district",
-"office": "Janjgir"
+"place": "Janjgir",
+"source": "team csv"
 },
 "12": {
-"area": "Korba district",
-"office": "Korba"
+"place": "Korba",
+"source": "team csv"
 },
 "13": {
-"area": "Raigarh district",
-"office": "Raigarh"
+"place": "Raigarh",
+"source": "team csv"
 },
 "14": {
-"area": "Jashpur district",
-"office": "Jashpur Nagar"
+"place": "Jashpur Nagar",
+"source": "team csv"
 },
 "15": {
-"area": "Surguja district",
-"office": "Ambikapur"
+"place": "Ambikapur",
+"source": "team csv"
 },
 "16": {
-"area": "Koriya district",
-"office": "Baikunthpur"
+"place": "Baikunthpur",
+"source": "team csv"
 },
 "17": {
-"area": "Bastar district",
-"office": "Jagdalpur"
+"place": "Jagdalpur",
+"source": "team csv"
 },
 "18": {
-"area": "Dantewada district",
-"office": "Dantewada"
+"place": "Dantewada",
+"source": "team csv"
 },
 "19": {
-"area": "Kanker district",
-"office": "Kanker"
+"place": "Kanker",
+"source": "team csv"
 },
 "20": {
-"area": "Bijapur district",
-"office": "Bijapur"
+"place": "Bijapur",
+"source": "team csv"
 },
 "21": {
-"area": "Narayanpur district",
-"office": "Narayanpur"
+"place": "Narayanpur",
+"source": "team csv"
 },
 "22": {
-"area": "Baloda Bazar district",
-"office": "Baloda Bazar"
+"place": "Baloda Bazar",
+"source": "team csv"
 },
 "23": {
-"area": "Gariaband district",
-"office": "Gariaband"
+"place": "Gariaband",
+"source": "team csv"
 },
 "24": {
-"area": "Balod district",
-"office": "Balod"
+"place": "Balod",
+"source": "team csv"
 },
 "25": {
-"area": "Bemetara district",
-"office": "Bemetara"
+"place": "Bemetara",
+"source": "team csv"
 },
 "26": {
-"area": "Sukma district",
-"office": "Sukma"
+"place": "Sukma",
+"source": "team csv"
 },
 "27": {
-"area": "Kondagaon district",
-"office": "Kondagaon"
+"place": "Kondagaon",
+"source": "team csv"
 },
 "28": {
-"area": "Mungeli district",
-"office": "Mungeli"
+"place": "Mungeli",
+"source": "team csv"
 },
 "29": {
-"area": "Surajpur district",
-"office": "Surajpur"
+"place": "Surajpur",
+"source": "team csv"
 },
 "30": {
-"area": "Balrampur district",
-"office": "Balrampur"
+"place": "Balrampur",
+"source": "team csv"
 }
 },
 "name": "Chhattisgarh"
@@ -565,20 +612,20 @@
 "CH": {
 "codes": {
 "01": {
-"area": "Chandigarh district",
-"office": "Chandigarh"
+"place": "Chandigarh",
+"source": "team csv"
 },
 "02": {
-"area": "Chandigarh district",
-"office": "Chandigarh"
+"place": "Chandigarh",
+"source": "team csv"
 },
 "03": {
-"area": "Chandigarh district",
-"office": "Chandigarh"
+"place": "Chandigarh",
+"source": "team csv"
 },
 "04": {
-"area": "Chandigarh district",
-"office": "Chandigarh"
+"place": "Chandigarh",
+"source": "team csv"
 }
 },
 "name": "Chandigarh"
@@ -586,16 +633,16 @@
 "DD": {
 "codes": {
 "01": {
-"area": "Dadra and Nagar Haveli district",
-"office": "Silvassa"
+"place": "Silvassa",
+"source": "team csv"
 },
 "02": {
-"area": "Diu district",
-"office": "Diu"
+"place": "Diu",
+"source": "team csv"
 },
 "03": {
-"area": "Daman district",
-"office": "Daman"
+"place": "Daman",
+"source": "team csv"
 }
 },
 "name": "Dadra and Nagar Haveli and Daman and Diu"
@@ -603,56 +650,56 @@
 "DL": {
 "codes": {
 "01": {
-"area": "North Delhi District:",
-"office": "Mall Road, Vishwavidyalaya"
+"place": "Mall Road, Vishwavidyalaya",
+"source": "team csv"
 },
 "02": {
-"area": "New Delhi District:",
-"office": "Indraprastha Depot"
+"place": "Indraprastha Depot",
+"source": "team csv"
 },
 "03": {
-"area": "South Delhi District:",
-"office": "DDA Market, Sheikh Sarai"
+"place": "DDA Market, Sheikh Sarai",
+"source": "team csv"
 },
 "04": {
-"area": "West Delhi District I:",
-"office": "Janakpuri"
+"place": "Janakpuri",
+"source": "team csv"
 },
 "05": {
-"area": "North East Delhi District:",
-"office": "Loni Road, Shahdara"
+"place": "Loni Road, Shahdara",
+"source": "team csv"
 },
 "06": {
-"area": "Central Delhi District:",
-"office": "ISBT Sarai Kale Khan"
+"place": "ISBT Sarai Kale Khan",
+"source": "team csv"
 },
 "07": {
-"area": "East Delhi District-I:",
-"office": "DTC Depot, Mayur Vihar"
+"place": "DTC Depot, Mayur Vihar",
+"source": "team csv"
 },
 "08": {
-"area": "North West Delhi District-I:",
-"office": "DTC Depot, Wazirpur"
+"place": "DTC Depot, Wazirpur",
+"source": "team csv"
 },
 "09": {
-"area": "South West Delhi District-I:",
-"office": "Sector-10, Dwarka"
+"place": "Sector-10, Dwarka",
+"source": "team csv"
 },
 "10": {
-"area": "West Delhi District-II:",
-"office": "Raja Garden"
+"place": "Raja Garden",
+"source": "team csv"
 },
 "11": {
-"area": "North West Delhi District-II:",
-"office": "DTC Depot, Rohini"
+"place": "DTC Depot, Rohini",
+"source": "team csv"
 },
 "12": {
-"area": "South West Delhi District-II:",
-"office": "DTC Depot, Vasant Vihar"
+"place": "DTC Depot, Vasant Vihar",
+"source": "team csv"
 },
 "13": {
-"area": "East Delhi District-II:",
-"office": "CBD Ground, Surajmal Vihar"
+"place": "CBD Ground, Surajmal Vihar",
+"source": "team csv"
 }
 },
 "name": "Delhi"
@@ -660,52 +707,52 @@
 "GA": {
 "codes": {
 "01": {
-"area": "North Goa district",
-"office": "Panaji"
+"place": "Panaji",
+"source": "team csv"
 },
 "02": {
-"area": "South Goa district",
-"office": "Margao"
+"place": "Margao",
+"source": "team csv"
 },
 "03": {
-"area": "Bardez taluka",
-"office": "Mapusa"
+"place": "Mapusa",
+"source": "team csv"
 },
 "04": {
-"area": "Bicholim taluka, Sattari taluka",
-"office": "Bicholim"
+"place": "Bicholim",
+"source": "team csv"
 },
 "05": {
-"area": "Ponda taluka",
-"office": "Ponda"
+"place": "Ponda",
+"source": "team csv"
 },
 "06": {
-"area": "Mormugao taluka",
-"office": "Vasco da Gama"
+"place": "Vasco da Gama",
+"source": "team csv"
 },
 "07": {
-"area": "Tiswadi taluka",
-"office": "Panaji"
+"place": "Panaji",
+"source": "team csv"
 },
 "08": {
-"area": "Salcette taluka",
-"office": "Margao"
+"place": "Margao",
+"source": "team csv"
 },
 "09": {
-"area": "Quepem taluka, Sanguem taluka",
-"office": "Quepem"
+"place": "Quepem",
+"source": "team csv"
 },
 "10": {
-"area": "Canacona taluka",
-"office": "Canacona"
+"place": "Canacona",
+"source": "team csv"
 },
 "11": {
-"area": "Pernem taluka",
-"office": "Pernem"
+"place": "Pernem",
+"source": "team csv"
 },
 "12": {
-"area": "Dharbandora taluka",
-"office": "Dharbandora"
+"place": "Dharbandora",
+"source": "team csv"
 }
 },
 "name": "Goa"
@@ -713,541 +760,565 @@
 "GJ": {
 "codes": {
 "01": {
-"area": "Covers parts of Ahmedabad City on the western bank of the Sabarmati River, over Vejalpur, Sabarmati, Ghatlodiya and parts of Daskroi Taluks of Western Ahmedabad District",
-"office": "Ahmedabad (West), Subhash Bridge"
+"place": "Ahmedabad (West), Subhash Bridge",
+"source": "team csv"
 },
 "02": {
-"area": "Covers entire Mehsana District",
-"office": "Mehsana"
+"place": "Mehsana",
+"source": "team csv"
 },
 "03": {
-"area": "Covers entire Rajkot District",
-"office": "Rajkot"
+"place": "Rajkot",
+"source": "team csv"
 },
 "04": {
-"area": "Covers entire Bhavnagar District",
-"office": "Bhavnagar"
+"place": "Bhavnagar",
+"source": "team csv"
 },
 "05": {
-"area": "Covers Surat City, Olpad, Chorasi, Kamrej and Palsana Taluks of Western Surat District",
-"office": "Surat"
+"place": "Surat",
+"source": "team csv"
 },
 "06": {
-"area": "Covers entire Vadodara District",
-"office": "Vadodara"
+"place": "Vadodara",
+"source": "team csv"
 },
 "07": {
-"area": "Covers entire Kheda District",
-"office": "Nadiad, Kheda District"
+"place": "Nadiad, Kheda District",
+"source": "team csv"
 },
 "08": {
-"area": "Covers Banaskantha District and Vav-Tharad District",
-"office": "Palanpur, Banaskantha District"
+"place": "Palanpur, Banaskantha District",
+"source": "team csv"
 },
 "09": {
-"area": "Covers entire Sabarkantha District",
-"office": "Himmatnagar, Sabarkantha District"
+"place": "Himmatnagar, Sabarkantha District",
+"source": "team csv"
 },
 "10": {
-"area": "Covers entire Jamnagar District",
-"office": "Jamnagar"
+"place": "Jamnagar",
+"source": "team csv"
 },
 "11": {
-"area": "Covers entire Junagadh District",
-"office": "Junagadh"
+"place": "Junagadh",
+"source": "team csv"
 },
 "12": {
-"area": "Covers Bhuj, Mundra, Mandvi, Nakhtarana, Abdasa and Lakhpat Taluks of Western Kutch District",
-"office": "Bhuj, Kutch District (West)"
+"place": "Bhuj, Kutch District (West)",
+"source": "team csv"
 },
 "13": {
-"area": "Covers entire Surendranagar District",
-"office": "Surendranagar"
+"place": "Surendranagar",
+"source": "team csv"
 },
 "14": {
-"area": "Covers entire Amreli District",
-"office": "Amreli"
+"place": "Amreli",
+"source": "team csv"
 },
 "15": {
-"area": "Covers entire Valsad District",
-"office": "Valsad"
+"place": "Valsad",
+"source": "team csv"
 },
 "16": {
-"area": "Covers entire Bharuch District",
-"office": "Bharuch"
+"place": "Bharuch",
+"source": "team csv"
 },
 "17": {
-"area": "Covers entire Panchmahal District",
-"office": "Godhra, Panchmahal District"
+"place": "Godhra, Panchmahal District",
+"source": "team csv"
 },
 "18": {
-"area": "Covers entire Gandhinagar District",
-"office": "Gandhinagar"
+"place": "Gandhinagar",
+"source": "team csv"
 },
 "19": {
-"area": "Covers Bardoli, Mahuva, Mandvi, Mangrol, Ambika, Areth and Umarpada Taluks of Eastern Surat District",
-"office": "Bardoli, Surat District (East)"
+"place": "Bardoli, Surat District (East)",
+"source": "team csv"
 },
 "20": {
-"area": "Covers entire Dahod District",
-"office": "Dahod"
+"place": "Dahod",
+"source": "team csv"
 },
 "21": {
-"area": "Covers entire Navsari District",
-"office": "Navsari"
+"place": "Navsari",
+"source": "team csv"
 },
 "22": {
-"area": "Covers entire Narmada District",
-"office": "Rajpipla, Narmada District"
+"place": "Rajpipla, Narmada District",
+"source": "team csv"
 },
 "23": {
-"area": "Covers entire Anand District",
-"office": "Anand"
+"place": "Anand",
+"source": "team csv"
 },
 "24": {
-"area": "Covers entire Patan District",
-"office": "Patan"
+"place": "Patan",
+"source": "team csv"
 },
 "25": {
-"area": "Covers entire Porbandar District",
-"office": "Porbandar"
+"place": "Porbandar",
+"source": "team csv"
 },
 "26": {
-"area": "Covers entire Tapi District",
-"office": "Vyara, Tapi District"
+"place": "Vyara, Tapi District",
+"source": "team csv"
 },
 "27": {
-"area": "Covers parts of Ahmedabad City on the eastern bank of the Sabarmati River, over Maninagar, Asarwa, Vatva and parts of Daskroi Taluks of Eastern Ahmedabad District",
-"office": "Ahmedabad (East), Vastral"
+"place": "Ahmedabad (East), Vastral",
+"source": "team csv"
 },
 "28": {
-"area": "Reserved for Surat",
-"office": "Not Allocated"
+"place": "Not Allocated",
+"source": "team csv"
 },
 "29": {
-"area": "Reserved for Vadodara",
-"office": "Not Allocated"
+"place": "Not Allocated",
+"source": "team csv"
 },
 "30": {
-"area": "Covers entire Dang District",
-"office": "Ahwa, Dang District"
+"place": "Ahwa, Dang District",
+"source": "team csv"
 },
 "31": {
-"area": "Covers entire Aravalli District",
-"office": "Modasa, Aravalli District"
+"place": "Modasa, Aravalli District",
+"source": "team csv"
 },
 "32": {
-"area": "Covers entire Gir Somnath District",
-"office": "Veraval, Gir Somnath District"
+"place": "Veraval, Gir Somnath District",
+"source": "team csv"
 },
 "33": {
-"area": "Covers entire Botad District",
-"office": "Botad"
+"place": "Botad",
+"source": "team csv"
 },
 "34": {
-"area": "Covers entire Chhota Udaipur District",
-"office": "Chhota Udaipur"
+"place": "Chhota Udaipur",
+"source": "team csv"
 },
 "35": {
-"area": "Covers entire Mahisagar District",
-"office": "Lunawada, Mahisagar District"
+"place": "Lunawada, Mahisagar District",
+"source": "team csv"
 },
 "36": {
-"area": "Covers entire Morbi District",
-"office": "Morbi"
+"place": "Morbi",
+"source": "team csv"
 },
 "37": {
-"area": "Covers entire Devbhoomi Dwarka District",
-"office": "Khambhaliya, Devbhoomi Dwarka District"
+"place": "Khambhaliya, Devbhoomi Dwarka District",
+"source": "team csv"
 },
 "38": {
-"area": "Covers Bavla, Sanand, Viramgam, Detroj-Rampura, Mandal, Dholka, Dhandhuka, Dholera and parts of Daskroi Taluks of Rural Ahmedabad District",
-"office": "Bavla, Ahmedabad District (Rural)"
+"place": "Bavla, Ahmedabad District (Rural)",
+"source": "team csv"
 },
 "39": {
-"area": "Covers Anjar, Gandhidham, Bhachau and Rapar Taluks of Eastern Kutch District",
-"office": "Anjar, Kutch District (East)"
+"place": "Anjar, Kutch District (East)",
+"source": "team csv"
 },
 "40": {
-"area": "Covers Vav-Tharad District, reviously under GJ-08 (Palanpur)",
-"office": "Tharad"
+"place": "Tharad",
+"source": "team csv"
 }
 },
 "name": "Gujarat"
 },
 "HP": {
 "codes": {
+"01": {
+"place": "Statewide (Tourist buses & Taxis)",
+"source": "team csv"
+},
+"02": {
+"place": "Statewide (Tourist buses & Taxis)",
+"source": "team csv"
+},
 "03": {
-"area": "",
-"office": "Shimla (Urban)"
+"place": "Shimla (Urban)",
+"source": "team csv"
 },
 "04": {
-"area": "",
-"office": "Kangra, Dharamsala"
+"place": "Kangra, Dharamsala",
+"source": "team csv"
 },
 "05": {
-"area": "",
-"office": "Mandi"
+"place": "Mandi",
+"source": "team csv"
 },
 "06": {
-"area": "",
-"office": "Rampur Bushahr"
+"place": "Rampur Bushahr",
+"source": "team csv"
 },
 "07": {
-"area": "",
-"office": "Shimla (Urban)"
+"place": "Shimla (Urban)",
+"source": "team csv"
 },
 "08": {
-"area": "",
-"office": "Chaupal"
+"place": "Chaupal",
+"source": "team csv"
 },
 "09": {
-"area": "",
-"office": "Theog"
+"place": "Theog",
+"source": "team csv"
 },
 "10": {
-"area": "",
-"office": "Rohru"
+"place": "Rohru",
+"source": "team csv"
 },
 "11": {
-"area": "",
-"office": "Arki"
+"place": "Arki",
+"source": "team csv"
 },
 "12": {
-"area": "",
-"office": "Nalagarh"
+"place": "Nalagarh",
+"source": "team csv"
 },
 "13": {
-"area": "",
-"office": "Kandaghat"
+"place": "Kandaghat",
+"source": "team csv"
 },
 "14": {
-"area": "",
-"office": "Solan"
+"place": "Solan",
+"source": "team csv"
 },
 "15": {
-"area": "",
-"office": "Parwanoo"
+"place": "Parwanoo",
+"source": "team csv"
 },
 "16": {
-"area": "",
-"office": "Rajgarh"
+"place": "Rajgarh",
+"source": "team csv"
 },
 "17": {
-"area": "",
-"office": "Paonta Sahib"
+"place": "Paonta Sahib",
+"source": "team csv"
 },
 "18": {
-"area": "",
-"office": "Nahan"
+"place": "Nahan",
+"source": "team csv"
 },
 "19": {
-"area": "",
-"office": "Amb"
+"place": "Amb",
+"source": "team csv"
 },
 "20": {
-"area": "",
-"office": "Una"
+"place": "Una",
+"source": "team csv"
 },
 "21": {
-"area": "",
-"office": "Barsar, Hamirpur"
+"place": "Barsar, Hamirpur",
+"source": "team csv"
 },
 "22": {
-"area": "",
-"office": "Hamirpur"
+"place": "Hamirpur",
+"source": "team csv"
 },
 "23": {
-"area": "",
-"office": "Ghumarwin"
+"place": "Ghumarwin",
+"source": "team csv"
 },
 "24": {
-"area": "",
-"office": "Bilaspur"
+"place": "Bilaspur",
+"source": "team csv"
 },
 "25": {
-"area": "",
-"office": "Kalpa"
+"place": "Kalpa",
+"source": "team csv"
 },
 "26": {
-"area": "",
-"office": "Nichar, Bhaba Nagar"
+"place": "Nichar, Bhaba Nagar",
+"source": "team csv"
 },
 "27": {
-"area": "",
-"office": "Pooh"
+"place": "Pooh",
+"source": "team csv"
 },
 "28": {
-"area": "",
-"office": "Sarkaghat"
+"place": "Sarkaghat",
+"source": "team csv"
 },
 "29": {
-"area": "",
-"office": "Jogindernagar"
+"place": "Jogindernagar",
+"source": "team csv"
 },
 "30": {
-"area": "",
-"office": "Karsog"
+"place": "Karsog",
+"source": "team csv"
 },
 "31": {
-"area": "",
-"office": "Sundernagar"
+"place": "Sundernagar",
+"source": "team csv"
 },
 "32": {
-"area": "",
-"office": "Gohar, Mandi"
+"place": "Gohar, Mandi",
+"source": "team csv"
 },
 "33": {
-"area": "",
-"office": "Mandi"
+"place": "Mandi",
+"source": "team csv"
 },
 "34": {
-"area": "",
-"office": "Kullu"
+"place": "Kullu",
+"source": "team csv"
 },
 "35": {
-"area": "",
-"office": "Anni, Kullu"
+"place": "Anni, Kullu",
+"source": "team csv"
 },
 "36": {
-"area": "",
-"office": "Dehra"
+"place": "Dehra",
+"source": "team csv"
 },
 "37": {
-"area": "",
-"office": "Palampur"
+"place": "Palampur",
+"source": "team csv"
 },
 "38": {
-"area": "",
-"office": "Nurpur"
+"place": "Nurpur",
+"source": "team csv"
 },
 "39": {
-"area": "",
-"office": "Dharamshala"
+"place": "Dharamshala",
+"source": "team csv"
 },
 "40": {
-"area": "",
-"office": "Kangra"
+"place": "Kangra",
+"source": "team csv"
 },
 "41": {
-"area": "",
-"office": "Kaza"
+"place": "Kaza",
+"source": "team csv"
 },
 "42": {
-"area": "",
-"office": "Keylong"
+"place": "Keylong",
+"source": "team csv"
 },
 "43": {
-"area": "",
-"office": "Udaipur, Lahaul and Spiti"
+"place": "Udaipur, Lahaul and Spiti",
+"source": "team csv"
 },
 "44": {
-"area": "",
-"office": "Churah, Chamba"
+"place": "Churah, Chamba",
+"source": "team csv"
 },
 "45": {
-"area": "",
-"office": "Pangi"
+"place": "Pangi",
+"source": "team csv"
 },
 "46": {
-"area": "",
-"office": "Bharmour"
+"place": "Bharmour",
+"source": "team csv"
 },
 "47": {
-"area": "",
-"office": "Dalhousie"
+"place": "Dalhousie",
+"source": "team csv"
 },
 "48": {
-"area": "",
-"office": "Chamba"
+"place": "Chamba",
+"source": "team csv"
 },
 "49": {
-"area": "",
-"office": "Banjar"
+"place": "Banjar",
+"source": "team csv"
 },
 "50": {
-"area": "Auto-rickshaws",
-"office": "Shimla"
+"place": "Shimla",
+"source": "team csv"
+},
+"51": {
+"place": "Shimla (Rural)",
+"source": "team csv"
+},
+"52": {
+"place": "Shimla (Rural)",
+"source": "team csv"
 },
 "53": {
-"area": "",
-"office": "Baijnath"
+"place": "Baijnath",
+"source": "team csv"
 },
 "54": {
-"area": "",
-"office": "Jawali"
+"place": "Jawali",
+"source": "team csv"
 },
 "55": {
-"area": "",
-"office": "Nadaun"
+"place": "Nadaun",
+"source": "team csv"
 },
 "56": {
-"area": "",
-"office": "Jaisinghpur"
+"place": "Jaisinghpur",
+"source": "team csv"
 },
 "57": {
-"area": "",
-"office": "Chowari"
+"place": "Chowari",
+"source": "team csv"
 },
 "58": {
-"area": "",
-"office": "Manali"
+"place": "Manali",
+"source": "team csv"
 },
 "59": {
-"area": "",
-"office": "Solan"
+"place": "Solan",
+"source": "team csv"
 },
 "60": {
-"area": "",
-"office": "Hamirpur"
+"place": "Hamirpur",
+"source": "team csv"
 },
 "61": {
-"area": "",
-"office": "Kullu"
+"place": "Kullu",
+"source": "team csv"
 },
 "62": {
-"area": "",
-"office": "Shimla"
+"place": "Shimla",
+"source": "team csv"
 },
 "63": {
-"area": "",
-"office": "Shimla"
+"place": "Shimla",
+"source": "team csv"
 },
 "64": {
-"area": "",
-"office": "Solan"
+"place": "Solan",
+"source": "team csv"
 },
 "65": {
-"area": "",
-"office": "Mandi"
+"place": "Mandi",
+"source": "team csv"
 },
 "66": {
-"area": "",
-"office": "Kullu"
+"place": "Kullu",
+"source": "team csv"
 },
 "67": {
-"area": "",
-"office": "Hamirpur"
+"place": "Hamirpur",
+"source": "team csv"
 },
 "68": {
-"area": "",
-"office": "Kangra, Dharmsala"
+"place": "Kangra, Dharmsala",
+"source": "team csv"
+},
+"69": {
+"place": "Bilaspur",
+"source": "team csv"
+},
+"70": {
+"place": "Bilaspur",
+"source": "team csv"
 },
 "71": {
-"area": "",
-"office": "Nahan"
+"place": "Nahan",
+"source": "team csv"
 },
 "72": {
-"area": "",
-"office": "Una"
+"place": "Una",
+"source": "team csv"
 },
 "73": {
-"area": "",
-"office": "Chamba"
+"place": "Chamba",
+"source": "team csv"
 },
 "74": {
-"area": "",
-"office": "Bhoranj, Hamirpur"
+"place": "Bhoranj, Hamirpur",
+"source": "team csv"
 },
 "75": {
-"area": "",
-"office": "Jubbal"
+"place": "Jubbal",
+"source": "team csv"
 },
 "76": {
-"area": "",
-"office": "Paddhar, Mandi"
+"place": "Paddhar, Mandi",
+"source": "team csv"
 },
 "77": {
-"area": "",
-"office": "Dodra Kawar, Shimla"
+"place": "Dodra Kawar, Shimla",
+"source": "team csv"
 },
 "78": {
-"area": "",
-"office": "Bangana, Una"
+"place": "Bangana, Una",
+"source": "team csv"
 },
 "79": {
-"area": "",
-"office": "Sangrah, Sirmaur"
+"place": "Sangrah, Sirmaur",
+"source": "team csv"
 },
 "80": {
-"area": "",
-"office": "Haroli, Una"
+"place": "Haroli, Una",
+"source": "team csv"
 },
 "81": {
-"area": "",
-"office": "Salooni"
+"place": "Salooni",
+"source": "team csv"
 },
 "82": {
-"area": "",
-"office": "Balh, Mandi"
+"place": "Balh, Mandi",
+"source": "team csv"
 },
 "83": {
-"area": "",
-"office": "Jawalaji, Kangra"
+"place": "Jawalaji, Kangra",
+"source": "team csv"
 },
 "84": {
-"area": "",
-"office": "Sujanpur Tihra, Hamirpur"
+"place": "Sujanpur Tihra, Hamirpur",
+"source": "team csv"
 },
 "85": {
-"area": "",
-"office": "Shillai, Sirmaur"
+"place": "Shillai, Sirmaur",
+"source": "team csv"
 },
 "86": {
-"area": "",
-"office": "Dharampur, Mandi"
+"place": "Dharampur, Mandi",
+"source": "team csv"
 },
 "87": {
-"area": "",
-"office": "Janjehli, Mandi"
+"place": "Janjehli, Mandi",
+"source": "team csv"
 },
 "88": {
-"area": "",
-"office": "Fatehpur, Kangra"
+"place": "Fatehpur, Kangra",
+"source": "team csv"
 },
 "89": {
-"area": "",
-"office": "Jhandutta, Bilaspur"
+"place": "Jhandutta, Bilaspur",
+"source": "team csv"
 },
 "90": {
-"area": "",
-"office": "Shahpur, Kangra"
+"place": "Shahpur, Kangra",
+"source": "team csv"
 },
 "91": {
-"area": "",
-"office": "Naina Devi, Swarghat, Bilaspur"
+"place": "Naina Devi, Swarghat, Bilaspur",
+"source": "team csv"
 },
 "92": {
-"area": "",
-"office": "Rampur Bushahr"
+"place": "Rampur Bushahr",
+"source": "team csv"
 },
 "93": {
-"area": "",
-"office": "Nalagarh"
+"place": "Nalagarh",
+"source": "team csv"
 },
 "94": {
-"area": "",
-"office": "Nagrota Bagwan"
+"place": "Nagrota Bagwan",
+"source": "team csv"
 },
 "95": {
-"area": "",
-"office": "Kumarsain"
+"place": "Kumarsain",
+"source": "team csv"
 },
 "96": {
-"area": "",
-"office": "Dheera, Kangra"
+"place": "Dheera, Kangra",
+"source": "team csv"
 },
 "97": {
-"area": "",
-"office": "Indora"
+"place": "Indora",
+"source": "team csv"
 },
 "98": {
-"area": "",
-"office": "Kasauli"
+"place": "Kasauli",
+"source": "team csv"
 },
 "99": {
-"area": "",
-"office": "Kotkhai"
+"place": "Kotkhai",
+"source": "team csv"
 }
 },
 "name": "Himachal Pradesh"
@@ -1255,400 +1326,400 @@
 "HR": {
 "codes": {
 "01": {
-"area": "Ambala",
-"office": "Ambala"
+"place": "Ambala",
+"source": "team csv"
 },
 "02": {
-"area": "Yamunanagar",
-"office": "Jagadhari"
+"place": "Jagadhari",
+"source": "team csv"
 },
 "03": {
-"area": "Panchkula",
-"office": "Panchkula"
+"place": "Panchkula",
+"source": "team csv"
 },
 "04": {
-"area": "Naraingarh",
-"office": "Naraingarh"
+"place": "Naraingarh",
+"source": "team csv"
 },
 "05": {
-"area": "Karnal",
-"office": "Karnal"
+"place": "Karnal",
+"source": "team csv"
 },
 "06": {
-"area": "Panipat",
-"office": "Panipat"
+"place": "Panipat",
+"source": "team csv"
 },
 "07": {
-"area": "Thanesar",
-"office": "Thanesar"
+"place": "Thanesar",
+"source": "team csv"
 },
 "08": {
-"area": "Kaithal",
-"office": "Kaithal"
+"place": "Kaithal",
+"source": "team csv"
 },
 "09": {
-"area": "Guhla",
-"office": "Guhla"
+"place": "Guhla",
+"source": "team csv"
 },
 "10": {
-"area": "Sonipat",
-"office": "Sonipat"
+"place": "Sonipat",
+"source": "team csv"
 },
 "11": {
-"area": "Gohana",
-"office": "Gohana"
+"place": "Gohana",
+"source": "team csv"
 },
 "12": {
-"area": "Rohtak",
-"office": "Rohtak"
+"place": "Rohtak",
+"source": "team csv"
 },
 "13": {
-"area": "Bahadurgarh",
-"office": "Bahadurgarh"
+"place": "Bahadurgarh",
+"source": "team csv"
 },
 "14": {
-"area": "Jhajjar",
-"office": "Jhajjar"
+"place": "Jhajjar",
+"source": "team csv"
 },
 "15": {
-"area": "Meham",
-"office": "Meham"
+"place": "Meham",
+"source": "team csv"
 },
 "16": {
-"area": "Bhiwani",
-"office": "Bhiwani"
+"place": "Bhiwani",
+"source": "team csv"
 },
 "17": {
-"area": "Siwani",
-"office": "Siwani"
+"place": "Siwani",
+"source": "team csv"
 },
 "18": {
-"area": "Loharu",
-"office": "Loharu"
+"place": "Loharu",
+"source": "team csv"
 },
 "19": {
-"area": "Charkhi Dadri",
-"office": "Charkhi Dadri"
+"place": "Charkhi Dadri",
+"source": "team csv"
 },
 "20": {
-"area": "Hisar",
-"office": "Hisar"
+"place": "Hisar",
+"source": "team csv"
 },
 "21": {
-"area": "Hansi",
-"office": "Hansi"
+"place": "Hansi",
+"source": "team csv"
 },
 "22": {
-"area": "Fatehabad",
-"office": "Fatehabad"
+"place": "Fatehabad",
+"source": "team csv"
 },
 "23": {
-"area": "Tohana",
-"office": "Tohana, Jakhal Mandi"
+"place": "Tohana, Jakhal Mandi",
+"source": "team csv"
 },
 "24": {
-"area": "Sirsa",
-"office": "Sirsa"
+"place": "Sirsa",
+"source": "team csv"
 },
 "25": {
-"area": "Mandi Dabwali",
-"office": "Mandi Dabwali"
+"place": "Mandi Dabwali",
+"source": "team csv"
 },
 "26": {
-"area": "Old Gurgaon City (Northern Parts)",
-"office": "Gurugram (Gurugram North)"
+"place": "Gurugram (Gurugram North)",
+"source": "team csv"
 },
 "27": {
-"area": "Nuh",
-"office": "Nuh"
+"place": "Nuh",
+"source": "team csv"
 },
 "28": {
-"area": "Ferozepur Jhirka",
-"office": "Ferozepur Jhirka"
+"place": "Ferozepur Jhirka",
+"source": "team csv"
 },
 "29": {
-"area": "Ballabgarh",
-"office": "Ballabgarh (Faridabad South)"
+"place": "Ballabgarh (Faridabad South)",
+"source": "team csv"
 },
 "30": {
-"area": "Palwal",
-"office": "Palwal"
+"place": "Palwal",
+"source": "team csv"
 },
 "31": {
-"area": "Jind",
-"office": "Jind"
+"place": "Jind",
+"source": "team csv"
 },
 "32": {
-"area": "Narwana",
-"office": "Narwana"
+"place": "Narwana",
+"source": "team csv"
 },
 "33": {
-"area": "Safidon",
-"office": "Safidon"
+"place": "Safidon",
+"source": "team csv"
 },
 "34": {
-"area": "Mahendragarh",
-"office": "Mahendragarh"
+"place": "Mahendragarh",
+"source": "team csv"
 },
 "35": {
-"area": "Narnaul",
-"office": "Narnaul"
+"place": "Narnaul",
+"source": "team csv"
 },
 "36": {
-"area": "Rewari",
-"office": "Rewari"
+"place": "Rewari",
+"source": "team csv"
 },
 "37": {
-"area": "Ambala",
-"office": "Ambala"
+"place": "Ambala",
+"source": "team csv"
 },
 "38": {
-"area": "Faridabad district",
-"office": "Faridabad"
+"place": "Faridabad",
+"source": "team csv"
 },
 "39": {
-"area": "Hisar district",
-"office": "Hisar"
+"place": "Hisar",
+"source": "team csv"
 },
 "40": {
-"area": "Assandh",
-"office": "Assandh"
+"place": "Assandh",
+"source": "team csv"
 },
 "41": {
-"area": "Pehowa",
-"office": "Pehowa"
+"place": "Pehowa",
+"source": "team csv"
 },
 "42": {
-"area": "Ganaur",
-"office": "Ganaur"
+"place": "Ganaur",
+"source": "team csv"
 },
 "43": {
-"area": "Kosli",
-"office": "Kosli"
+"place": "Kosli",
+"source": "team csv"
 },
 "44": {
-"area": "Ellenabad",
-"office": "Ellenabad"
+"place": "Ellenabad",
+"source": "team csv"
 },
 "45": {
-"area": "Karnal district",
-"office": "Karnal"
+"place": "Karnal",
+"source": "team csv"
 },
 "46": {
-"area": "Rohtak district",
-"office": "Rohtak"
+"place": "Rohtak",
+"source": "team csv"
 },
 "47": {
-"area": "Rewari district",
-"office": "Rewari"
+"place": "Rewari",
+"source": "team csv"
 },
 "48": {
-"area": "Tosham, Bawani Khera",
-"office": "Tosham"
+"place": "Tosham",
+"source": "team csv"
 },
 "49": {
-"area": "Kalka",
-"office": "Kalka"
+"place": "Kalka",
+"source": "team csv"
 },
 "50": {
-"area": "Hodal",
-"office": "Hodal"
+"place": "Hodal",
+"source": "team csv"
 },
 "51": {
-"area": "Faridabad",
-"office": "Faridabad (Faridabad North)"
+"place": "Faridabad (Faridabad North)",
+"source": "team csv"
 },
 "52": {
-"area": "Hathin",
-"office": "Hathin"
+"place": "Hathin",
+"source": "team csv"
 },
 "53": {
-"area": "Adampur",
-"office": "Adampur"
+"place": "Adampur",
+"source": "team csv"
 },
 "54": {
-"area": "Barara",
-"office": "Barara"
+"place": "Barara",
+"source": "team csv"
 },
 "55": {
-"area": "Gurugram district",
-"office": "Gurugram"
+"place": "Gurugram",
+"source": "team csv"
 },
 "56": {
-"area": "Jind, Julana",
-"office": "Jind"
+"place": "Jind",
+"source": "team csv"
 },
 "57": {
-"area": "Sirsa district",
-"office": "Sirsa"
+"place": "Sirsa",
+"source": "team csv"
 },
 "58": {
-"area": "Yamunanagar district",
-"office": "Yamunanagar"
+"place": "Yamunanagar",
+"source": "team csv"
 },
 "59": {
-"area": "Ratia",
-"office": "Ratia"
+"place": "Ratia",
+"source": "team csv"
 },
 "60": {
-"area": "Samalkha",
-"office": "Samalkha"
+"place": "Samalkha",
+"source": "team csv"
 },
 "61": {
-"area": "Bhiwani district",
-"office": "Bhiwani"
+"place": "Bhiwani",
+"source": "team csv"
 },
 "62": {
-"area": "Fatehabad district",
-"office": "Fatehabad"
+"place": "Fatehabad",
+"source": "team csv"
 },
 "63": {
-"area": "Jhajjar, Bahadurgarh",
-"office": "Jhajjar"
+"place": "Jhajjar",
+"source": "team csv"
 },
 "64": {
-"area": "Kaithal district",
-"office": "Kaithal"
+"place": "Kaithal",
+"source": "team csv"
 },
 "65": {
-"area": "Kurukshetra district",
-"office": "Kurukshetra"
+"place": "Kurukshetra",
+"source": "team csv"
 },
 "66": {
-"area": "Mahendragarh district",
-"office": "Narnaul"
+"place": "Narnaul",
+"source": "team csv"
 },
 "67": {
-"area": "Panipat district",
-"office": "Panipat"
+"place": "Panipat",
+"source": "team csv"
 },
 "68": {
-"area": "Panchkula district",
-"office": "Panchkula"
+"place": "Panchkula",
+"source": "team csv"
 },
 "69": {
-"area": "Sonipat district",
-"office": "Sonipat"
+"place": "Sonipat",
+"source": "team csv"
 },
 "70": {
-"area": "Chandigarh",
-"office": "Chandigarh"
+"place": "Chandigarh",
+"source": "team csv"
 },
 "71": {
-"area": "Bilaspur",
-"office": "Bilaspur"
+"place": "Bilaspur",
+"source": "team csv"
 },
 "72": {
-"area": "Sohna",
-"office": "Sohna"
+"place": "Sohna",
+"source": "team csv"
 },
 "73": {
-"area": "Palwal district",
-"office": "Palwal"
+"place": "Palwal",
+"source": "team csv"
 },
 "74": {
-"area": "Mewat district",
-"office": "Nuh"
+"place": "Nuh",
+"source": "team csv"
 },
 "75": {
-"area": "Indri",
-"office": "Indri"
+"place": "Indri",
+"source": "team csv"
 },
 "76": {
-"area": "Pataudi, Farrukhnagar",
-"office": "Pataudi"
+"place": "Pataudi",
+"source": "team csv"
 },
 "77": {
-"area": "Beri",
-"office": "Beri"
+"place": "Beri",
+"source": "team csv"
 },
 "78": {
-"area": "Shahabad Markanda",
-"office": "Shahabad Markanda"
+"place": "Shahabad Markanda",
+"source": "team csv"
 },
 "79": {
-"area": "Kharkhoda",
-"office": "Kharkhoda"
+"place": "Kharkhoda",
+"source": "team csv"
 },
 "80": {
-"area": "Barwala",
-"office": "Barwala"
+"place": "Barwala",
+"source": "team csv"
 },
 "81": {
-"area": "Bawal",
-"office": "Bawal"
+"place": "Bawal",
+"source": "team csv"
 },
 "82": {
-"area": "Kanina",
-"office": "Kanina"
+"place": "Kanina",
+"source": "team csv"
 },
 "83": {
-"area": "Kalayat",
-"office": "Kalayat"
+"place": "Kalayat",
+"source": "team csv"
 },
 "84": {
-"area": "Charkhi Dadri district",
-"office": "Charkhi Dadri"
+"place": "Charkhi Dadri",
+"source": "team csv"
 },
 "85": {
-"area": "Ambala Cantt",
-"office": "Ambala Cantt"
+"place": "Ambala Cantt",
+"source": "team csv"
 },
 "86": {
-"area": "Narnaund",
-"office": "Narnaund"
+"place": "Narnaund",
+"source": "team csv"
 },
 "87": {
-"area": "Badkhal Tehsil",
-"office": "Badkhal (Faridabad West)"
+"place": "Badkhal (Faridabad West)",
+"source": "team csv"
 },
 "88": {
-"area": "Badhra",
-"office": "Badhra"
+"place": "Badhra",
+"source": "team csv"
 },
 "89": {
-"area": "Badli",
-"office": "Badli"
+"place": "Badli",
+"source": "team csv"
 },
 "90": {
-"area": "Uchana",
-"office": "Uchana"
+"place": "Uchana",
+"source": "team csv"
 },
 "91": {
-"area": "Gharaunda",
-"office": "Gharaunda"
+"place": "Gharaunda",
+"source": "team csv"
 },
 "92": {
-"area": "Radaur",
-"office": "Radaur"
+"place": "Radaur",
+"source": "team csv"
 },
 "93": {
-"area": "Punhana",
-"office": "Punhana"
+"place": "Punhana",
+"source": "team csv"
 },
 "94": {
-"area": "Kalanwali",
-"office": "Kalanwali"
+"place": "Kalanwali",
+"source": "team csv"
 },
 "95": {
-"area": "Sampla",
-"office": "Sampla"
+"place": "Sampla",
+"source": "team csv"
 },
 "96": {
-"area": "Taoru",
-"office": "Taoru"
+"place": "Taoru",
+"source": "team csv"
 },
 "97": {
-"area": "Ladwa",
-"office": "Ladwa"
+"place": "Ladwa",
+"source": "team csv"
 },
 "98": {
-"area": "New Gurgaon City (southern parts) including Badshahpur & Wazirabad",
-"office": "Badshahpur (Gurugram South)"
+"place": "Badshahpur (Gurugram South)",
+"source": "team csv"
 },
 "99": {
-"area": "entire Haryana",
-"office": ""
+"place": "entire Haryana",
+"source": "team csv"
 }
 },
 "name": "Haryana"
@@ -1656,100 +1727,100 @@
 "JH": {
 "codes": {
 "01": {
-"area": "Ranchi district",
-"office": "Ranchi"
+"place": "Ranchi",
+"source": "team csv"
 },
 "02": {
-"area": "Hazaribagh district",
-"office": "Hazaribagh"
+"place": "Hazaribagh",
+"source": "team csv"
 },
 "03": {
-"area": "Palamu district",
-"office": "Daltonganj"
+"place": "Daltonganj",
+"source": "team csv"
 },
 "04": {
-"area": "Dumka district",
-"office": "Dumka"
+"place": "Dumka",
+"source": "team csv"
 },
 "05": {
-"area": "East Singhbhum district",
-"office": "Jamshedpur"
+"place": "Jamshedpur",
+"source": "team csv"
 },
 "06": {
-"area": "West Singhbhum district",
-"office": "Chaibasa"
+"place": "Chaibasa",
+"source": "team csv"
 },
 "07": {
-"area": "Gumla district",
-"office": "Gumla"
+"place": "Gumla",
+"source": "team csv"
 },
 "08": {
-"area": "Lohardaga district",
-"office": "Lohardaga"
+"place": "Lohardaga",
+"source": "team csv"
 },
 "09": {
-"area": "Bokaro district",
-"office": "Bokaro"
+"place": "Bokaro",
+"source": "team csv"
 },
 "10": {
-"area": "Dhanbad district",
-"office": "Dhanbad"
+"place": "Dhanbad",
+"source": "team csv"
 },
 "11": {
-"area": "Giridih district",
-"office": "Giridih"
+"place": "Giridih",
+"source": "team csv"
 },
 "12": {
-"area": "Koderma district",
-"office": "Koderma"
+"place": "Koderma",
+"source": "team csv"
 },
 "13": {
-"area": "Chatra district",
-"office": "Chatra"
+"place": "Chatra",
+"source": "team csv"
 },
 "14": {
-"area": "Garhwa district",
-"office": "Garhwa"
+"place": "Garhwa",
+"source": "team csv"
 },
 "15": {
-"area": "Deoghar district",
-"office": "Deoghar"
+"place": "Deoghar",
+"source": "team csv"
 },
 "16": {
-"area": "Pakur district",
-"office": "Pakur"
+"place": "Pakur",
+"source": "team csv"
 },
 "17": {
-"area": "Godda district",
-"office": "Godda"
+"place": "Godda",
+"source": "team csv"
 },
 "18": {
-"area": "Sahebganj district",
-"office": "Sahibganj"
+"place": "Sahibganj",
+"source": "team csv"
 },
 "19": {
-"area": "Latehar district",
-"office": "Latehar"
+"place": "Latehar",
+"source": "team csv"
 },
 "20": {
-"area": "Simdega district",
-"office": "Simdega"
+"place": "Simdega",
+"source": "team csv"
 },
 "21": {
-"area": "Jamtara district",
-"office": "Jamtara"
+"place": "Jamtara",
+"source": "team csv"
 },
 "22": {
-"area": "Seraikela Kharsawan district",
-"office": "Seraikela Kharsawan"
+"place": "Seraikela Kharsawan",
+"source": "team csv"
 },
 "23": {
-"area": "Khunti district",
-"office": "Khunti"
+"place": "Khunti",
+"source": "team csv"
 },
 "24": {
-"area": "Ramgarh district",
-"office": "Ramgarh"
+"place": "Ramgarh",
+"source": "team csv"
 }
 },
 "name": "Jharkhand"
@@ -1757,353 +1828,357 @@
 "JK": {
 "codes": {
 "01": {
-"area": "Srinagar District",
-"office": "Srinagar"
+"place": "Srinagar",
+"source": "team csv"
 },
 "02": {
-"area": "Jammu District",
-"office": "Jammu"
+"place": "Jammu",
+"source": "team csv"
 },
 "03": {
-"area": "Anantnag District",
-"office": "Anantnag"
+"place": "Anantnag",
+"source": "team csv"
 },
 "04": {
-"area": "Budgam District",
-"office": "Budgam"
+"place": "Budgam",
+"source": "team csv"
 },
 "05": {
-"area": "Baramulla District",
-"office": "Baramulla"
+"place": "Baramulla",
+"source": "team csv"
 },
 "06": {
-"area": "Doda District",
-"office": "Doda"
+"place": "Doda",
+"source": "team csv"
 },
 "08": {
-"area": "Kathua District",
-"office": "Lakhanpur, Kathua"
+"place": "Lakhanpur, Kathua",
+"source": "team csv"
 },
 "09": {
-"area": "Kupwara District",
-"office": "Kupwara"
+"place": "Kupwara",
+"source": "team csv"
 },
 "11": {
-"area": "Rajouri District",
-"office": "Rajouri"
+"place": "Rajouri",
+"source": "team csv"
 },
 "12": {
-"area": "Poonch district, India",
-"office": "Poonch"
+"place": "Poonch",
+"source": "team csv"
 },
 "13": {
-"area": "Pulwama District",
-"office": "Pulwama"
+"place": "Pulwama",
+"source": "team csv"
 },
 "14": {
-"area": "Udhampur District",
-"office": "Udhampur"
+"place": "Udhampur",
+"source": "team csv"
 },
 "15": {
-"area": "Bandipora District",
-"office": "Bandipora"
+"place": "Bandipora",
+"source": "team csv"
 },
 "16": {
-"area": "Ganderbal District",
-"office": "Ganderbal"
+"place": "Ganderbal",
+"source": "team csv"
 },
 "17": {
-"area": "Kishtwar District",
-"office": "Kishtwar"
+"place": "Kishtwar",
+"source": "team csv"
 },
 "18": {
-"area": "Kulgam District",
-"office": "Kulgam"
+"place": "Kulgam",
+"source": "team csv"
 },
 "19": {
-"area": "Ramban District",
-"office": "Ramban"
+"place": "Ramban",
+"source": "team csv"
 },
 "20": {
-"area": "Reasi District",
-"office": "Reasi"
+"place": "Reasi",
+"source": "team csv"
 },
 "21": {
-"area": "Samba District",
-"office": "Samba"
+"place": "Samba",
+"source": "team csv"
 },
 "22": {
-"area": "Shopian District",
-"office": "Shopian"
+"place": "Shopian",
+"source": "team csv"
 }
 },
 "name": "Jammu and Kashmir"
 },
 "KA": {
 "codes": {
+"01": {
+"place": "Bengaluru Central, HSR Layout (Previously located in Koramangala)",
+"source": "team csv"
+},
 "02": {
-"area": "12th Main Road, Rajajinagara 2nd Block, Bengaluru - 560010",
-"office": "Bengaluru West, Rajajinagar"
+"place": "Bengaluru West, Rajajinagar",
+"source": "team csv"
 },
 "03": {
-"area": "3rd D Main Road, east of NGEF Layout, Kasturinagara, Bengaluru - 560016",
-"office": "Bengaluru East, Kasturinagar (Previously located in Indiranagar)"
+"place": "Bengaluru East, Kasturinagar (Previously located in Indiranagar)",
+"source": "team csv"
 },
 "04": {
-"area": "Subedarchatram Road, Dr. Ambedkar Nagara, Yeshwanthpura, Bengaluru - 560022",
-"office": "Bengaluru North, Yeshwantpur"
+"place": "Bengaluru North, Yeshwantpur",
+"source": "team csv"
 },
 "05": {
-"area": "3rd Main Road, Royal Park Residency Layout 2, Jayaprakash Nagara 9th Phase, Bengaluru - 560108",
-"office": "Bengaluru South, Jayaprakash Nagara (Previously located in Jayanagar)"
+"place": "Bengaluru South, Jayaprakash Nagara (Previously located in Jayanagar)",
+"source": "team csv"
 },
 "06": {
-"area": "Bengaluru - Honnavara Road, Ashok Nagara, Tumakuru - 572103",
-"office": "Tumakuru"
+"place": "Tumakuru",
+"source": "team csv"
 },
 "07": {
-"area": "Rahmat Nagara Main Road, Kanakanapalya, Kolar - 563101",
-"office": "Kolar"
+"place": "Kolar",
+"source": "team csv"
 },
 "08": {
-"area": "DK Halli Main Road, Henry Colony, Kolar Gold Fields, Kolar District (KA) - 563120",
-"office": "Kolar (KGF region)"
+"place": "Kolar (KGF region)",
+"source": "team csv"
 },
 "09": {
-"area": "MG Road, Chamarajapura, Lakshmipura, Mysuru - 570004",
-"office": "Mysuru West"
+"place": "Mysuru West",
+"source": "team csv"
 },
 "10": {
-"area": "Chamarajanagara Bypass Road, Mallayanapura, Chamarajanagara - 571313",
-"office": "Chamarajanagar"
+"place": "Chamarajanagar",
+"source": "team csv"
 },
 "11": {
-"area": "RTO Road, Subash Nagara, Mandya - 571401",
-"office": "Mandya"
+"place": "Mandya",
+"source": "team csv"
 },
 "12": {
-"area": "Abbey Falls Road, Madikeri, Kodagu District (KA) - 571201",
-"office": "Madikeri"
+"place": "Madikeri",
+"source": "team csv"
 },
 "13": {
-"area": "Arsikere - Hassan Road, Sri Rama Nagara, Hassan - 573202",
-"office": "Hassan"
+"place": "Hassan",
+"source": "team csv"
 },
 "14": {
-"area": "Savlanga Road, Basavanagudi, Shivamogga - 577201",
-"office": "Shivamogga"
+"place": "Shivamogga",
+"source": "team csv"
 },
 "15": {
-"area": "Ikkeri Road, Sagara, Shivamogga District (KA) - 577401",
-"office": "Sagara"
+"place": "Sagara",
+"source": "team csv"
 },
 "16": {
-"area": "NH Service Road, Maniyuru, Chitradurga - 577501",
-"office": "Chitradurga"
+"place": "Chitradurga",
+"source": "team csv"
 },
 "17": {
-"area": "Kondajji Road, Devaraj Urs Layout B Block, Davanagere - 577004",
-"office": "Davanagere"
+"place": "Davanagere",
+"source": "team csv"
 },
 "18": {
-"area": "KM Road, Chikkamagaluru - 577101",
-"office": "Chikkamagaluru"
+"place": "Chikkamagaluru",
+"source": "team csv"
 },
 "19": {
-"area": "Maidan Road, Attavara, Mangaluru, Dakshina Kannada District (KA) - 575001",
-"office": "Mangaluru"
+"place": "Mangaluru",
+"source": "team csv"
 },
 "20": {
-"area": "Dr. VS Acharya Road, Saralebettu, Manipal, Udupi District (KA) - 576104",
-"office": "Udupi"
+"place": "Udupi",
+"source": "team csv"
 },
 "21": {
-"area": "RTO Road, Bannur, Puttur, Dakshina Kannada District (KA) - 574203",
-"office": "Puttur"
+"place": "Puttur",
+"source": "team csv"
 },
 "22": {
-"area": "Bachi - Raichur Road, Khade Bazar, Raviwar Peth, Belagavi - 590016",
-"office": "Belagavi"
+"place": "Belagavi",
+"source": "team csv"
 },
 "23": {
-"area": "Nippani Road, Chikkodi, Belagavi District (KA) - 591201",
-"office": "Chikkodi"
+"place": "Chikkodi",
+"source": "team csv"
 },
 "24": {
-"area": "Devalapura Road, Bailhongal, Belagavi District (KA) - 591102",
-"office": "Bailhongal"
+"place": "Bailhongal",
+"source": "team csv"
 },
 "25": {
-"area": "Hubballi - Dharwad Road, Navanagara, Hubballi, Dharwad District (KA) - 580025",
-"office": "Dharwad"
+"place": "Dharwad",
+"source": "team csv"
 },
 "26": {
-"area": "Mulgund Road, Malasamudra, Gadag - 582103",
-"office": "Gadag"
+"place": "Gadag",
+"source": "team csv"
 },
 "27": {
-"area": "PB Road, Haveri - 581110",
-"office": "Haveri"
+"place": "Haveri",
+"source": "team csv"
 },
 "28": {
-"area": "Bagalkote Road, Bammanajogi, Vijayapura - 586109",
-"office": "Vijayapura"
+"place": "Vijayapura",
+"source": "team csv"
 },
 "29": {
-"area": "Navanagara Bypass Road, Vidyagiri, Bagalkote - 587103",
-"office": "Bagalkote"
+"place": "Bagalkote",
+"source": "team csv"
 },
 "30": {
-"area": "Bypass Road, Kodibag, Karwar, Uttara Kannada District (KA) - 581301",
-"office": "Karwar"
+"place": "Karwar",
+"source": "team csv"
 },
 "31": {
-"area": "Bashettikere Road, Basaveshwara Nagara, Sirsi, Uttara Kannada District (KA) - 581402",
-"office": "Sirsi"
+"place": "Sirsi",
+"source": "team csv"
 },
 "32": {
-"area": "Sedam Road, Badepura Colony, Kalaburagi - 585101",
-"office": "Kalaburagi"
+"place": "Kalaburagi",
+"source": "team csv"
 },
 "33": {
-"area": "Yadgir - Chittapura Road, Yadgir - 585202",
-"office": "Yadgir"
+"place": "Yadgir",
+"source": "team csv"
 },
 "34": {
-"area": "Old Trunk Road, Cantonment, Ballari - 583104",
-"office": "Ballari"
+"place": "Ballari",
+"source": "team csv"
 },
 "35": {
-"area": "Hosapete - Harihara Road, Vivekananda Nagara, Hosapete, Vijayanagara District (KA) - 583201",
-"office": "Hosapete"
+"place": "Hosapete",
+"source": "team csv"
 },
 "36": {
-"area": "Mantralayam Road, Ashok Nagara, Raichur - 584103",
-"office": "Raichur"
+"place": "Raichur",
+"source": "team csv"
 },
 "37": {
-"area": "Ballari - Hubballi Road, Kidadhal, Koppal - 583231",
-"office": "Koppal"
+"place": "Koppal",
+"source": "team csv"
 },
 "38": {
-"area": "Naubad Road, Naubad, Bidar - 585402",
-"office": "Bidar"
+"place": "Bidar",
+"source": "team csv"
 },
 "39": {
-"area": "Udgir - Bidar Road, Gunj, Bhalki, Bidar District (KA) - 585328",
-"office": "Bhalki"
+"place": "Bhalki",
+"source": "team csv"
 },
 "40": {
-"area": "Chitravathi Road, Honnenahalli, Chikkaballapura - 562101",
-"office": "Chikkaballapura"
+"place": "Chikkaballapura",
+"source": "team csv"
 },
 "41": {
-"area": "Ullal Main Road, Jnana Bharathi, Ullal, Bengaluru - 560091",
-"office": "Jnana Bharathi (Bengaluru Western Suburbs)"
+"place": "Jnana Bharathi (Bengaluru Western Suburbs)",
+"source": "team csv"
 },
 "42": {
-"area": "Mysuru Road, Vijayanagara, Ramanagara - 562159",
-"office": "Ramanagara"
+"place": "Ramanagara",
+"source": "team csv"
 },
 "43": {
-"area": "Nandi Hills Road, Kurubarakunte, Devanahalli, Bengaluru Rural District (KA) - 562110",
-"office": "Devanahalli"
+"place": "Devanahalli",
+"source": "team csv"
 },
 "44": {
-"area": "Halepalya Road, Krishnaraja Extension, Tiptur, Tumakuru District (KA) - 572201",
-"office": "Tiptur"
+"place": "Tiptur",
+"source": "team csv"
 },
 "45": {
-"area": "RTO Road, Housing Board Colony, Hunsur, Mysuru District (KA) - 571105",
-"office": "Hunsur"
+"place": "Hunsur",
+"source": "team csv"
 },
 "46": {
-"area": "Bengaluru - Mangaluru Road, Kollahalli, Sakleshpura, Hassan District (KA) - 573127",
-"office": "Sakleshpura, Hassan District"
+"place": "Sakleshpura, Hassan District",
+"source": "team csv"
 },
 "47": {
-"area": "Honnavar - Areangadi Road, Rama Tirtha, Honnavar, Uttara Kannada District (KA) - 581341",
-"office": "Honnavar, Uttara Kannada District"
+"place": "Honnavar, Uttara Kannada District",
+"source": "team csv"
 },
 "48": {
-"area": "Mudhol Road, Jamakhandi, Bagalkote District (KA) - 587301",
-"office": "Jamkhandi, Bagalkote District"
+"place": "Jamkhandi, Bagalkote District",
+"source": "team csv"
 },
 "49": {
-"area": "Gokak Main Road, Gokak, Belagavi District (KA) - 591307",
-"office": "Gokak, Belagavi District"
+"place": "Gokak, Belagavi District",
+"source": "team csv"
 },
 "50": {
-"area": "Singanayakanahalli Road, Singanayakanahalli, Yelahanka, Bengaluru - 560064",
-"office": "Yelahanka, Bengaluru (Bengaluru Northern Suburbs)"
+"place": "Yelahanka, Bengaluru (Bengaluru Northern Suburbs)",
+"source": "team csv"
 },
 "51": {
-"area": "5th Main Road, BTM Layout 4th Stage, Bengaluru - 560076",
-"office": "Electronic City, Bengaluru (Bengaluru Southern Suburbs)"
+"place": "Electronic City, Bengaluru (Bengaluru Southern Suburbs)",
+"source": "team csv"
 },
 "52": {
-"area": "Rahuthnahalli Main Road, Harokyathanahalli, Nelamangala, Bengaluru Rural District (KA) - 562162",
-"office": "Nelamangala, Bengaluru Rural District"
+"place": "Nelamangala, Bengaluru Rural District",
+"source": "team csv"
 },
 "53": {
-"area": "Old Madras Road, Hosabasavanapura, Krishnarajapuram, Bengaluru - 560049",
-"office": "Krishnarajapuram, Bengaluru (Bengaluru Eastern Suburbs)"
+"place": "Krishnarajapuram, Bengaluru (Bengaluru Eastern Suburbs)",
+"source": "team csv"
 },
 "54": {
-"area": "Basaveshwara Nagara Road, Nagamangala, Mandya District (KA) - 571432",
-"office": "Nagamangala, Mandya District"
+"place": "Nagamangala, Mandya District",
+"source": "team csv"
 },
 "55": {
-"area": "Mysuru Ring Road, Hale Kesare, Mysuru - 570019",
-"office": "Mysuru East"
+"place": "Mysuru East",
+"source": "team csv"
 },
 "56": {
-"area": "Basavakalyan Main Road, Morkhandi, Basavakalyan, Bidar District (KA) - 585327",
-"office": "Basavakalyan, Bidar District"
+"place": "Basavakalyan, Bidar District",
+"source": "team csv"
 },
 "57": {
-"area": "BMTC Depot Road, Shanthinagara, Bengaluru - 560027",
-"office": "Shantinagara, KSRTC and BMTC buses"
+"place": "Shantinagara, KSRTC and BMTC buses",
+"source": "team csv"
 },
 "59": {
-"area": "Anekal Road, Byagadadenahalli, Chandapura, Bengaluru Urban District (KA) - 562107",
-"office": "Chandapura, Bengaluru Urban District"
+"place": "Chandapura, Bengaluru Urban District",
+"source": "team csv"
 },
 "63": {
-"area": "Hubballi - Dharwad Road, Gabbur, Hubballi, Dharwad District (KA) - 580028",
-"office": "Dharwad East"
+"place": "Dharwad East",
+"source": "team csv"
 },
 "64": {
-"area": "Gauribidanuru Road, Madhugiri, Tumakuru District (KA) - 572132",
-"office": "Madhugiri, Tumkur District"
+"place": "Madhugiri, Tumkur District",
+"source": "team csv"
 },
 "65": {
-"area": "DFA Road, Dandeli, Uttara Kannada District (KA) - 581325",
-"office": "Dandeli, Uttara Kannada District"
+"place": "Dandeli, Uttara Kannada District",
+"source": "team csv"
 },
 "66": {
-"area": "Bengaluru - Shivamogga Road, Tarikere, Chikkamagaluru District (KA) - 577228",
-"office": "Tarikere, Chikkamagaluru District"
+"place": "Tarikere, Chikkamagaluru District",
+"source": "team csv"
 },
 "67": {
-"area": "Hosakote - Chintamani Road, Kanampalli Layout, Chintamani, Chikkaballapura District (KA) - 563125",
-"office": "Chintamani, Chikkaballapura District"
+"place": "Chintamani, Chikkaballapura District",
+"source": "team csv"
 },
 "68": {
-"area": "PB Road, Sangolli Rayanna Nagara, Ranebennuru, Haveri District (KA) - 581115",
-"office": "Ranebennur, Haveri District"
+"place": "Ranebennur, Haveri District",
+"source": "team csv"
 },
 "69": {
-"area": "Belagavi Road, Radhapurapete, Ramdurga, Belagavi District (KA) - 591123",
-"office": "Ramdurg, Belagavi District"
+"place": "Ramdurg, Belagavi District",
+"source": "team csv"
 },
 "70": {
-"area": "Bengaluru - Mangaluru Road, Melkar, Bantwal, Dakshina Kannada District (KA) - 574231",
-"office": "Bantwal, Dakshina Kannada District"
+"place": "Bantwal, Dakshina Kannada District",
+"source": "team csv"
 },
 "71": {
-"area": "Gokak Road, Haluvalli, Athani, Belagavi District (KA) - 591304",
-"office": "Athani, Belagavi District"
+"place": "Athani, Belagavi District",
+"source": "team csv"
 }
 },
 "name": "Karnataka"
@@ -2111,356 +2186,356 @@
 "KL": {
 "codes": {
 "01": {
-"area": "Thiruvananthapuram Corporation wards 12-101, Kalliyoor",
-"office": "Thiruvananthapuram"
+"place": "Thiruvananthapuram",
+"source": "team csv"
 },
 "02": {
-"area": "Kollam Municipal Corporation, Paravur, Adichanalloor, Chathannoor, Chirakkara, Elampalloor, Kalluvathukkal, Kottamkara, Kundara, Mayyanad, Munroe Island, Nedumpana, Panayam, Perayam, Perinad, Poothakkulam, Thrikkaruva, Thrikkovilvattom",
-"office": "Kollam"
+"place": "Kollam",
+"source": "team csv"
 },
 "03": {
-"area": "Pathanamthitta Town, Kaipattoor, Omallur, Malayalapuzha, Mylapra, Naranganam, Sabarigiri, Aranmula, Kozhencherri",
-"office": "Pathanamthitta"
+"place": "Pathanamthitta",
+"source": "team csv"
 },
 "04": {
-"area": "Alappuzha Town, Ambalappuzha, Aryad, Komalapuram, Kommadi, Polathai, Thumboli, Punnapra, Kalavur, Ananthanarayanapuram",
-"office": "Alappuzha"
+"place": "Alappuzha",
+"source": "team csv"
 },
 "05": {
-"area": "Kottayam Town, Kodimatha, Manarcaud, Pampady, Tirunnakara, Nattakom, Tiruvarppu, Tiruvathikkal, Sankranthi, Vijayapuram, Pallickathodu, Ettumanoor",
-"office": "Kottayam"
+"place": "Kottayam",
+"source": "team csv"
 },
 "06": {
-"area": "Idukki Twp, Painavu",
-"office": "Idukki"
+"place": "Idukki",
+"source": "team csv"
 },
 "07": {
-"area": "Areas of Greater Kochi covered by the Kochi Municipal Corporation, [https://kalamasserymunicipality.lsgkerala.gov.in/en Kalamassery Municipality], Infopark Phase 2, [https://thrikkakaramunicipality.lsgkerala.gov.in/en Thrikkakara Municipality], Cheranallur Grama Panchayat",
-"office": "Kochi, Ernakulam District."
+"place": "Kochi, Ernakulam District",
+"source": "team csv"
 },
 "08": {
-"area": "Thrissur Corporation, Pananchery, Cherpu, Paralam, Kolazhy, Nadathara, Madakkathara, Adat, Avinissery, Avanur, Mulamkunnathukavu",
-"office": "Thrissur"
+"place": "Thrissur",
+"source": "team csv"
 },
 "09": {
-"area": "Palakkad municipality,Parli,Pirayiri,Kongad,Mankara,Mundur,Malampuzha,Puduppariyaram,Keralasseri Grama Panchayat areas",
-"office": "Palakkad"
+"place": "Palakkad",
+"source": "team csv"
 },
 "10": {
-"area": "Malappuram, Manjeri, Anakkayam, Pookkoottor, Kavanur, Pulpetta, Edavanna, Pandikkad, Thrikkalangode, Koottilangadi, Kodur, Ponmala",
-"office": "Malappuram (part of Ernad, Perintalmanna & Tirur Taluks)"
+"place": "Malappuram (part of Ernad, Perintalmanna & Tirur Taluks)",
+"source": "team csv"
 },
 "11": {
-"area": "Kozhikode Municipal Corporation, Feroke, Ramanattukara, Chathamangalam, Chelannur, Kadalundi, Kakkodi, Kakkur, Karassery, Kunnamangalam, Kuruvattur, Mavoor, Mukkam, Nanmanda, Olavanna, Perumanna, Peruvayal, Thalakulathur,",
-"office": "Kozhikode"
+"place": "Kozhikode",
+"source": "team csv"
 },
 "12": {
-"area": "Kalpetta Township, Chitragiri, Vythiri",
-"office": "Kalpetta, Wayanad District"
+"place": "Kalpetta, Wayanad District",
+"source": "team csv"
 },
 "13": {
-"area": "Kannur Municipal Corporation limits, Valapattanam, Papinnisheri, Kannapuram, Dharmadam, Parashinikadavu",
-"office": "Kannur"
+"place": "Kannur",
+"source": "team csv"
 },
 "14": {
-"area": "Kasaragod, Chandragiri, Manjeshwaram, Uppala, Mogral Puttur, Kumbla",
-"office": "Kasaragod"
+"place": "Kasaragod",
+"source": "team csv"
 },
 "15": {
-"area": "Used exclusively for KSRTC and KURTC buses",
-"office": "Nationalised Sector I, Thiruvananthapuram"
+"place": "Nationalised Sector I, Thiruvananthapuram",
+"source": "team csv"
 },
 "16": {
-"area": "Chirayinkeezhu Taluk",
-"office": "Attingal, Thiruvananthapuram District"
+"place": "Attingal, Thiruvananthapuram District",
+"source": "team csv"
 },
 "17": {
-"area": "Muvattupuzha, Vazhakulam, Koothattukulam, Piravom",
-"office": "Muvattupuzha, Ernakulam District"
+"place": "Muvattupuzha, Ernakulam District",
+"source": "team csv"
 },
 "18": {
-"area": "Vadakara, Nadapuram",
-"office": "Vadakara, Kozhikode District"
+"place": "Vadakara, Kozhikode District",
+"source": "team csv"
 },
 "19": {
-"area": "Padmanabhapuram, Tiruvattar, Tiruparappu, Kulasekaram, Amaravilla, Dhanuvachapuram, Marthandam Poovaar",
-"office": "Parassala, Thiruvananthapuram District"
+"place": "Parassala, Thiruvananthapuram District",
+"source": "team csv"
 },
 "20": {
-"area": "Neyyattinkara, Balaramapuram, Vedivachankovil, Pravachambalam, Pallichal",
-"office": "Neyyattinkara, Thiruvananthapuram District"
+"place": "Neyyattinkara, Thiruvananthapuram District",
+"source": "team csv"
 },
 "21": {
-"area": "Nedumangad, Arruvikara, Bhartheeswaram, Palode, Vithura, Ponmudi, Karakulam, Perrorkada",
-"office": "Nedumangad, Thiruvananthapuram District"
+"place": "Nedumangad, Thiruvananthapuram District",
+"source": "team csv"
 },
 "22": {
-"area": "Thiruvananthapuram Corporation, Thiruvananthapuram Taluk Northern Areas (Andoorkonam, Kadinamkulam, Mangalapuram, Pothencode Panchayats)",
-"office": "Kazhakkoottam, Thiruvananthapuram"
+"place": "Kazhakkoottam, Thiruvananthapuram",
+"source": "team csv"
 },
 "23": {
-"area": "Karunagapalli, Oachira, Mynagapalli, Chavara, Amrithapuri, Thazhava, Paavumba",
-"office": "Karunagappalli, Kollam District"
+"place": "Karunagappalli, Kollam District",
+"source": "team csv"
 },
 "24": {
-"area": "Kottarakara, Malanada, Enathu, Pavitreeswaram, Chengamanad. Mavadi",
-"office": "Kottarakkara, Kollam District"
+"place": "Kottarakkara, Kollam District",
+"source": "team csv"
 },
 "25": {
-"area": "Punalur, Thenmala, Aryankavu, Bhagavathipuram, Anchal, Kulathuppuzha, Achankovil",
-"office": "Punalur, Kollam District"
+"place": "Punalur, Kollam District",
+"source": "team csv"
 },
 "26": {
-"area": "Adoor Taluk",
-"office": "Adoor, Pathanamthitta District"
+"place": "Adoor, Pathanamthitta District",
+"source": "team csv"
 },
 "27": {
-"area": "Tiruvalla, Tirumoolapuram, Othera, Manjadi, Parumala, Valanjavattom",
-"office": "Tiruvalla, Pathanamthitta District"
+"place": "Tiruvalla, Pathanamthitta District",
+"source": "team csv"
 },
 "28": {
-"area": "Mallappally, Kaviyoor",
-"office": "Mallappally, Pathanamthitta District"
+"place": "Mallappally, Pathanamthitta District",
+"source": "team csv"
 },
 "29": {
-"area": "Karthikapalli, Kayankulam Town, Krishnapuram, Harippad, Shaktipuram, Karuvatta, Manarssala",
-"office": "Kayamkulam, Alappuzha District"
+"place": "Kayamkulam, Alappuzha District",
+"source": "team csv"
 },
 "30": {
-"area": "Chengannur, Cheriyanad, Budhannur, Pandanad, Venmani-kalyathra",
-"office": "Chengannur, Alappuzha District"
+"place": "Chengannur, Alappuzha District",
+"source": "team csv"
 },
 "31": {
-"area": "Mavelikara, Chettikulangara, Kattanam, Mannar, Charummod, Adhikattukulangara, Aakanattukara, Vallikonam, Vathukonam, Vettiyar",
-"office": "Mavelikkara, Alappuzha District"
+"place": "Mavelikkara, Alappuzha District",
+"source": "team csv"
 },
 "32": {
-"area": "Cherthala, Tiruvizha, Pattanakkad, Vayalar, Turavur, Aroor, Eramalloor, Varanad, Mannancherry, Panavally, Varanam",
-"office": "Cherthala, Alappuzha District"
+"place": "Cherthala, Alappuzha District",
+"source": "team csv"
 },
 "33": {
-"area": "Changanassery, Nalukodi, Kurichi, Chingavanam, Karukachal, Perunna, Vazhoor, Kangazha, Vellavoor",
-"office": "Changanassery, Kottayam District"
+"place": "Changanassery, Kottayam District",
+"source": "team csv"
 },
 "34": {
-"area": "Kanjirapalli, Erumelli, Mundakayam, Ponkunnam, Chirrakadavu, Anchillappa, Anakkal, Koottickal",
-"office": "Kanjirapalli, Kottayam District"
+"place": "Kanjirapalli, Kottayam District",
+"source": "team csv"
 },
 "35": {
-"area": "Meenachil, Erattupetta, Poonjar, Bharananganam, Kadanad, Kidangoor, Mutholi, Poovarani, Melukavu, Thalanad, Teekoi, Moonnilavu, Thalappulam, Thidanad",
-"office": "Pala, Kottayam District"
+"place": "Pala, Kottayam District",
+"source": "team csv"
 },
 "36": {
-"area": "Vaikom, Talayolaparambu, Udayanapuram, Vadayar, Kaduthuruthi, Vechoor",
-"office": "Vaikom, Kottayam District"
+"place": "Vaikom, Kottayam District",
+"source": "team csv"
 },
 "37": {
-"area": "Peerumed, Elappara, Kuttikanam, Vandiperiyar, Kumili, Kattappana, Kambammedu, Mangaladevi",
-"office": "Vandiperiyar, Idukki District"
+"place": "Vandiperiyar, Idukki District",
+"source": "team csv"
 },
 "38": {
-"area": "Thodupuzha, Kumaramangalam .Vengannur, Muttum, Uravvappara, Malankara, Moolamattam",
-"office": "Thodupuzha, Idukki District"
+"place": "Thodupuzha, Idukki District",
+"source": "team csv"
 },
 "39": {
-"area": "Thripunithura, Udayamperoor, Cheppanam-Chattamma, Kanjiramattom, Mulanthuruthy, Chottanikkara",
-"office": "Thripunithura, Ernakulam District"
+"place": "Thripunithura, Ernakulam District",
+"source": "team csv"
 },
 "40": {
-"area": "Kunnathunad, Nellad, Valayanchirangara, Chellamattom, Thottuva, Rayamangalam, Pattimattam",
-"office": "Perumbavoor, Ernakulam District"
+"place": "Perumbavoor, Ernakulam District",
+"source": "team csv"
 },
 "41": {
-"area": "Aluva Municipality limits, Edathala Grama Panchayat limits, Vazhakulam Grama Panchayat, Choornikkara Grama Panchayat",
-"office": "Aluva, Ernakulam District"
+"place": "Aluva, Ernakulam District",
+"source": "team csv"
 },
 "42": {
-"area": "North Paravur, Munambam, Cherrai, Vypin, Puthuvype",
-"office": "North Paravur, Ernakulam District"
+"place": "North Paravur, Ernakulam District",
+"source": "team csv"
 },
 "43": {
-"area": "Kochi Corporation Area, Pallurthi, Kumbalangi",
-"office": "Fort Kochi & Mattancherry, Ernakulam District"
+"place": "Fort Kochi & Mattancherry, Ernakulam District",
+"source": "team csv"
 },
 "44": {
-"area": "Kothamangalam Taluk, Odakkali, Neriyamangalam, Bhootathankettu",
-"office": "Kothamangalam, Ernakulam District"
+"place": "Kothamangalam, Ernakulam District",
+"source": "team csv"
 },
 "45": {
-"area": "Mukundapuram Taluk, Ashtamichira, Annammanada, Mala, Cherppu, Kandassamkadavu",
-"office": "Irinjalakuda, Thrissur District"
+"place": "Irinjalakuda, Thrissur District",
+"source": "team csv"
 },
 "46": {
-"area": "Guruvayur Taluk, Chhavakad, Chettuva, Pavaratti",
-"office": "Guruvayur, Thrissur District"
+"place": "Guruvayur, Thrissur District",
+"source": "team csv"
 },
 "47": {
-"area": "Kodungallur, Methala, Sringapuram",
-"office": "Kodungallur, Thrissur District"
+"place": "Kodungallur, Thrissur District",
+"source": "team csv"
 },
 "48": {
-"area": "Wadakkancherry, Thiruvilwamala, Pazhayannur, Chelakkara, Anthimahal, Uthralikavu, Mulangunathukavu, Deshamangalam, Chittada, Malakha, Akamalavaram",
-"office": "Wadakkancherry, Thrissur District"
+"place": "Wadakkancherry, Thrissur District",
+"source": "team csv"
 },
 "49": {
-"area": "Alathur, Vadakkenchery, Kavassery, Kuzhalmannam, Thenkurissi, Kottayi, Mathur, Peringottukurissi",
-"office": "Alathur, Palakkad District"
+"place": "Alathur, Palakkad District",
+"source": "team csv"
 },
 "50": {
-"area": "Mannarkkad municipality, Attappady Taluk comprising Agali,Pudur and Sholaiyur Panchayats,Karimba, Kanhirappuzha,Thachampara,Kumarampathur,Kottopadam,Alanellur,Thachanattukara,Thenkara,Karakurissy Panchayats.",
-"office": "Mannarkkad, Palakkad District"
+"place": "Mannarkkad, Palakkad District",
+"source": "team csv"
 },
 "51": {
-"area": "Ottapalam",
-"office": "Ottapalam, Palakkad District"
+"place": "Ottapalam, Palakkad District",
+"source": "team csv"
 },
 "52": {
-"area": "Pattambi Municipality, Thrithala, Nagalassery, Vallapuzha, Koppam,Vilayur,Tiruvegappura,Paruthur,Thirumittakode,Pattithara,Chalissery,Muthuthala,Kulukkallur and Ongallur Grama Panchayats.",
-"office": "Pattambi, Palakkad District"
+"place": "Pattambi, Palakkad District",
+"source": "team csv"
 },
 "53": {
-"area": "Perinthalmanna, Edappatta, Keezhattur, Aliparamba, Elamkulam, Thazhekode, Vettathur, Pulamanthole, Melattur, Angadippuram, Kuruva, Mankada, Puzhakkattiri, Moorkkanad, Makkaraparamba",
-"office": "Perinthalmanna, Malappuram District"
+"place": "Perinthalmanna, Malappuram District",
+"source": "team csv"
 },
 "54": {
-"area": "Ponnani, Edappal, Alankode, Marancheri, Nannammukku, Perumpadappu, Veliynakode, Thavanur, Kaladi, Vattamkulam",
-"office": "Ponnani, Malappuram District"
+"place": "Ponnani, Malappuram District",
+"source": "team csv"
 },
 "55": {
-"area": "Tirur, Tirunnavaya, Tanur, Valancheri, Kalapancheri, Valavannur, Vettam, Thalakkad, Athavanad, Ponmundam, Cheriyamundam, Ozhur, Nirmaruthur, Thanalur, Edayur, Irimbiliyma, Marakkara, Kuttippuram, Purathur, Mangalam, Thrippangode",
-"office": "Tirur, Malappuram District"
+"place": "Tirur, Malappuram District",
+"source": "team csv"
 },
 "56": {
-"area": "Koyilandy, Payyoli, Chemancheri",
-"office": "Koyilandy, Kozhikode District"
+"place": "Koyilandy, Kozhikode District",
+"source": "team csv"
 },
 "57": {
-"area": "Mukkam, Kunnamangalam, Koduvally, Thamarasseri, Elettiyil, Vattoli, Mavoor, Thiruvambadi, Kattangal",
-"office": "Koduvally, Kozhikode District"
+"place": "Koduvally, Kozhikode District",
+"source": "team csv"
 },
 "58": {
-"area": "Thalassery, Anjarakandy, Koothuparamba, Gopalpet, Chokli, Pinarayi, Pathirayad, Sivapuram",
-"office": "Thalassery, Kannur District"
+"place": "Thalassery, Kannur District",
+"source": "team csv"
 },
 "59": {
-"area": "Taliparamba, Sreekandapuram, Alakkode, Karthikapuram, Payyavoor, Irikkur, Chemperi, Mayyil",
-"office": "Taliparamba, Kannur District"
+"place": "Taliparamba, Kannur District",
+"source": "team csv"
 },
 "60": {
-"area": "Hosdurg, Balla, Nileshwaram, Trikkarippur, Cheruvathur",
-"office": "Kanhangad, Kasargod District"
+"place": "Kanhangad, Kasargod District",
+"source": "team csv"
 },
 "61": {
-"area": "Sasthamkotta, Bharanikkavu, Kallada, Anayadi",
-"office": "Kunnathur, Kollam District"
+"place": "Kunnathur, Kollam District",
+"source": "team csv"
 },
 "62": {
-"area": "Ranni Perinad, Kuravamoozhi, Mandamaruthi",
-"office": "Ranni, Pathanamthitta District"
+"place": "Ranni, Pathanamthitta District",
+"source": "team csv"
 },
 "63": {
-"area": "Angamaly, Karukutti, Tirumoozhikulam, Malayathur, Kodannad, Yordhanapuram",
-"office": "Angamaly, Ernakulam District"
+"place": "Angamaly, Ernakulam District",
+"source": "team csv"
 },
 "64": {
-"area": "Chalakkudy, Athirapalli, Malakkapara, Poringu, Potta, Kodakara",
-"office": "Chalakkudy, Thrissur District"
+"place": "Chalakkudy, Thrissur District",
+"source": "team csv"
 },
 "65": {
-"area": "Tirurangadi, Thenhipalam, Parappanangadi, Kottakkal, Edarikode, Parappur, Othukkungal, Oorakam, Vengara, Kannamangalam, Peruvalloore, AR Nagar, Perumanna Klari, Thennala, Nannambra, Moonniyur, Vallikkunnu",
-"office": "Tirurangadi, Malappuram District"
+"place": "Tirurangadi, Malappuram District",
+"source": "team csv"
 },
 "66": {
-"area": "Champakulam, Kainakari, Puthukari, Mithrakari, Ramankari, Champakulam, Thayankary, Nedumudi, Takazhi, Vezhapra, Edathua, Thalavadi, Mancompu, Pulincunnoo, Koduppunna, Kavalam, Neelamperoor, Veliyanad, Veeyapuram, Muttar, Chennamkary, Kidangara",
-"office": "Kuttanad, Alappuzha District"
+"place": "Kuttanad, Alappuzha District",
+"source": "team csv"
 },
 "67": {
-"area": "Uzhavur, Ramapuram, Njeezhoor, Kuravilangad, Monipalli, Aandoor, Kuruppanthara",
-"office": "Uzhavoor, Kottayam District"
+"place": "Uzhavoor, Kottayam District",
+"source": "team csv"
 },
 "68": {
-"area": "Devikulam, Munnar, Marayur, Chinnar, Boddimettu, Mattupetti, Vatavada, Kanthaloor, Chinnakanal",
-"office": "Devikulam, Idukki District"
+"place": "Devikulam, Idukki District",
+"source": "team csv"
 },
 "69": {
-"area": "Udumbancholla, Nedumkandam, Rajakumari, Rajakkad, Bison Valley, Chithirapuram, Vellathooval",
-"office": "Udumbanchola, Idukki District"
+"place": "Udumbanchola, Idukki District",
+"source": "team csv"
 },
 "70": {
-"area": "Chittur-Thathamangalam Municipality,Meenakshipuram, Gopalapuram, Govindapuram, Kollengode, Koduvayur, Pudunagaram, Nenmara, Neliyampathy areas of Chittur Taluk",
-"office": "Chittur, Palakkad District"
+"place": "Chittur, Palakkad District",
+"source": "team csv"
 },
 "71": {
-"area": "Nilambur, Wandoor, Chaliyar, Vazhikkadavu, Edakakra, Pothukkallu, Chungathara, Mothedam, Amarambalam, Karulai, Thiruvali, Mampad, Porur, Kalikavu, Chokkad, Karuvarakundu, Thuvvoor",
-"office": "Nilambur, Malappuram District"
+"place": "Nilambur, Malappuram District",
+"source": "team csv"
 },
 "72": {
-"area": "Manathawadi, Ambalavayal, Kottiyur, Tirunelli, Tholpetti, Bramhagiri",
-"office": "Mananthavady, Wayanad District"
+"place": "Mananthavady, Wayanad District",
+"source": "team csv"
 },
 "73": {
-"area": "Sulthan Bathery, Muthanga, Meenangadi",
-"office": "Sulthan Bathery, Wayanad District"
+"place": "Sulthan Bathery, Wayanad District",
+"source": "team csv"
 },
 "74": {
-"area": "Kattakada, Malayankeezh, Vilappil, Otasekharamangalam, Amboori, Vellarda, Vilvoorkal",
-"office": "Kattakada, Thiruvananthapuram District"
+"place": "Kattakada, Thiruvananthapuram District",
+"source": "team csv"
 },
 "75": {
-"area": "Thriprayyar, Vadannapalli, Valappad, Nattikka",
-"office": "Thriprayar, Thrissur District"
+"place": "Thriprayar, Thrissur District",
+"source": "team csv"
 },
 "76": {
-"area": "Balusseri, Atholli, Chelannur, Kakkodi, Kuruvattur",
-"office": "Nanmanda, Kozhikode District"
+"place": "Nanmanda, Kozhikode District",
+"source": "team csv"
 },
 "77": {
-"area": "Perambra, Kuttiyadi",
-"office": "Perambra, Kozhikode District"
+"place": "Perambra, Kozhikode District",
+"source": "team csv"
 },
 "78": {
-"area": "Iritty, Padiyoor, Ulikkal, Aralam, Payam, Ayyankunnu, Mattannur, Peravoor, Kottiyoor, Kelakam, Kanichar, Muzhakkunnu, Thillenkery",
-"office": "Iritty, Kannur District"
+"place": "Iritty, Kannur District",
+"source": "team csv"
 },
 "79": {
-"area": "Vellarikundu, Chittarikkal, Rajapuram, Ranipuram, Bandadukka, Cheruppuzha, Parappa, Konnakkad, Bovikanam",
-"office": "Vellarikundu, Kasargod District"
+"place": "Vellarikundu, Kasargod District",
+"source": "team csv"
 },
 "80": {
-"area": "Pathanapuram, Manchaloor, Pattazhi, Pakalkuri, Avaneeswaram",
-"office": "Pathanapuram, Kollam District"
+"place": "Pathanapuram, Kollam District",
+"source": "team csv"
 },
 "81": {
-"area": "Varkala, Sivagiri, Anchuthengu, Edavai",
-"office": "Varkala, Thiruvananthapuram District"
+"place": "Varkala, Thiruvananthapuram District",
+"source": "team csv"
 },
 "82": {
-"area": "Chadayamangalam, Elamadu, Velinallur, Ittiva, Kottukkal, Nilamel, Kadakkal, Chithara, Mankode, Kummil",
-"office": "Chadayamangalam, Kollam District"
+"place": "Chadayamangalam, Kollam District",
+"source": "team csv"
 },
 "83": {
-"area": "Konni, Koodal-Rajagiri, Gavi",
-"office": "Konni, Pathanamthitta District"
+"place": "Konni, Pathanamthitta District",
+"source": "team csv"
 },
 "84": {
-"area": "Karippur, Kondotty, Pallikkal, Chelembra, Kuzhimanna, Cherukavu, Muthuvallore, Vazhayur, Vazhakkad, Pulikkal, Chekkode, Morayur, Keezhuparmab, Areekode, Orgnatteeri",
-"office": "Kondotty, Malappuram District"
+"place": "Kondotty, Malappuram District",
+"source": "team csv"
 },
 "85": {
-"area": "Feroke, Ramanattukara, Kadalundi Beypore, Nallalam, Olavanna, Perumanna",
-"office": "Ramanattukara-Feroke, Kozhikode District"
+"place": "Ramanattukara-Feroke, Kozhikode District",
+"source": "team csv"
 },
 "86": {
-"area": "Payyannur, Ramanthali, Cherupuzha, Peringome, Kankole, Kadannappally-Panapuzha, Eramam-Kuttoor, Karivellur",
-"office": "Payyannur, Kannur District"
+"place": "Payyannur, Kannur District",
+"source": "team csv"
 },
 "90": {
-"area": "Thiruvananthapuram",
-"office": "Nationalised Sector II"
+"place": "Nationalised Sector II Thiruvananthapuram",
+"source": "team csv"
 },
 "99": {
-"area": "Used exclusively for State Transport Authority vehicles",
-"office": "Thiruvananthapuram"
+"place": "Thiruvananthapuram",
+"source": "team csv"
 }
 },
 "name": "Kerala"
@@ -2468,12 +2543,12 @@
 "LA": {
 "codes": {
 "01": {
-"area": "Kargil district",
-"office": "Kargil"
+"place": "Kargil; Padum; Dras",
+"source": "team csv"
 },
 "02": {
-"area": "Leh district",
-"office": "Leh"
+"place": "Leh; Nyoma; Diskit; Khalatse",
+"source": "team csv"
 }
 },
 "name": "Ladakh"
@@ -2481,40 +2556,40 @@
 "LD": {
 "codes": {
 "01": {
-"area": "Kavaratti",
-"office": "Kavaratti"
+"place": "Kavaratti",
+"source": "team csv"
 },
 "02": {
-"area": "Agatti",
-"office": "Agatti"
+"place": "Agatti",
+"source": "team csv"
 },
 "03": {
-"area": "Amini",
-"office": "Amini"
+"place": "Amini",
+"source": "team csv"
 },
 "04": {
-"area": "Androth",
-"office": "Androth"
+"place": "Androth",
+"source": "team csv"
 },
 "05": {
-"area": "Kadmat",
-"office": "Kadmat"
+"place": "Kadmat",
+"source": "team csv"
 },
 "06": {
-"area": "Kiltan",
-"office": "Kiltan"
+"place": "Kiltan",
+"source": "team csv"
 },
 "07": {
-"area": "Kalpeni",
-"office": "Kalpeni"
+"place": "Kalpeni",
+"source": "team csv"
 },
 "08": {
-"area": "Kalpeni",
-"office": "Kalpeni"
+"place": "Kalpeni",
+"source": "team csv"
 },
 "09": {
-"area": "Minicoy",
-"office": "Minicoy"
+"place": "Minicoy",
+"source": "team csv"
 }
 },
 "name": "Lakshadweep"
@@ -2522,248 +2597,248 @@
 "MH": {
 "codes": {
 "01": {
-"area": "Location: Tardeo, Mumbai City district",
-"office": "Mumbai Central (Tardeo)"
+"place": "Mumbai Central (Tardeo)",
+"source": "team csv"
 },
 "02": {
-"area": "Location: Versova Road, Andheri (W), Mumbai Suburban district",
-"office": "Mumbai West (Andheri)"
+"place": "Mumbai West (Andheri)",
+"source": "team csv"
 },
 "03": {
-"area": "Location: Wadala Truck Terminal, Mumbai City district",
-"office": "Mumbai East (Wadala)"
+"place": "Mumbai East (Wadala)",
+"source": "team csv"
 },
 "04": {
-"area": "Location: near Central Jail, Thane",
-"office": "Thane"
+"place": "Thane",
+"source": "team csv"
 },
 "05": {
-"area": "Location: Sahyadri Nagar, Kalyan West, Thane district",
-"office": "Kalyan"
+"place": "Kalyan",
+"source": "team csv"
 },
 "06": {
-"area": "Location: Utkarsh Nagar, Pen (Town and Taluka)",
-"office": "Raigad"
+"place": "Raigad",
+"source": "team csv"
 },
 "07": {
-"area": "Location: Oros, Kudal taluka",
-"office": "Sindhudurg"
+"place": "Sindhudurg",
+"source": "team csv"
 },
 "08": {
-"area": "Location: Kuwarbav, Ratnagiri district",
-"office": "Ratnagiri"
+"place": "Ratnagiri",
+"source": "team csv"
 },
 "09": {
-"area": "Location: Tarabai Park, Kolhapur",
-"office": "Kolhapur"
+"place": "Kolhapur",
+"source": "team csv"
 },
 "10": {
-"area": "Location: Madhav Nagar Road, Sangli",
-"office": "Sangli"
+"place": "Sangli",
+"source": "team csv"
 },
 "11": {
-"area": "Location: Camp, Satara",
-"office": "Satara"
+"place": "Satara",
+"source": "team csv"
 },
 "12": {
-"area": "Location: Sangam Bridge, Raja Bahadur Mills Road, Pune",
-"office": "Pune"
+"place": "Pune",
+"source": "team csv"
 },
 "13": {
-"area": "Location: Vijapur Road, Solapur",
-"office": "Solapur"
+"place": "Solapur",
+"source": "team csv"
 },
 "14": {
-"area": "Location: Sector 6, Pradhikaran, Nigdi, Pimpri-Chinchwad, Pune district",
-"office": "Pimpri-Chinchwad"
+"place": "Pimpri-Chinchwad",
+"source": "team csv"
 },
 "15": {
-"area": "Location: Panchavati, Nashik",
-"office": "Nashik"
+"place": "Nashik",
+"source": "team csv"
 },
 "16": {
-"area": "Location: Wambori Road, Ahmednagar",
-"office": "Ahmednagar"
+"place": "Ahmednagar",
+"source": "team csv"
 },
 "17": {
-"area": "Location: Nevasa Road, Shrirampur, Ahmednagar district",
-"office": "Shrirampur"
+"place": "Shrirampur",
+"source": "team csv"
 },
 "18": {
-"area": "Location: Mumbai Agra Road, Dhule",
-"office": "Dhule"
+"place": "Dhule",
+"source": "team csv"
 },
 "19": {
-"area": "Location: Adarsh Nagar, Jalgaon",
-"office": "Jalgaon"
+"place": "Jalgaon",
+"source": "team csv"
 },
 "20": {
-"area": "Location: Railway Station Road, Chhatrapati Sambhajinagar",
-"office": "Chhatrapati Sambhajinagar"
+"place": "Chhatrapati Sambhajinagar",
+"source": "team csv"
 },
 "21": {
-"area": "Location: Nagewadi, Jalna",
-"office": "Jalna"
+"place": "Jalna",
+"source": "team csv"
 },
 "22": {
-"area": "Location: Manvat Road, Parbhani",
-"office": "Parbhani"
+"place": "Parbhani",
+"source": "team csv"
 },
 "23": {
-"area": "Location: Jalna Road, Beed",
-"office": "Beed"
+"place": "Beed",
+"source": "team csv"
 },
 "24": {
-"area": "Location: Babhalgaon Road, Latur",
-"office": "Latur"
+"place": "Latur",
+"source": "team csv"
 },
 "25": {
-"area": "Location: MIDC, Osmanabad",
-"office": "Dharashiv"
+"place": "Dharashiv",
+"source": "team csv"
 },
 "26": {
-"area": "Location: CIDCO, Nanded",
-"office": "Nanded"
+"place": "Nanded",
+"source": "team csv"
 },
 "27": {
-"area": "Location: Collectorate Camp, Amaravati",
-"office": "Amravati"
+"place": "Amravati",
+"source": "team csv"
 },
 "28": {
-"area": "Location: Malkapur Road, Buldhana",
-"office": "Buldhana"
+"place": "Buldhana",
+"source": "team csv"
 },
 "29": {
-"area": "Location: Nagpur Road, Yavatmal",
-"office": "Yavatmal"
+"place": "Yavatmal",
+"source": "team csv"
 },
 "30": {
-"area": "Location: Murtijapur Road, Akola",
-"office": "Akola"
+"place": "Akola",
+"source": "team csv"
 },
 "31": {
-"area": "Location: opposite Giripeth Post Office, Nagpur",
-"office": "Nagpur West"
+"place": "Nagpur West",
+"source": "team csv"
 },
 "32": {
-"area": "Location: Sevagram Road, Wardha",
-"office": "Wardha"
+"place": "Wardha",
+"source": "team csv"
 },
 "33": {
-"area": "Location: near Collector Office, Gadchiroli",
-"office": "Gadchiroli"
+"place": "Gadchiroli",
+"source": "team csv"
 },
 "34": {
-"area": "Location: Jal Nagar Ward, Chandrapur",
-"office": "Chandrapur"
+"place": "Chandrapur",
+"source": "team csv"
 },
 "35": {
-"area": "Location: Fulchurtola, Gondia",
-"office": "Gondia"
+"place": "Gondia",
+"source": "team csv"
 },
 "36": {
-"area": "Location: National Highway 6, Bhandara",
-"office": "Bhandara"
+"place": "Bhandara",
+"source": "team csv"
 },
 "37": {
-"area": "Location: Lakhala, Washim",
-"office": "Washim"
+"place": "Washim",
+"source": "team csv"
 },
 "38": {
-"area": "Location: Limbala Matka, Hingoli",
-"office": "Hingoli"
+"place": "Hingoli",
+"source": "team csv"
 },
 "39": {
-"area": "Location: Sakri Road, Nandurbar",
-"office": "Nandurbar"
+"place": "Nandurbar",
+"source": "team csv"
 },
 "40": {
-"area": "Location: Indora, Nagpur district",
-"office": "Nagpur Rural"
+"place": "Nagpur Rural",
+"source": "team csv"
 },
 "41": {
-"area": "Location: Camp, Malegaon, Nashik district",
-"office": "Malegaon"
+"place": "Malegaon",
+"source": "team csv"
 },
 "42": {
-"area": "Location: Bhigwan Road, Baramati, Pune district",
-"office": "Baramati"
+"place": "Baramati",
+"source": "team csv"
 },
 "43": {
-"area": "Location: SBI Colony, Sector 13, Nerul, Navi Mumbai",
-"office": "Navi Mumbai"
+"place": "Navi Mumbai",
+"source": "team csv"
 },
 "44": {
-"area": "Location: Morewadi, Ambajogai, Beed district",
-"office": "Ambajogai"
+"place": "Ambajogai",
+"source": "team csv"
 },
 "45": {
-"area": "Location: Anand Nagar, Akluj, Malshiras Taluka, Solapur district",
-"office": "Akluj"
+"place": "Akluj",
+"source": "team csv"
 },
 "46": {
-"area": "Location: Kalamboli, Panvel, Raigad district",
-"office": "Panvel"
+"place": "Panvel",
+"source": "team csv"
 },
 "47": {
-"area": "Location: Dahisar West, Mumbai Suburban district",
-"office": "Mumbai North (Borivali)"
+"place": "Mumbai North (Borivali)",
+"source": "team csv"
 },
 "48": {
-"area": "Location: Bhatpara, Virar East, Palghar district",
-"office": "Vasai"
+"place": "Vasai",
+"source": "team csv"
 },
 "49": {
-"area": "Location: Chikhali Layout, Nagpur",
-"office": "Nagpur East"
+"place": "Nagpur East",
+"source": "team csv"
 },
 "50": {
-"area": "Location: Supane, Karad, Satara district",
-"office": "Karad"
+"place": "Karad",
+"source": "team csv"
 },
 "51": {
-"area": "Location: Vikash Nagar, Ichalkaranji, Kolhapur district",
-"office": "Ichalkaranji"
+"place": "Ichalkaranji",
+"source": "team csv"
 },
 "52": {
-"area": "Location: Shastri Nagar, Bhadgaon Road, Chalisgaon, Jalgaon district",
-"office": "Chalisgaon"
+"place": "Chalisgaon",
+"source": "team csv"
 },
 "53": {
-"area": "Location: Sanmati Nagar, Shinganpur Road, Phaltan, Satara district",
-"office": "Phaltan"
+"place": "Phaltan",
+"source": "team csv"
 },
 "54": {
-"area": "Location: Mauje Tongaon, Bhadgaon - Pachora Marg, Opp. Ashirwad Jining, Bhadgaon, Jalgaon district",
-"office": "Bhadgaon"
+"place": "Bhadgaon",
+"source": "team csv"
 },
 "55": {
-"area": "Location: Venkatesh Nagar, Ramchandra Nagar, Udgir, Latur district",
-"office": "Udgir"
+"place": "Udgir",
+"source": "team csv"
 },
 "56": {
-"area": "Location: Near JV Mehta New Era High School, Khamgaon, Buldhana district",
-"office": "Khamgaon"
+"place": "Khamgaon",
+"source": "team csv"
 },
 "57": {
-"area": "Location: Valmik Nagar, Vaijapur, Aurangabad district",
-"office": "Vaijapur"
+"place": "Vaijapur",
+"source": "team csv"
 },
 "58": {
-"area": "Location: Ghodbunder Rd, Kashimira, Mira-Bhayandar, Thane district",
-"office": "Mira-Bhayandar"
+"place": "Mira-Bhayandar",
+"source": "team csv"
 },
 "59": {
-"area": "Location: Jat, Sangli district",
-"office": "Jat"
+"place": "Jat",
+"source": "team csv"
 },
 "60": {
-"area": "Location: Umroli, Boisar, Palghar district (Speculative)",
-"office": "Palghar"
+"place": "Palghar",
+"source": "team csv"
 },
 "61": {
-"area": "Location: Sangam Bridge, Raja Bahadur Mills Road, Pune",
-"office": "Pune (New)"
+"place": "Pune (New)",
+"source": "team csv"
 }
 },
 "name": "Maharashtra"
@@ -2771,40 +2846,40 @@
 "ML": {
 "codes": {
 "01": {
-"area": "N/A",
-"office": "Meghalaya Government vehicles"
+"place": "Meghalaya Government vehicles",
+"source": "team csv"
 },
 "02": {
-"area": "N/A",
-"office": "Meghalaya Police vehicles"
+"place": "Meghalaya Police vehicles",
+"source": "team csv"
 },
 "04": {
-"area": "Jaintia Hills",
-"office": "Jowai"
+"place": "Jowai",
+"source": "team csv"
 },
 "05": {
-"area": "Shillong",
-"office": "Shillong"
+"place": "Shillong",
+"source": "team csv"
 },
 "06": {
-"area": "West Khasi Hills",
-"office": "Nongstoin"
+"place": "Nongstoin",
+"source": "team csv"
 },
 "07": {
-"area": "East Garo Hills",
-"office": "William Nagar"
+"place": "William Nagar",
+"source": "team csv"
 },
 "08": {
-"area": "West Garo Hills",
-"office": "Tura"
+"place": "Tura",
+"source": "team csv"
 },
 "09": {
-"area": "South Garo Hills",
-"office": "Baghmara"
+"place": "Baghmara",
+"source": "team csv"
 },
 "10": {
-"area": "Ri-Bhoi",
-"office": "Nongpoh"
+"place": "Nongpoh",
+"source": "team csv"
 }
 },
 "name": "Meghalaya"
@@ -2812,36 +2887,36 @@
 "MN": {
 "codes": {
 "01": {
-"area": "Imphal West",
-"office": "Imphal West"
+"place": "Imphal West",
+"source": "team csv"
 },
 "02": {
-"area": "Churachandpur",
-"office": "Churachandpur"
+"place": "Churachandpur",
+"source": "team csv"
 },
 "03": {
-"area": "Kangpokpi",
-"office": "Kangpokpi"
+"place": "Kangpokpi",
+"source": "team csv"
 },
 "04": {
-"area": "Thoubal",
-"office": "Thoubal"
+"place": "Thoubal",
+"source": "team csv"
 },
 "05": {
-"area": "Bishnupur",
-"office": "Bishnupur"
+"place": "Bishnupur",
+"source": "team csv"
 },
 "06": {
-"area": "Imphal East",
-"office": "Imphal East"
+"place": "Imphal East",
+"source": "team csv"
 },
 "07": {
-"area": "Ukhrul",
-"office": "Ukhrul"
+"place": "Ukhrul",
+"source": "team csv"
 },
 "08": {
-"area": "Senapati",
-"office": "Senapati"
+"place": "Senapati",
+"source": "team csv"
 }
 },
 "name": "Manipur"
@@ -2849,232 +2924,236 @@
 "MP": {
 "codes": {
 "01": {
-"area": "entire Madhya Pradesh",
-"office": "Bhopal"
+"place": "Bhopal",
+"source": "team csv"
 },
 "02": {
-"area": "entire Madhya Pradesh",
-"office": "Bhopal"
+"place": "Bhopal",
+"source": "team csv"
 },
 "03": {
-"area": "entire Madhya Pradesh",
-"office": "Bhopal"
+"place": "Bhopal",
+"source": "team csv"
 },
 "04": {
-"area": "Bhopal",
-"office": "Bhopal"
+"place": "Bhopal",
+"source": "team csv"
+},
+"05": {
+"place": "Hoshangabad / Narmadapuram",
+"source": "team csv"
 },
 "06": {
-"area": "Morena",
-"office": "Morena"
+"place": "Morena",
+"source": "team csv"
 },
 "07": {
-"area": "Gwalior",
-"office": "Gwalior"
+"place": "Gwalior",
+"source": "team csv"
 },
 "08": {
-"area": "Guna",
-"office": "Guna"
+"place": "Guna",
+"source": "team csv"
 },
 "09": {
-"area": "Indore",
-"office": "Indore"
+"place": "Indore",
+"source": "team csv"
 },
 "10": {
-"area": "Khargone",
-"office": "Khargone"
+"place": "Khargone",
+"source": "team csv"
 },
 "11": {
-"area": "Dhar",
-"office": "Dhar"
+"place": "Dhar",
+"source": "team csv"
 },
 "12": {
-"area": "Khandwa",
-"office": "Khandwa"
+"place": "Khandwa",
+"source": "team csv"
 },
 "13": {
-"area": "Ujjain",
-"office": "Ujjain"
+"place": "Ujjain",
+"source": "team csv"
 },
 "14": {
-"area": "Mandsaur",
-"office": "Mandsaur"
+"place": "Mandsaur",
+"source": "team csv"
 },
 "15": {
-"area": "Sagar",
-"office": "Sagar"
+"place": "Sagar",
+"source": "team csv"
 },
 "16": {
-"area": "Chhatarpur",
-"office": "Chhatarpur"
+"place": "Chhatarpur",
+"source": "team csv"
 },
 "17": {
-"area": "Rewa",
-"office": "Rewa"
+"place": "Rewa",
+"source": "team csv"
 },
 "18": {
-"area": "Shahdol",
-"office": "Shahdol"
+"place": "Shahdol",
+"source": "team csv"
 },
 "19": {
-"area": "Satna",
-"office": "Satna"
+"place": "Satna",
+"source": "team csv"
 },
 "20": {
-"area": "Jabalpur",
-"office": "Jabalpur"
+"place": "Jabalpur",
+"source": "team csv"
 },
 "21": {
-"area": "Katni",
-"office": "Katni"
+"place": "Katni",
+"source": "team csv"
 },
 "22": {
-"area": "Seoni",
-"office": "Seoni"
+"place": "Seoni",
+"source": "team csv"
 },
 "28": {
-"area": "Chhindwara",
-"office": "Chhindwara"
+"place": "Chhindwara",
+"source": "team csv"
 },
 "30": {
-"area": "Bhind",
-"office": "Bhind"
+"place": "Bhind",
+"source": "team csv"
 },
 "31": {
-"area": "Sheopur",
-"office": "Sheopur"
+"place": "Sheopur",
+"source": "team csv"
 },
 "32": {
-"area": "Datia",
-"office": "Datia"
+"place": "Datia",
+"source": "team csv"
 },
 "33": {
-"area": "Shivpuri",
-"office": "Shivpuri"
+"place": "Shivpuri",
+"source": "team csv"
 },
 "34": {
-"area": "Damoh",
-"office": "Damoh"
+"place": "Damoh",
+"source": "team csv"
 },
 "35": {
-"area": "Panna",
-"office": "Panna"
+"place": "Panna",
+"source": "team csv"
 },
 "36": {
-"area": "Tikamgarh",
-"office": "Tikamgarh"
+"place": "Tikamgarh",
+"source": "team csv"
 },
 "37": {
-"area": "Sehore",
-"office": "Sehore"
+"place": "Sehore",
+"source": "team csv"
 },
 "38": {
-"area": "Raisen",
-"office": "Raisen"
+"place": "Raisen",
+"source": "team csv"
 },
 "39": {
-"area": "Rajgarh",
-"office": "Rajgarh"
+"place": "Rajgarh",
+"source": "team csv"
 },
 "40": {
-"area": "Vidisha",
-"office": "Vidisha"
+"place": "Vidisha",
+"source": "team csv"
 },
 "41": {
-"area": "Dewas",
-"office": "Dewas"
+"place": "Dewas",
+"source": "team csv"
 },
 "42": {
-"area": "Shajapur",
-"office": "Shajapur"
+"place": "Shajapur",
+"source": "team csv"
 },
 "43": {
-"area": "Ratlam",
-"office": "Ratlam"
+"place": "Ratlam",
+"source": "team csv"
 },
 "44": {
-"area": "Neemuch",
-"office": "Neemuch"
+"place": "Neemuch",
+"source": "team csv"
 },
 "45": {
-"area": "Jhabua",
-"office": "Jhabua"
+"place": "Jhabua",
+"source": "team csv"
 },
 "46": {
-"area": "Barwani",
-"office": "Barwani"
+"place": "Barwani",
+"source": "team csv"
 },
 "47": {
-"area": "Harda",
-"office": "Harda"
+"place": "Harda",
+"source": "team csv"
 },
 "48": {
-"area": "Betul",
-"office": "Betul"
+"place": "Betul",
+"source": "team csv"
 },
 "49": {
-"area": "Narsinghpur",
-"office": "Narsinghpur"
+"place": "Narsinghpur",
+"source": "team csv"
 },
 "50": {
-"area": "Balaghat",
-"office": "Balaghat"
+"place": "Balaghat",
+"source": "team csv"
 },
 "51": {
-"area": "Mandla",
-"office": "Mandla"
+"place": "Mandla",
+"source": "team csv"
 },
 "52": {
-"area": "Dindori",
-"office": "Dindori"
+"place": "Dindori",
+"source": "team csv"
 },
 "53": {
-"area": "Sidhi",
-"office": "Sidhi"
+"place": "Sidhi",
+"source": "team csv"
 },
 "54": {
-"area": "Umaria",
-"office": "Umaria"
+"place": "Umaria",
+"source": "team csv"
 },
 "65": {
-"area": "Anuppur",
-"office": "Anuppur"
+"place": "Anuppur",
+"source": "team csv"
 },
 "66": {
-"area": "Waidhan",
-"office": "Singrauli"
+"place": "Singrauli",
+"source": "team csv"
 },
 "67": {
-"area": "Ashoknagar",
-"office": "Ashoknagar"
+"place": "Ashoknagar",
+"source": "team csv"
 },
 "68": {
-"area": "Burhanpur",
-"office": "Burhanpur"
+"place": "Burhanpur",
+"source": "team csv"
 },
 "69": {
-"area": "Alirajpur",
-"office": "Alirajpur"
+"place": "Alirajpur",
+"source": "team csv"
 },
 "70": {
-"area": "Agar Malwa",
-"office": "Agar"
+"place": "Agar",
+"source": "team csv"
 },
 "71": {
-"area": "Niwari",
-"office": "Niwari"
+"place": "Niwari",
+"source": "team csv"
 },
 "73": {
-"area": "Maihar",
-"office": "Maihar"
+"place": "Maihar",
+"source": "team csv"
 },
 "74": {
-"area": "Pandhurna",
-"office": "Pandhurna"
+"place": "Pandhurna",
+"source": "team csv"
 },
 "79": {
-"area": "Mauganj",
-"office": "Mauganj"
+"place": "Mauganj",
+"source": "team csv"
 }
 },
 "name": "Madhya Pradesh"
@@ -3082,36 +3161,36 @@
 "MZ": {
 "codes": {
 "01": {
-"area": "",
-"office": "Aizawl"
+"place": "Aizawl",
+"source": "team csv"
 },
 "02": {
-"area": "",
-"office": "Lunglei"
+"place": "Lunglei",
+"source": "team csv"
 },
 "03": {
-"area": "",
-"office": "Saiha"
+"place": "Saiha",
+"source": "team csv"
 },
 "04": {
-"area": "",
-"office": "Champhai"
+"place": "Champhai",
+"source": "team csv"
 },
 "05": {
-"area": "",
-"office": "Kolasib"
+"place": "Kolasib",
+"source": "team csv"
 },
 "06": {
-"area": "",
-"office": "Serchhip"
+"place": "Serchhip",
+"source": "team csv"
 },
 "07": {
-"area": "",
-"office": "Lawngtlai"
+"place": "Lawngtlai",
+"source": "team csv"
 },
 "08": {
-"area": "",
-"office": "Mamit"
+"place": "Mamit",
+"source": "team csv"
 }
 },
 "name": "Mizoram"
@@ -3119,44 +3198,44 @@
 "NL": {
 "codes": {
 "01": {
-"area": "Kohima District",
-"office": "Kohima"
+"place": "Kohima District",
+"source": "team csv"
 },
 "02": {
-"area": "Mokokchung District",
-"office": "Mokokchung District"
+"place": "Mokokchung District",
+"source": "team csv"
 },
 "03": {
-"area": "Tuensang District",
-"office": "Tuensang District"
+"place": "Tuensang District",
+"source": "team csv"
 },
 "04": {
-"area": "Mon District",
-"office": "Mon District"
+"place": "Mon District",
+"source": "team csv"
 },
 "05": {
-"area": "Wokha District",
-"office": "Wokha District"
+"place": "Wokha District",
+"source": "team csv"
 },
 "06": {
-"area": "Zünheboto District",
-"office": "Zünheboto District"
+"place": "Zunheboto District",
+"source": "team csv"
 },
 "07": {
-"area": "Chümoukedima DistrictDimapur DistrictNiuland District",
-"office": "Chümoukedima DistrictDimapur DistrictNiuland District"
+"place": "Chumoukedima District / Dimapur District / Niuland District",
+"source": "team csv"
 },
 "08": {
-"area": "Phek District",
-"office": "Phek District"
+"place": "Phek District",
+"source": "team csv"
 },
 "09": {
-"area": "entire Nagaland",
-"office": "entire Nagaland"
+"place": "entire Nagaland",
+"source": "team csv"
 },
 "10": {
-"area": "entire Nagaland",
-"office": "entire Nagaland"
+"place": "entire Nagaland",
+"source": "team csv"
 }
 },
 "name": "Nagaland"
@@ -3164,144 +3243,144 @@
 "OD": {
 "codes": {
 "01": {
-"area": "Balasore district",
-"office": "Balasore"
+"place": "Balasore",
+"source": "team csv"
 },
 "02": {
-"area": "Khurda district",
-"office": "Bhubaneswar"
+"place": "Bhubaneswar",
+"source": "team csv"
 },
 "03": {
-"area": "Bolangir district",
-"office": "Bolangir"
+"place": "Bolangir",
+"source": "team csv"
 },
 "04": {
-"area": "Jajpur district",
-"office": "Chandikhol"
+"place": "Chandikhol",
+"source": "team csv"
 },
 "05": {
-"area": "Cuttack district",
-"office": "Cuttack"
+"place": "Cuttack",
+"source": "team csv"
 },
 "06": {
-"area": "Dhenkanal district",
-"office": "Dhenkanal"
+"place": "Dhenkanal",
+"source": "team csv"
 },
 "07": {
-"area": "Ganjam district",
-"office": "Chatrapur"
+"place": "Chatrapur",
+"source": "team csv"
 },
 "08": {
-"area": "Kalahandi district",
-"office": "Bhawanipatna"
+"place": "Bhawanipatna",
+"source": "team csv"
 },
 "09": {
-"area": "Keonjhar district",
-"office": "Keonjhar"
+"place": "Keonjhar",
+"source": "team csv"
 },
 "10": {
-"area": "Koraput district",
-"office": "Koraput"
+"place": "Koraput",
+"source": "team csv"
 },
 "11": {
-"area": "Mayurbhanj district",
-"office": "Baripada"
+"place": "Baripada",
+"source": "team csv"
 },
 "12": {
-"area": "Kandhamal district",
-"office": "Phulbani"
+"place": "Phulbani",
+"source": "team csv"
 },
 "13": {
-"area": "Puri district",
-"office": "Puri"
+"place": "Puri",
+"source": "team csv"
 },
 "14": {
-"area": "Sundargarh district",
-"office": "Rourkela"
+"place": "Rourkela",
+"source": "team csv"
 },
 "15": {
-"area": "Sambalpur district",
-"office": "Sambalpur"
+"place": "Sambalpur",
+"source": "team csv"
 },
 "16": {
-"area": "Sundargarh district",
-"office": "Sundargarh"
+"place": "Sundargarh",
+"source": "team csv"
 },
 "17": {
-"area": "Bargarh district",
-"office": "Bargarh"
+"place": "Bargarh",
+"source": "team csv"
 },
 "18": {
-"area": "Rayagada district",
-"office": "Rayagada"
+"place": "Rayagada",
+"source": "team csv"
 },
 "19": {
-"area": "Angul district",
-"office": "Angul"
+"place": "Angul",
+"source": "team csv"
 },
 "20": {
-"area": "Gajapati district",
-"office": "Paralakhemundi"
+"place": "Paralakhemundi",
+"source": "team csv"
 },
 "21": {
-"area": "Jagatsinghpur district",
-"office": "Jagatsinghpur"
+"place": "Jagatsinghpur",
+"source": "team csv"
 },
 "22": {
-"area": "Bhadrak district",
-"office": "Bhadrak"
+"place": "Bhadrak",
+"source": "team csv"
 },
 "23": {
-"area": "Jharsuguda district",
-"office": "Jharsuguda"
+"place": "Jharsuguda",
+"source": "team csv"
 },
 "24": {
-"area": "Nabarangpur district",
-"office": "Nabarangpur"
+"place": "Nabarangpur",
+"source": "team csv"
 },
 "25": {
-"area": "Nayagarh district",
-"office": "Nayagarh"
+"place": "Nayagarh",
+"source": "team csv"
 },
 "26": {
-"area": "Nuapada district",
-"office": "Nuapada"
+"place": "Nuapada",
+"source": "team csv"
 },
 "27": {
-"area": "Boudh district",
-"office": "Boudh"
+"place": "Boudh",
+"source": "team csv"
 },
 "28": {
-"area": "Debagarh district",
-"office": "Debagarh"
+"place": "Debagarh",
+"source": "team csv"
 },
 "29": {
-"area": "Kendrapara district",
-"office": "Kendrapara"
+"place": "Kendrapara",
+"source": "team csv"
 },
 "30": {
-"area": "Malkangiri district",
-"office": "Malkangiri"
+"place": "Malkangiri",
+"source": "team csv"
 },
 "31": {
-"area": "Subarnapur district",
-"office": "Subarnapur"
+"place": "Subarnapur",
+"source": "team csv"
 },
 "32": {
-"area": "Ganjam district",
-"office": "Bhanjanagar"
+"place": "Bhanjanagar",
+"source": "team csv"
 },
 "33": {
-"area": "Khurda district",
-"office": "Bhubaneswar-II"
+"place": "Bhubaneswar-II",
+"source": "team csv"
 },
 "34": {
-"area": "Jajpur district",
-"office": "Jajpur"
+"place": "Jajpur",
+"source": "team csv"
 },
 "35": {
-"area": "Angul district",
-"office": "Talcher"
+"place": "Talcher",
+"source": "team csv"
 }
 },
 "name": "Odisha"
@@ -3309,380 +3388,380 @@
 "PB": {
 "codes": {
 "01": {
-"area": "",
-"office": "Rented cars, self drive cars in Chandigarh & taxi vehicles from Punjab"
+"place": "Rented cars, self drive cars in Chandigarh & taxi vehicles from Punjab",
+"source": "team csv"
 },
 "02": {
-"area": "",
-"office": "Amritsar (1)"
+"place": "Amritsar (1)",
+"source": "team csv"
 },
 "03": {
-"area": "",
-"office": "Bathinda"
+"place": "Bathinda",
+"source": "team csv"
 },
 "04": {
-"area": "",
-"office": "Faridkot"
+"place": "Faridkot",
+"source": "team csv"
 },
 "05": {
-"area": "",
-"office": "Ferozpur"
+"place": "Ferozpur",
+"source": "team csv"
 },
 "06": {
-"area": "",
-"office": "Gurdaspur"
+"place": "Gurdaspur",
+"source": "team csv"
 },
 "07": {
-"area": "",
-"office": "Hoshiarpur"
+"place": "Hoshiarpur",
+"source": "team csv"
 },
 "08": {
-"area": "",
-"office": "Jalandhar (1)"
+"place": "Jalandhar (1)",
+"source": "team csv"
 },
 "09": {
-"area": "",
-"office": "Kapurthala"
+"place": "Kapurthala",
+"source": "team csv"
 },
 "10": {
-"area": "",
-"office": "Ludhiana (West)"
+"place": "Ludhiana (West)",
+"source": "team csv"
 },
 "11": {
-"area": "",
-"office": "Patiala"
+"place": "Patiala",
+"source": "team csv"
 },
 "12": {
-"area": "",
-"office": "Rupnagar"
+"place": "Rupnagar",
+"source": "team csv"
 },
 "13": {
-"area": "",
-"office": "Sangrur"
+"place": "Sangrur",
+"source": "team csv"
 },
 "14": {
-"area": "",
-"office": "Ajnala"
+"place": "Ajnala",
+"source": "team csv"
 },
 "15": {
-"area": "",
-"office": "Abohar"
+"place": "Abohar",
+"source": "team csv"
 },
 "16": {
-"area": "",
-"office": "Anandpur Sahib"
+"place": "Anandpur Sahib",
+"source": "team csv"
 },
 "17": {
-"area": "",
-"office": "Baba Bakala"
+"place": "Baba Bakala",
+"source": "team csv"
 },
 "18": {
-"area": "",
-"office": "Batala"
+"place": "Batala",
+"source": "team csv"
 },
 "19": {
-"area": "",
-"office": "Barnala"
+"place": "Barnala",
+"source": "team csv"
 },
 "20": {
-"area": "",
-"office": "Balachaur"
+"place": "Balachaur",
+"source": "team csv"
 },
 "21": {
-"area": "",
-"office": "Dasuya"
+"place": "Dasuya",
+"source": "team csv"
 },
 "22": {
-"area": "",
-"office": "Fazilka"
+"place": "Fazilka",
+"source": "team csv"
 },
 "23": {
-"area": "",
-"office": "Fatehgarh Sahib"
+"place": "Fatehgarh Sahib",
+"source": "team csv"
 },
 "24": {
-"area": "",
-"office": "Garhshankar"
+"place": "Garhshankar",
+"source": "team csv"
 },
 "25": {
-"area": "",
-"office": "Jagraon"
+"place": "Jagraon",
+"source": "team csv"
 },
 "26": {
-"area": "",
-"office": "Khanna"
+"place": "Khanna",
+"source": "team csv"
 },
 "27": {
-"area": "",
-"office": "Kharar"
+"place": "Kharar",
+"source": "team csv"
 },
 "28": {
-"area": "",
-"office": "Malerkotla"
+"place": "Malerkotla",
+"source": "team csv"
 },
 "29": {
-"area": "",
-"office": "Moga"
+"place": "Moga",
+"source": "team csv"
 },
 "30": {
-"area": "",
-"office": "Muktsar"
+"place": "Muktsar",
+"source": "team csv"
 },
 "31": {
-"area": "",
-"office": "Mansa"
+"place": "Mansa",
+"source": "team csv"
 },
 "32": {
-"area": "",
-"office": "Nawanshahar"
+"place": "Nawanshahar",
+"source": "team csv"
 },
 "33": {
-"area": "",
-"office": "Nakodar"
+"place": "Nakodar",
+"source": "team csv"
 },
 "34": {
-"area": "",
-"office": "Nabha"
+"place": "Nabha",
+"source": "team csv"
 },
 "35": {
-"area": "",
-"office": "Pathankot"
+"place": "Pathankot",
+"source": "team csv"
 },
 "36": {
-"area": "",
-"office": "Phagwara"
+"place": "Phagwara",
+"source": "team csv"
 },
 "37": {
-"area": "",
-"office": "Phillaur"
+"place": "Phillaur",
+"source": "team csv"
 },
 "38": {
-"area": "",
-"office": "Patti"
+"place": "Patti",
+"source": "team csv"
 },
 "39": {
-"area": "",
-"office": "Rajpura"
+"place": "Rajpura",
+"source": "team csv"
 },
 "40": {
-"area": "",
-"office": "Rampura Phul"
+"place": "Rampura Phul",
+"source": "team csv"
 },
 "41": {
-"area": "",
-"office": "Sultanpur Lodhi"
+"place": "Sultanpur Lodhi",
+"source": "team csv"
 },
 "42": {
-"area": "",
-"office": "Samana"
+"place": "Samana",
+"source": "team csv"
 },
 "43": {
-"area": "",
-"office": "Samrala"
+"place": "Samrala",
+"source": "team csv"
 },
 "44": {
-"area": "",
-"office": "Sunam"
+"place": "Sunam",
+"source": "team csv"
 },
 "45": {
-"area": "",
-"office": "Talwandi Sabo"
+"place": "Talwandi Sabo",
+"source": "team csv"
 },
 "46": {
-"area": "",
-"office": "Tarn Taran"
+"place": "Tarn Taran",
+"source": "team csv"
 },
 "47": {
-"area": "",
-"office": "Zira"
+"place": "Zira",
+"source": "team csv"
 },
 "48": {
-"area": "",
-"office": "Amloh"
+"place": "Amloh",
+"source": "team csv"
 },
 "49": {
-"area": "",
-"office": "Khamanon"
+"place": "Khamanon",
+"source": "team csv"
 },
 "50": {
-"area": "",
-"office": "Budhlada"
+"place": "Budhlada",
+"source": "team csv"
 },
 "51": {
-"area": "",
-"office": "Sardulgarh"
+"place": "Sardulgarh",
+"source": "team csv"
 },
 "52": {
-"area": "",
-"office": "Bassi Pathana"
+"place": "Bassi Pathana",
+"source": "team csv"
 },
 "53": {
-"area": "",
-"office": "Malout"
+"place": "Malout",
+"source": "team csv"
 },
 "54": {
-"area": "",
-"office": "Mukerian"
+"place": "Mukerian",
+"source": "team csv"
 },
 "55": {
-"area": "",
-"office": "Payal"
+"place": "Payal",
+"source": "team csv"
 },
 "56": {
-"area": "",
-"office": "Raikot"
+"place": "Raikot",
+"source": "team csv"
 },
 "57": {
-"area": "",
-"office": "Bhulath"
+"place": "Bhulath",
+"source": "team csv"
 },
 "58": {
-"area": "",
-"office": "Dera Baba Nanak"
+"place": "Dera Baba Nanak",
+"source": "team csv"
 },
 "59": {
-"area": "",
-"office": "Dhuri"
+"place": "Dhuri",
+"source": "team csv"
 },
 "60": {
-"area": "",
-"office": "Gidderbaha"
+"place": "Gidderbaha",
+"source": "team csv"
 },
 "61": {
-"area": "",
-"office": "Jalalabad"
+"place": "Jalalabad",
+"source": "team csv"
 },
 "62": {
-"area": "",
-"office": "Jaitu"
+"place": "Jaitu",
+"source": "team csv"
 },
 "63": {
-"area": "",
-"office": "Khadoor Sahib"
+"place": "Khadoor Sahib",
+"source": "team csv"
 },
 "64": {
-"area": "",
-"office": "Moonak"
+"place": "Moonak",
+"source": "team csv"
 },
 "65": {
-"area": "",
-"office": "Mohali"
+"place": "Mohali",
+"source": "team csv"
 },
 "66": {
-"area": "",
-"office": "Nihal Singh Wala"
+"place": "Nihal Singh Wala",
+"source": "team csv"
 },
 "67": {
-"area": "",
-"office": "Shahkot"
+"place": "Shahkot",
+"source": "team csv"
 },
 "68": {
-"area": "",
-"office": "Dhar Kalan"
+"place": "Dhar Kalan",
+"source": "team csv"
 },
 "69": {
-"area": "",
-"office": "Bagha Purana"
+"place": "Bagha Purana",
+"source": "team csv"
 },
 "70": {
-"area": "",
-"office": "Dera Bassi"
+"place": "Dera Bassi",
+"source": "team csv"
 },
 "71": {
-"area": "",
-"office": "Chamkaur Sahib"
+"place": "Chamkaur Sahib",
+"source": "team csv"
 },
 "72": {
-"area": "",
-"office": "Pattran"
+"place": "Pattran",
+"source": "team csv"
 },
 "73": {
-"area": "",
-"office": "Tappa Mandi"
+"place": "Tappa Mandi",
+"source": "team csv"
 },
 "74": {
-"area": "",
-"office": "Nangal"
+"place": "Nangal",
+"source": "team csv"
 },
 "75": {
-"area": "",
-"office": "Lehragaga"
+"place": "Lehragaga",
+"source": "team csv"
 },
 "76": {
-"area": "",
-"office": "Dharamkot"
+"place": "Dharamkot",
+"source": "team csv"
 },
 "77": {
-"area": "",
-"office": "Guru Har Sahai"
+"place": "Guru Har Sahai",
+"source": "team csv"
 },
 "78": {
-"area": "",
-"office": "Banga"
+"place": "Banga",
+"source": "team csv"
 },
 "79": {
-"area": "",
-"office": "Kotkapura"
+"place": "Kotkapura",
+"source": "team csv"
 },
 "80": {
-"area": "",
-"office": "Maur"
+"place": "Maur",
+"source": "team csv"
 },
 "81": {
-"area": "",
-"office": "Majitha"
+"place": "Majitha",
+"source": "team csv"
 },
 "82": {
-"area": "",
-"office": "Ahmedgarh"
+"place": "Ahmedgarh",
+"source": "team csv"
 },
 "83": {
-"area": "",
-"office": "Dudhan Sadhan"
+"place": "Dudhan Sadhan",
+"source": "team csv"
 },
 "84": {
-"area": "",
-"office": "Bhawanigarh"
+"place": "Bhawanigarh",
+"source": "team csv"
 },
 "85": {
-"area": "",
-"office": "Kalanaur"
+"place": "Kalanaur",
+"source": "team csv"
 },
 "86": {
-"area": "",
-"office": "Dirba"
+"place": "Dirba",
+"source": "team csv"
 },
 "87": {
-"area": "",
-"office": "Morinda"
+"place": "Morinda",
+"source": "team csv"
 },
 "88": {
-"area": "",
-"office": "Bhikhiwind"
+"place": "Bhikhiwind",
+"source": "team csv"
 },
 "89": {
-"area": "",
-"office": "Amritsar (2)"
+"place": "Amritsar (2)",
+"source": "team csv"
 },
 "90": {
-"area": "",
-"office": "Jalandhar (2)"
+"place": "Jalandhar (2)",
+"source": "team csv"
 },
 "91": {
-"area": "",
-"office": "Ludhiana (East)"
+"place": "Ludhiana (East)",
+"source": "team csv"
 },
 "92": {
-"area": "",
-"office": "Amargarh"
+"place": "Amargarh",
+"source": "team csv"
 },
 "93": {
-"area": "",
-"office": "Lopoke"
+"place": "Lopoke",
+"source": "team csv"
 },
 "99": {
-"area": "",
-"office": "Dinanagar"
+"place": "Dinanagar",
+"source": "team csv"
 }
 },
 "name": "Punjab"
@@ -3690,24 +3769,24 @@
 "PY": {
 "codes": {
 "01": {
-"area": "",
-"office": "Puducherry"
+"place": "Puducherry",
+"source": "team csv"
 },
 "02": {
-"area": "",
-"office": "Karaikal"
+"place": "Karaikal",
+"source": "team csv"
 },
 "03": {
-"area": "",
-"office": "Mahe"
+"place": "Mahe",
+"source": "team csv"
 },
 "04": {
-"area": "",
-"office": "Yanam"
+"place": "Yanam",
+"source": "team csv"
 },
 "05": {
-"area": "",
-"office": "Oulgaret"
+"place": "Oulgaret",
+"source": "team csv"
 }
 },
 "name": "Puducherry"
@@ -3715,244 +3794,244 @@
 "RJ": {
 "codes": {
 "01": {
-"area": "Ajmer district",
-"office": "Ajmer"
+"place": "Ajmer",
+"source": "team csv"
 },
 "02": {
-"area": "Alwar district",
-"office": "Alwar"
+"place": "Alwar",
+"source": "team csv"
 },
 "03": {
-"area": "Banswara district",
-"office": "Banswara"
+"place": "Banswara",
+"source": "team csv"
 },
 "04": {
-"area": "Barmer district",
-"office": "Barmer"
+"place": "Barmer",
+"source": "team csv"
 },
 "05": {
-"area": "Bharatpur district",
-"office": "Bharatpur"
+"place": "Bharatpur",
+"source": "team csv"
 },
 "06": {
-"area": "Bhilwara district",
-"office": "Bhilwara"
+"place": "Bhilwara",
+"source": "team csv"
 },
 "07": {
-"area": "Bikaner district",
-"office": "Bikaner"
+"place": "Bikaner",
+"source": "team csv"
 },
 "08": {
-"area": "Bundi district",
-"office": "Bundi"
+"place": "Bundi",
+"source": "team csv"
 },
 "09": {
-"area": "Chittorgarh district",
-"office": "Chittorgarh"
+"place": "Chittorgarh",
+"source": "team csv"
 },
 "10": {
-"area": "Churu district",
-"office": "Churu"
+"place": "Churu",
+"source": "team csv"
 },
 "11": {
-"area": "Dholpur district",
-"office": "Dholpur"
+"place": "Dholpur",
+"source": "team csv"
 },
 "12": {
-"area": "Dungarpur district",
-"office": "Dungarpur"
+"place": "Dungarpur",
+"source": "team csv"
 },
 "13": {
-"area": "Sri Ganganagar district",
-"office": "Sri Ganganagar"
+"place": "Sri Ganganagar",
+"source": "team csv"
 },
 "14": {
-"area": "Jaipur district",
-"office": "Jaipur (South)"
+"place": "Jaipur (South)",
+"source": "team csv"
 },
 "15": {
-"area": "Jaisalmer district",
-"office": "Jaisalmer"
+"place": "Jaisalmer",
+"source": "team csv"
 },
 "16": {
-"area": "Jalore district",
-"office": "Jalore"
+"place": "Jalore",
+"source": "team csv"
 },
 "17": {
-"area": "Jhalawar district",
-"office": "Jhalawar"
+"place": "Jhalawar",
+"source": "team csv"
 },
 "18": {
-"area": "Jhunjhunu district",
-"office": "Jhunjhunu"
+"place": "Jhunjhunu",
+"source": "team csv"
 },
 "19": {
-"area": "Jodhpur district",
-"office": "Jodhpur"
+"place": "Jodhpur",
+"source": "team csv"
 },
 "20": {
-"area": "Kota district",
-"office": "Kota"
+"place": "Kota",
+"source": "team csv"
 },
 "21": {
-"area": "Nagaur district",
-"office": "Nagaur"
+"place": "Nagaur",
+"source": "team csv"
 },
 "22": {
-"area": "Pali district",
-"office": "Pali"
+"place": "Pali",
+"source": "team csv"
 },
 "23": {
-"area": "Sikar district",
-"office": "Sikar"
+"place": "Sikar",
+"source": "team csv"
 },
 "24": {
-"area": "Sirohi district",
-"office": "Sirohi"
+"place": "Sirohi",
+"source": "team csv"
 },
 "25": {
-"area": "Sawai Madhopur district",
-"office": "Sawai Madhopur"
+"place": "Sawai Madhopur",
+"source": "team csv"
 },
 "26": {
-"area": "Tonk district",
-"office": "Tonk"
+"place": "Tonk",
+"source": "team csv"
 },
 "27": {
-"area": "Udaipur district",
-"office": "Udaipur"
+"place": "Udaipur",
+"source": "team csv"
 },
 "28": {
-"area": "Baran district",
-"office": "Baran"
+"place": "Baran",
+"source": "team csv"
 },
 "29": {
-"area": "Dausa district",
-"office": "Dausa"
+"place": "Dausa",
+"source": "team csv"
 },
 "30": {
-"area": "Rajsamand district",
-"office": "Rajsamand"
+"place": "Rajsamand",
+"source": "team csv"
 },
 "31": {
-"area": "Hanumangarh district",
-"office": "Hanumangarh"
+"place": "Hanumangarh",
+"source": "team csv"
 },
 "32": {
-"area": "Kotputli-Behror district",
-"office": "Kotputli"
+"place": "Kotputli",
+"source": "team csv"
 },
 "33": {
-"area": "Kota district",
-"office": "Ramganj Mandi"
+"place": "Ramganj Mandi",
+"source": "team csv"
 },
 "34": {
-"area": "Karauli district",
-"office": "Karauli"
+"place": "Karauli",
+"source": "team csv"
 },
 "35": {
-"area": "Pratapgarh district",
-"office": "Pratapgarh"
+"place": "Pratapgarh",
+"source": "team csv"
 },
 "36": {
-"area": "Beawar District",
-"office": "Beawar"
+"place": "Beawar",
+"source": "team csv"
 },
 "37": {
-"area": "Didwana-Kuchaman district",
-"office": "Didwana"
+"place": "Didwana",
+"source": "team csv"
 },
 "38": {
-"area": "Sirohi district",
-"office": "Abu Road"
+"place": "Abu Road",
+"source": "team csv"
 },
 "39": {
-"area": "Balotra district",
-"office": "Balotra"
+"place": "Balotra",
+"source": "team csv"
 },
 "40": {
-"area": "Khairthal-Tijara district",
-"office": "Bhiwadi"
+"place": "Bhiwadi",
+"source": "team csv"
 },
 "41": {
-"area": "Jaipur district",
-"office": "Chomu"
+"place": "Chomu",
+"source": "team csv"
 },
 "42": {
-"area": "Ajmer district",
-"office": "Kishangarh"
+"place": "Kishangarh",
+"source": "team csv"
 },
 "43": {
-"area": "Phalodi district",
-"office": "Phalodi"
+"place": "Phalodi",
+"source": "team csv"
 },
 "44": {
-"area": "Churu district",
-"office": "Sujangarh"
+"place": "Sujangarh",
+"source": "team csv"
 },
 "45": {
-"area": "Jaipur district",
-"office": "Jaipur (North)"
+"place": "Jaipur (North)",
+"source": "team csv"
 },
 "46": {
-"area": "Jalore district",
-"office": "Bhinmal"
+"place": "Bhinmal",
+"source": "team csv"
 },
 "47": {
-"area": "Jaipur district",
-"office": "Dudu"
+"place": "Dudu",
+"source": "team csv"
 },
 "48": {
-"area": "Ajmer district",
-"office": "Kekri"
+"place": "Kekri",
+"source": "team csv"
 },
 "49": {
-"area": "Hanumangarh district",
-"office": "Nohar"
+"place": "Nohar",
+"source": "team csv"
 },
 "50": {
-"area": "Bikaner district",
-"office": "Nokha"
+"place": "Nokha",
+"source": "team csv"
 },
 "51": {
-"area": "Bhilwara district",
-"office": "Shahpura"
+"place": "Shahpura",
+"source": "team csv"
 },
 "52": {
-"area": "Jaipur district",
-"office": "Shahpura"
+"place": "Shahpura",
+"source": "team csv"
 },
 "53": {
-"area": "Jhunjhunu district",
-"office": "Khetri"
+"place": "Khetri",
+"source": "team csv"
 },
 "54": {
-"area": "Jodhpur district",
-"office": "Piparcity"
+"place": "Piparcity",
+"source": "team csv"
 },
 "55": {
-"area": "Jaisalmer district",
-"office": "Pokhran"
+"place": "Pokhran",
+"source": "team csv"
 },
 "56": {
-"area": "Sri Ganganagar district",
-"office": "Sadulshahar"
+"place": "Sadulshahar",
+"source": "team csv"
 },
 "57": {
-"area": "Pali district",
-"office": "Sumerpur"
+"place": "Sumerpur",
+"source": "team csv"
 },
 "58": {
-"area": "Salumbar district",
-"office": "Salumbar"
+"place": "Salumbar",
+"source": "team csv"
 },
 "59": {
-"area": "Jaipur district",
-"office": "Shahpura"
+"place": "Shahpura",
+"source": "team csv"
 },
 "60": {
-"area": "Jaipur district",
-"office": "Jaipur(Additional)"
+"place": "Jaipur (Additional)",
+"source": "team csv"
 }
 },
 "name": "Rajasthan"
@@ -3960,36 +4039,36 @@
 "SK": {
 "codes": {
 "01": {
-"area": "Gangtok",
-"office": "Gangtok"
+"place": "Gangtok",
+"source": "team csv"
 },
 "02": {
-"area": "Gyalshing district",
-"office": "Gyalshing"
+"place": "Gyalshing (Gyalshing district)",
+"source": "team csv"
 },
 "03": {
-"area": "Mangan",
-"office": "Mangan"
+"place": "Mangan",
+"source": "team csv"
 },
 "04": {
-"area": "Namchi district",
-"office": "Jorethang"
+"place": "Jorethang (Namchi district)",
+"source": "team csv"
 },
 "05": {
-"area": "Namchi district",
-"office": "Namchi"
+"place": "Namchi (Namchi district)",
+"source": "team csv"
 },
 "06": {
-"area": "Soreng district",
-"office": "Soreng"
+"place": "Soreng (Soreng district)",
+"source": "team csv"
 },
 "07": {
-"area": "Pakyong district",
-"office": "Pakyong"
+"place": "Pakyong (Pakyong district)",
+"source": "team csv"
 },
 "08": {
-"area": "",
-"office": "Singtam"
+"place": "Singtam",
+"source": "team csv"
 }
 },
 "name": "Sikkim"
@@ -3997,156 +4076,156 @@
 "TG": {
 "codes": {
 "01": {
-"area": "Adilabad district",
-"office": "Adilabad"
+"place": "Adilabad",
+"source": "team csv"
 },
 "02": {
-"area": "Karimnagar district",
-"office": "Karimnagar"
+"place": "Karimnagar",
+"source": "team csv"
 },
 "03": {
-"area": "Hanamkonda district",
-"office": "Warangal"
+"place": "Warangal",
+"source": "team csv"
 },
 "04": {
-"area": "Khammam district",
-"office": "Khammam"
+"place": "Khammam",
+"source": "team csv"
 },
 "05": {
-"area": "Nalgonda district",
-"office": "Nalgonda"
+"place": "Nalgonda",
+"source": "team csv"
 },
 "06": {
-"area": "Mahbubnagar district",
-"office": "Mahbubnagar"
+"place": "Mahbubnagar",
+"source": "team csv"
 },
 "07": {
-"area": "Ranga Reddy",
-"office": "Attapur (Hyderabad)*"
+"place": "Attapur (Hyderabad)",
+"source": "team csv"
 },
 "08": {
-"area": "Medchal-Malkajgiri District",
-"office": "Medchal (Hyderabad)*"
+"place": "Medchal (Hyderabad)",
+"source": "team csv"
 },
 "09": {
-"area": "Hyderabad Central",
-"office": "Khairtabad (Hyderabad)"
+"place": "Khairtabad (Hyderabad)",
+"source": "team csv"
 },
 "10": {
-"area": "Hyderabad North",
-"office": "Secunderabad (Hyderabad)"
+"place": "Secunderabad (Hyderabad)",
+"source": "team csv"
 },
 "11": {
-"area": "Hyderabad East",
-"office": "Malakpet (Hyderabad)"
+"place": "Malakpet (Hyderabad)",
+"source": "team csv"
 },
 "12": {
-"area": "Hyderabad South",
-"office": "Kishanbagh (Hyderabad)"
+"place": "Kishanbagh (Hyderabad)",
+"source": "team csv"
 },
 "13": {
-"area": "Hyderabad West",
-"office": "Tolichowki (Hyderabad)"
+"place": "Tolichowki (Hyderabad)",
+"source": "team csv"
 },
 "14": {
-"area": "Reserved for Hyderabad",
-"office": "Hyderabad"
+"place": "Hyderabad",
+"source": "team csv"
 },
 "15": {
-"area": "Sangareddy district",
-"office": "Sangareddy"
+"place": "Sangareddy",
+"source": "team csv"
 },
 "16": {
-"area": "Nizamabad district",
-"office": "Nizamabad"
+"place": "Nizamabad",
+"source": "team csv"
 },
 "17": {
-"area": "Kamareddy district",
-"office": "Kamareddy"
+"place": "Kamareddy",
+"source": "team csv"
 },
 "18": {
-"area": "Nirmal district",
-"office": "Nirmal"
+"place": "Nirmal",
+"source": "team csv"
 },
 "19": {
-"area": "Mancherial district",
-"office": "Mancherial"
+"place": "Mancherial",
+"source": "team csv"
 },
 "20": {
-"area": "Komaram Bheem district",
-"office": "Asifabad"
+"place": "Asifabad",
+"source": "team csv"
 },
 "21": {
-"area": "Jagtial district",
-"office": "Jagtial"
+"place": "Jagtial",
+"source": "team csv"
 },
 "22": {
-"area": "Peddapalli district",
-"office": "Peddapalli"
+"place": "Peddapalli",
+"source": "team csv"
 },
 "23": {
-"area": "Sircilla district",
-"office": "Sircilla"
+"place": "Sircilla",
+"source": "team csv"
 },
 "24": {
-"area": "Warangal district",
-"office": "Warangal"
+"place": "Warangal",
+"source": "team csv"
 },
 "25": {
-"area": "Jayashankar Bhupalpally district",
-"office": "Bhupalpalle"
+"place": "Bhupalpalle",
+"source": "team csv"
 },
 "26": {
-"area": "Mahabubabad district",
-"office": "Mahabubabad"
+"place": "Mahabubabad",
+"source": "team csv"
 },
 "27": {
-"area": "Jangaon district",
-"office": "Jangaon"
+"place": "Jangaon",
+"source": "team csv"
 },
 "28": {
-"area": "Bhadradri Kothagudem district",
-"office": "Kothagudem"
+"place": "Kothagudem",
+"source": "team csv"
 },
 "29": {
-"area": "Suryapet district",
-"office": "Suryapet"
+"place": "Suryapet",
+"source": "team csv"
 },
 "30": {
-"area": "Yadadri Bhuvanagiri district",
-"office": "Bhuvanagiri"
+"place": "Bhuvanagiri",
+"source": "team csv"
 },
 "31": {
-"area": "Nagarkurnool district",
-"office": "Nagarkurnool"
+"place": "Nagarkurnool",
+"source": "team csv"
 },
 "32": {
-"area": "Wanaparthy district",
-"office": "Wanaparthy"
+"place": "Wanaparthy",
+"source": "team csv"
 },
 "33": {
-"area": "Jogulamba Gadwal district",
-"office": "Gadwal"
+"place": "Gadwal",
+"source": "team csv"
 },
 "34": {
-"area": "Vikarabad district",
-"office": "Vikarabad"
+"place": "Vikarabad",
+"source": "team csv"
 },
 "35": {
-"area": "Medak district",
-"office": "Medak"
+"place": "Medak",
+"source": "team csv"
 },
 "36": {
-"area": "Siddipet district",
-"office": "Siddipet"
+"place": "Siddipet",
+"source": "team csv"
 },
 "37": {
-"area": "Mulugu district",
-"office": "Mulugu"
+"place": "Mulugu",
+"source": "team csv"
 },
 "38": {
-"area": "Narayanpet district",
-"office": "Narayanpet"
+"place": "Narayanpet",
+"source": "team csv"
 }
 },
 "name": "Telangana"
@@ -4154,356 +4233,356 @@
 "TN": {
 "codes": {
 "01": {
-"area": "Chennai",
-"office": "Chennai (Central): Ayanavaram"
+"place": "Chennai (Central): Ayanavaram (Chennai)",
+"source": "team csv"
 },
 "02": {
-"area": "Chennai",
-"office": "Chennai (North West): Anna Nagar"
+"place": "Chennai (North West): Anna Nagar (Chennai)",
+"source": "team csv"
 },
 "03": {
-"area": "Chennai",
-"office": "Chennai (North East): Tondiarpet"
+"place": "Chennai (North East): Tondiarpet (Chennai)",
+"source": "team csv"
 },
 "04": {
-"area": "Chennai",
-"office": "Chennai (East): Royapuram"
+"place": "Chennai (East): Royapuram (Chennai)",
+"source": "team csv"
 },
 "05": {
-"area": "Chennai",
-"office": "Chennai (North): Kolathur"
+"place": "Chennai (North): Kolathur (Chennai)",
+"source": "team csv"
 },
 "06": {
-"area": "Chennai",
-"office": "Chennai (South East): Mandavelli"
+"place": "Chennai (South East): Mandavelli (Chennai)",
+"source": "team csv"
 },
 "07": {
-"area": "Chennai",
-"office": "Chennai (South): Adyar"
+"place": "Chennai (South): Adyar (Chennai)",
+"source": "team csv"
 },
 "09": {
-"area": "Chennai",
-"office": "Chennai (West): K. K. Nagar"
+"place": "Chennai (West): K. K. Nagar (Chennai)",
+"source": "team csv"
 },
 "10": {
-"area": "Chennai",
-"office": "Chennai (South West): Virugambakkam"
+"place": "Chennai (South West): Virugambakkam (Chennai)",
+"source": "team csv"
 },
 "11": {
-"area": "Chengalpattu",
-"office": "Tambaram"
+"place": "Tambaram (Chengalpattu)",
+"source": "team csv"
 },
 "12": {
-"area": "Tiruvallur",
-"office": "Poonamallee"
+"place": "Poonamallee (Tiruvallur)",
+"source": "team csv"
 },
 "13": {
-"area": "Chennai",
-"office": "Ambattur"
+"place": "Ambattur (Chennai)",
+"source": "team csv"
 },
 "14": {
-"area": "Chengalpattu",
-"office": "Sholinganallur"
+"place": "Sholinganallur (Chengalpattu)",
+"source": "team csv"
 },
 "15": {
-"area": "Kallakurichi",
-"office": "Ulundurpet"
+"place": "Ulundurpet (Kallakurichi)",
+"source": "team csv"
 },
 "16": {
-"area": "Villupuram",
-"office": "Tindivanam"
+"place": "Tindivanam (Villupuram)",
+"source": "team csv"
 },
 "18": {
-"area": "Tiruvallur",
-"office": "Red Hills"
+"place": "Red Hills (Tiruvallur)",
+"source": "team csv"
 },
 "19": {
-"area": "Chengalpattu",
-"office": "Chengalpattu"
+"place": "Chengalpattu (Chengalpattu)",
+"source": "team csv"
 },
 "20": {
-"area": "Tiruvallur",
-"office": "Tiruvallur"
+"place": "Tiruvallur (Tiruvallur)",
+"source": "team csv"
 },
 "21": {
-"area": "Kanchipuram",
-"office": "Kanchipuram"
+"place": "Kanchipuram (Kanchipuram)",
+"source": "team csv"
 },
 "22": {
-"area": "Chennai",
-"office": "Meenambakkam"
+"place": "Meenambakkam (Chennai)",
+"source": "team csv"
 },
 "23": {
-"area": "Vellore",
-"office": "Vellore"
+"place": "Vellore (Vellore)",
+"source": "team csv"
 },
 "24": {
-"area": "Krishnagiri",
-"office": "Krishnagiri"
+"place": "Krishnagiri (Krishnagiri)",
+"source": "team csv"
 },
 "25": {
-"area": "Thiruvannamalai",
-"office": "Thiruvannamalai"
+"place": "Thiruvannamalai (Thiruvannamalai)",
+"source": "team csv"
 },
 "27": {
-"area": "Salem",
-"office": "Salem"
+"place": "Salem (Salem)",
+"source": "team csv"
 },
 "28": {
-"area": "Namakkal",
-"office": "Namakkal (North)"
+"place": "Namakkal (North) (Namakkal)",
+"source": "team csv"
 },
 "29": {
-"area": "Dharmapuri",
-"office": "Dharmapuri"
+"place": "Dharmapuri (Dharmapuri)",
+"source": "team csv"
 },
 "30": {
-"area": "Salem",
-"office": "Salem (West)"
+"place": "Salem (West) (Salem)",
+"source": "team csv"
 },
 "31": {
-"area": "Cuddalore",
-"office": "Cuddalore"
+"place": "Cuddalore (Cuddalore)",
+"source": "team csv"
 },
 "32": {
-"area": "Villupuram",
-"office": "Villupuram"
+"place": "Villupuram (Villupuram)",
+"source": "team csv"
 },
 "33": {
-"area": "Erode",
-"office": "Erode (East)"
+"place": "Erode (East) (Erode)",
+"source": "team csv"
 },
 "34": {
-"area": "Namakkal",
-"office": "Tiruchengode"
+"place": "Tiruchengode (Namakkal)",
+"source": "team csv"
 },
 "36": {
-"area": "Erode",
-"office": "Gobichettipalayam"
+"place": "Gobichettipalayam (Erode)",
+"source": "team csv"
 },
 "37": {
-"area": "Coimbatore",
-"office": "Coimbatore (South)"
+"place": "Coimbatore (South) (Coimbatore)",
+"source": "team csv"
 },
 "38": {
-"area": "Coimbatore",
-"office": "Coimbatore (North)"
+"place": "Coimbatore (North) (Coimbatore)",
+"source": "team csv"
 },
 "39": {
-"area": "Tirupur",
-"office": "Tirupur (North)"
+"place": "Tirupur (North) (Tirupur)",
+"source": "team csv"
 },
 "40": {
-"area": "Coimbatore",
-"office": "Mettupalayam"
+"place": "Mettupalayam (Coimbatore)",
+"source": "team csv"
 },
 "41": {
-"area": "Coimbatore",
-"office": "Pollachi"
+"place": "Pollachi (Coimbatore)",
+"source": "team csv"
 },
 "42": {
-"area": "Tirupur",
-"office": "Tirupur (South)"
+"place": "Tirupur (South) (Tirupur)",
+"source": "team csv"
 },
 "43": {
-"area": "Nilgiris",
-"office": "Ooty"
+"place": "Ooty (Nilgiris)",
+"source": "team csv"
 },
 "45": {
-"area": "Tiruchirapalli",
-"office": "Tiruchirapalli (West)"
+"place": "Tiruchirapalli (West) (Tiruchirapalli)",
+"source": "team csv"
 },
 "46": {
-"area": "Perambalur",
-"office": "Perambalur"
+"place": "Perambalur (Perambalur)",
+"source": "team csv"
 },
 "47": {
-"area": "Karur",
-"office": "Karur"
+"place": "Karur (Karur)",
+"source": "team csv"
 },
 "48": {
-"area": "Tiruchirapalli",
-"office": "Srirangam"
+"place": "Srirangam (Tiruchirapalli)",
+"source": "team csv"
 },
 "49": {
-"area": "Thanjavur",
-"office": "Thanjavur"
+"place": "Thanjavur (Thanjavur)",
+"source": "team csv"
 },
 "50": {
-"area": "Tiruvarur",
-"office": "Tiruvarur"
+"place": "Tiruvarur (Tiruvarur)",
+"source": "team csv"
 },
 "51": {
-"area": "Nagapattinam",
-"office": "Nagapattinam"
+"place": "Nagapattinam (Nagapattinam)",
+"source": "team csv"
 },
 "52": {
-"area": "Salem",
-"office": "Sankagiri"
+"place": "Sankagiri (Salem)",
+"source": "team csv"
 },
 "54": {
-"area": "Salem",
-"office": "Salem (East)"
+"place": "Salem (East) (Salem)",
+"source": "team csv"
 },
 "55": {
-"area": "Pudukottai",
-"office": "Pudukottai"
+"place": "Pudukottai (Pudukottai)",
+"source": "team csv"
 },
 "56": {
-"area": "Erode",
-"office": "Perundurai"
+"place": "Perundurai (Erode)",
+"source": "team csv"
 },
 "57": {
-"area": "Dindigul",
-"office": "Dindigul"
+"place": "Dindigul (Dindigul)",
+"source": "team csv"
 },
 "58": {
-"area": "Madurai",
-"office": "Madurai (South)"
+"place": "Madurai (South) (Madurai)",
+"source": "team csv"
 },
 "59": {
-"area": "Madurai",
-"office": "Madurai (North)"
+"place": "Madurai (North) (Madurai)",
+"source": "team csv"
 },
 "60": {
-"area": "Theni",
-"office": "Theni"
+"place": "Theni (Theni)",
+"source": "team csv"
 },
 "61": {
-"area": "Ariyalur",
-"office": "Ariyalur"
+"place": "Ariyalur (Ariyalur)",
+"source": "team csv"
 },
 "63": {
-"area": "Sivaganga",
-"office": "Sivaganga"
+"place": "Sivaganga (Sivaganga)",
+"source": "team csv"
 },
 "64": {
-"area": "Madurai",
-"office": "Madurai (Central)"
+"place": "Madurai (Central) (Madurai)",
+"source": "team csv"
 },
 "65": {
-"area": "Ramanathapuram",
-"office": "Ramanathapuram"
+"place": "Ramanathapuram (Ramanathapuram)",
+"source": "team csv"
 },
 "66": {
-"area": "Coimbatore",
-"office": "Coimbatore (Central)"
+"place": "Coimbatore (Central) (Coimbatore)",
+"source": "team csv"
 },
 "67": {
-"area": "Virudhunagar",
-"office": "Virudhunagar"
+"place": "Virudhunagar (Virudhunagar)",
+"source": "team csv"
 },
 "68": {
-"area": "Thanjavur",
-"office": "Kumbakonam"
+"place": "Kumbakonam (Thanjavur)",
+"source": "team csv"
 },
 "69": {
-"area": "Thoothukudi",
-"office": "Thoothukudi"
+"place": "Thoothukudi (Thoothukudi)",
+"source": "team csv"
 },
 "70": {
-"area": "Krishnagiri",
-"office": "Hosur"
+"place": "Hosur (Krishnagiri)",
+"source": "team csv"
 },
 "72": {
-"area": "Tirunelveli",
-"office": "Tirunelveli"
+"place": "Tirunelveli (Tirunelveli)",
+"source": "team csv"
 },
 "73": {
-"area": "Ranipet",
-"office": "Ranipet"
+"place": "Ranipet (Ranipet)",
+"source": "team csv"
 },
 "74": {
-"area": "Kanniyakumari",
-"office": "Nagercoil"
+"place": "Nagercoil (Kanniyakumari)",
+"source": "team csv"
 },
 "75": {
-"area": "Kanniyakumari",
-"office": "Marthandam"
+"place": "Marthandam (Kanniyakumari)",
+"source": "team csv"
 },
 "76": {
-"area": "Tenkasi",
-"office": "Tenkasi"
+"place": "Tenkasi (Tenkasi)",
+"source": "team csv"
 },
 "77": {
-"area": "Salem",
-"office": "Attur"
+"place": "Attur (Salem)",
+"source": "team csv"
 },
 "78": {
-"area": "Tirupur",
-"office": "Dharapuram"
+"place": "Dharapuram (Tirupur)",
+"source": "team csv"
 },
 "79": {
-"area": "Tenkasi",
-"office": "Sankarankovil"
+"place": "Sankarankovil (Tenkasi)",
+"source": "team csv"
 },
 "81": {
-"area": "Tiruchirapalli",
-"office": "Tiruchirapalli (East)"
+"place": "Tiruchirapalli (East) (Tiruchirapalli)",
+"source": "team csv"
 },
 "82": {
-"area": "Mayiladuthurai",
-"office": "Mayiladuthurai"
+"place": "Mayiladuthurai (Mayiladuthurai)",
+"source": "team csv"
 },
 "83": {
-"area": "Thirupattur",
-"office": "Vaniyambadi"
+"place": "Vaniyambadi (Thirupattur)",
+"source": "team csv"
 },
 "84": {
-"area": "Virudhunagar",
-"office": "Srivilliputhur"
+"place": "Srivilliputhur (Virudhunagar)",
+"source": "team csv"
 },
 "85": {
-"area": "Kanchipuram",
-"office": "Kundrathur"
+"place": "Kundrathur (Kanchipuram)",
+"source": "team csv"
 },
 "86": {
-"area": "Erode",
-"office": "Erode (West)"
+"place": "Erode (West) (Erode)",
+"source": "team csv"
 },
 "87": {
-"area": "Kanchipuram",
-"office": "Sriperumbudur"
+"place": "Sriperumbudur (Kanchipuram)",
+"source": "team csv"
 },
 "88": {
-"area": "Namakkal",
-"office": "Namakkal (South)"
+"place": "Namakkal (South) (Namakkal)",
+"source": "team csv"
 },
 "90": {
-"area": "Salem",
-"office": "Salem (South)"
+"place": "Salem (South) (Salem)",
+"source": "team csv"
 },
 "91": {
-"area": "Cuddalore",
-"office": "Chidambaram"
+"place": "Chidambaram (Cuddalore)",
+"source": "team csv"
 },
 "92": {
-"area": "Thoothukudi",
-"office": "Thiruchendur"
+"place": "Thiruchendur (Thoothukudi)",
+"source": "team csv"
 },
 "93": {
-"area": "Salem",
-"office": "Mettur"
+"place": "Mettur (Salem)",
+"source": "team csv"
 },
 "94": {
-"area": "Dindigul",
-"office": "Palani"
+"place": "Palani (Dindigul)",
+"source": "team csv"
 },
 "95": {
-"area": "Virudhunagar",
-"office": "Sivakasi"
+"place": "Sivakasi (Virudhunagar)",
+"source": "team csv"
 },
 "96": {
-"area": "Thoothukudi",
-"office": "Kovilpatti"
+"place": "Kovilpatti (Thoothukudi)",
+"source": "team csv"
 },
 "97": {
-"area": "Tiruvannamalai",
-"office": "Arani"
+"place": "Arani (Tiruvannamalai)",
+"source": "team csv"
 },
 "99": {
-"area": "Coimbatore",
-"office": "Coimbatore (West)"
+"place": "Coimbatore (West) (Coimbatore)",
+"source": "team csv"
 }
 },
 "name": "Tamil Nadu"
@@ -4511,36 +4590,36 @@
 "TR": {
 "codes": {
 "01": {
-"area": "West Tripura",
-"office": "Agartala"
+"place": "Agartala",
+"source": "team csv"
 },
 "02": {
-"area": "Unakoti",
-"office": "Kailasahar"
+"place": "Kailasahar",
+"source": "team csv"
 },
 "03": {
-"area": "Gomati",
-"office": "Udaipur"
+"place": "Udaipur",
+"source": "team csv"
 },
 "04": {
-"area": "Dhalai",
-"office": "Ambassa"
+"place": "Ambassa",
+"source": "team csv"
 },
 "05": {
-"area": "North Tripura",
-"office": "Dharmanagar"
+"place": "Dharmanagar",
+"source": "team csv"
 },
 "06": {
-"area": "Khowai",
-"office": "Teliamura"
+"place": "Teliamura",
+"source": "team csv"
 },
 "07": {
-"area": "Sipahijala",
-"office": "Bishramganj"
+"place": "Bishramganj",
+"source": "team csv"
 },
 "08": {
-"area": "South Tripura",
-"office": "Santirbazar"
+"place": "Santirbazar",
+"source": "team csv"
 }
 },
 "name": "Tripura"
@@ -4548,84 +4627,84 @@
 "UK": {
 "codes": {
 "01": {
-"area": "Almora district",
-"office": "Almora"
+"place": "Almora",
+"source": "team csv"
 },
 "02": {
-"area": "Bageshwar district",
-"office": "Bageshwar"
+"place": "Bageshwar",
+"source": "team csv"
 },
 "03": {
-"area": "Champawat district",
-"office": "Champawat"
+"place": "Champawat",
+"source": "team csv"
 },
 "04": {
-"area": "Nainital district",
-"office": "Haldwani"
+"place": "Haldwani (Nainital district)",
+"source": "team csv"
 },
 "05": {
-"area": "Pithoragarh district",
-"office": "Pithoragarh"
+"place": "Pithoragarh",
+"source": "team csv"
 },
 "06": {
-"area": "Udham Singh Nagar district",
-"office": "Rudrapur"
+"place": "Rudrapur (Udham Singh Nagar district)",
+"source": "team csv"
 },
 "07": {
-"area": "Dehradun district",
-"office": "Dehradun"
+"place": "Dehradun",
+"source": "team csv"
 },
 "08": {
-"area": "Haridwar district",
-"office": "Haridwar"
+"place": "Haridwar",
+"source": "team csv"
 },
 "09": {
-"area": "Tehri Garhwal district",
-"office": "Tehri"
+"place": "Tehri (Tehri Garhwal district)",
+"source": "team csv"
 },
 "10": {
-"area": "Uttarkashi district",
-"office": "Uttarkashi"
+"place": "Uttarkashi",
+"source": "team csv"
 },
 "11": {
-"area": "Chamoli district",
-"office": "Gopeshwar"
+"place": "Gopeshwar (Chamoli district)",
+"source": "team csv"
 },
 "12": {
-"area": "Pauri Garhwal district",
-"office": "Pauri"
+"place": "Pauri (Pauri Garhwal district)",
+"source": "team csv"
 },
 "13": {
-"area": "Rudraprayag district",
-"office": "Rudraprayag"
+"place": "Rudraprayag",
+"source": "team csv"
 },
 "14": {
-"area": "Dehradun district",
-"office": "Rishikesh"
+"place": "Rishikesh (Dehradun district)",
+"source": "team csv"
 },
 "15": {
-"area": "Pauri Garhwal district",
-"office": "Kotdwar"
+"place": "Kotdwar (Pauri Garhwal district)",
+"source": "team csv"
 },
 "16": {
-"area": "Dehradun district",
-"office": "Vikasnagar"
+"place": "Vikasnagar (Dehradun district)",
+"source": "team csv"
 },
 "17": {
-"area": "Haridwar district",
-"office": "Roorkee"
+"place": "Roorkee (Haridwar district)",
+"source": "team csv"
 },
 "18": {
-"area": "Udham Singh Nagar district",
-"office": "Kashipur"
+"place": "Kashipur (Udham Singh Nagar district)",
+"source": "team csv"
 },
 "19": {
-"area": "Nainital District",
-"office": "Ramnagar"
+"place": "Ramnagar (Nainital district)",
+"source": "team csv"
 },
 "20": {
-"area": "Almora District",
-"office": "Ranikhet"
+"place": "Ranikhet (Almora district)",
+"source": "team csv"
 }
 },
 "name": "Uttarakhand"
@@ -4633,304 +4712,304 @@
 "UP": {
 "codes": {
 "11": {
-"area": "Saharanpur district",
-"office": "Saharanpur"
+"place": "Saharanpur",
+"source": "team csv"
 },
 "12": {
-"area": "Muzaffarnagar district",
-"office": "Muzaffarnagar"
+"place": "Muzaffarnagar",
+"source": "team csv"
 },
 "13": {
-"area": "Bulandshahr district",
-"office": "Bulandshahr"
+"place": "Bulandshahr",
+"source": "team csv"
 },
 "14": {
-"area": "Ghaziabad district",
-"office": "Ghaziabad"
+"place": "Ghaziabad",
+"source": "team csv"
 },
 "15": {
-"area": "Meerut district",
-"office": "Meerut"
+"place": "Meerut",
+"source": "team csv"
 },
 "16": {
-"area": "Gautam Buddha Nagar district",
-"office": "Noida"
+"place": "Noida",
+"source": "team csv"
 },
 "17": {
-"area": "Bagpat district",
-"office": "Baghpat"
+"place": "Baghpat",
+"source": "team csv"
 },
 "19": {
-"area": "Shamli district",
-"office": "Shamli"
+"place": "Shamli",
+"source": "team csv"
 },
 "20": {
-"area": "Bijnor district",
-"office": "Bijnor"
+"place": "Bijnor",
+"source": "team csv"
 },
 "21": {
-"area": "Moradabad district",
-"office": "Moradabad"
+"place": "Moradabad",
+"source": "team csv"
 },
 "22": {
-"area": "Rampur district",
-"office": "Rampur"
+"place": "Rampur",
+"source": "team csv"
 },
 "23": {
-"area": "Amroha district",
-"office": "Amroha"
+"place": "Amroha",
+"source": "team csv"
 },
 "24": {
-"area": "Badaun district",
-"office": "Badaun"
+"place": "Badaun",
+"source": "team csv"
 },
 "25": {
-"area": "Bareilly district",
-"office": "Bareilly"
+"place": "Bareilly",
+"source": "team csv"
 },
 "26": {
-"area": "Pilibhit district",
-"office": "Pilibhit"
+"place": "Pilibhit",
+"source": "team csv"
 },
 "27": {
-"area": "Shahjahanpur district",
-"office": "Shahjahanpur"
+"place": "Shahjahanpur",
+"source": "team csv"
 },
 "30": {
-"area": "Hardoi district",
-"office": "Hardoi"
+"place": "Hardoi",
+"source": "team csv"
 },
 "31": {
-"area": "Lakhimpur Kheri district",
-"office": "Lakhimpur"
+"place": "Lakhimpur",
+"source": "team csv"
 },
 "32": {
-"area": "Lucknow district",
-"office": "Lucknow"
+"place": "Lucknow",
+"source": "team csv"
 },
 "33": {
-"area": "Raebareli district",
-"office": "Raebareli"
+"place": "Raebareli",
+"source": "team csv"
 },
 "34": {
-"area": "Sitapur district",
-"office": "Sitapur"
+"place": "Sitapur",
+"source": "team csv"
 },
 "35": {
-"area": "Unnao district",
-"office": "Unnao"
+"place": "Unnao",
+"source": "team csv"
 },
 "36": {
-"area": "Amethi district",
-"office": "Amethi"
+"place": "Amethi",
+"source": "team csv"
 },
 "37": {
-"area": "Hapur district",
-"office": "Hapur"
+"place": "Hapur",
+"source": "team csv"
 },
 "38": {
-"area": "Sambhal district",
-"office": "Bahjoi"
+"place": "Bahjoi",
+"source": "team csv"
 },
 "40": {
-"area": "Bahraich district",
-"office": "Bahraich"
+"place": "Bahraich",
+"source": "team csv"
 },
 "41": {
-"area": "Barabanki district",
-"office": "Barabanki"
+"place": "Barabanki",
+"source": "team csv"
 },
 "42": {
-"area": "Ayodhya district",
-"office": "Ayodhya"
+"place": "Ayodhya",
+"source": "team csv"
 },
 "43": {
-"area": "Gonda district",
-"office": "Gonda"
+"place": "Gonda",
+"source": "team csv"
 },
 "44": {
-"area": "Sultanpur district",
-"office": "Sultanpur"
+"place": "Sultanpur",
+"source": "team csv"
 },
 "45": {
-"area": "Ambedkar Nagar",
-"office": "Akbarpur"
+"place": "Akbarpur",
+"source": "team csv"
 },
 "46": {
-"area": "Shravasti district",
-"office": "Shravasti"
+"place": "Shravasti",
+"source": "team csv"
 },
 "47": {
-"area": "Balrampur district",
-"office": "Balrampur"
+"place": "Balrampur",
+"source": "team csv"
 },
 "50": {
-"area": "Azamgarh district",
-"office": "Azamgarh"
+"place": "Azamgarh",
+"source": "team csv"
 },
 "51": {
-"area": "Basti district",
-"office": "Basti"
+"place": "Basti",
+"source": "team csv"
 },
 "52": {
-"area": "Deoria district",
-"office": "Deoria"
+"place": "Deoria",
+"source": "team csv"
 },
 "53": {
-"area": "Gorakhpur district",
-"office": "Gorakhpur"
+"place": "Gorakhpur",
+"source": "team csv"
 },
 "54": {
-"area": "Mau district",
-"office": "Mau"
+"place": "Mau",
+"source": "team csv"
 },
 "55": {
-"area": "Siddharth Nagar",
-"office": "Siddharthnagar"
+"place": "Siddharthnagar",
+"source": "team csv"
 },
 "56": {
-"area": "Maharajganj district",
-"office": "Maharajganj"
+"place": "Maharajganj",
+"source": "team csv"
 },
 "57": {
-"area": "Kushinagar district",
-"office": "Padrauna"
+"place": "Padrauna (Kushinagar district)",
+"source": "team csv"
 },
 "58": {
-"area": "Sant Kabir Nagar",
-"office": "Khalilabad"
+"place": "Khalilabad (Sant Kabir Nagar)",
+"source": "team csv"
 },
 "60": {
-"area": "Ballia district",
-"office": "Ballia"
+"place": "Ballia",
+"source": "team csv"
 },
 "61": {
-"area": "Ghazipur district",
-"office": "Ghazipur"
+"place": "Ghazipur",
+"source": "team csv"
 },
 "62": {
-"area": "Jaunpur district",
-"office": "Jaunpur"
+"place": "Jaunpur",
+"source": "team csv"
 },
 "63": {
-"area": "Mirzapur district",
-"office": "Mirzapur"
+"place": "Mirzapur",
+"source": "team csv"
 },
 "64": {
-"area": "Sonbhadra district",
-"office": "Robertsganj"
+"place": "Robertsganj (Sonbhadra district)",
+"source": "team csv"
 },
 "65": {
-"area": "Varanasi district",
-"office": "Varanasi"
+"place": "Varanasi",
+"source": "team csv"
 },
 "66": {
-"area": "Bhadohi district",
-"office": "Gyanpur"
+"place": "Gyanpur (Bhadohi district)",
+"source": "team csv"
 },
 "67": {
-"area": "Chandauli district",
-"office": "Chandauli"
+"place": "Chandauli",
+"source": "team csv"
 },
 "70": {
-"area": "Prayagraj district",
-"office": "Prayagraj"
+"place": "Prayagraj",
+"source": "team csv"
 },
 "71": {
-"area": "Fatehpur district",
-"office": "Fatehpur"
+"place": "Fatehpur",
+"source": "team csv"
 },
 "72": {
-"area": "Pratapgarh district",
-"office": "Pratapgarh"
+"place": "Pratapgarh",
+"source": "team csv"
 },
 "73": {
-"area": "Kaushambi",
-"office": "Manjhanpur"
+"place": "Manjhanpur (Kaushambi)",
+"source": "team csv"
 },
 "74": {
-"area": "Kannauj district",
-"office": "Kannauj"
+"place": "Kannauj",
+"source": "team csv"
 },
 "75": {
-"area": "Etawah district",
-"office": "Etawah"
+"place": "Etawah",
+"source": "team csv"
 },
 "76": {
-"area": "Farrukhabad district",
-"office": "Farrukhabad"
+"place": "Farrukhabad",
+"source": "team csv"
 },
 "77": {
-"area": "Kanpur Dehat district",
-"office": "Akbarpur"
+"place": "Akbarpur (Kanpur Dehat district)",
+"source": "team csv"
 },
 "78": {
-"area": "Kanpur Nagar district",
-"office": "Kanpur"
+"place": "Kanpur (Kanpur Nagar district)",
+"source": "team csv"
 },
 "79": {
-"area": "Auraiya district",
-"office": "Auraiya"
+"place": "Auraiya",
+"source": "team csv"
 },
 "80": {
-"area": "Agra district",
-"office": "Agra"
+"place": "Agra",
+"source": "team csv"
 },
 "81": {
-"area": "Aligarh district",
-"office": "Aligarh"
+"place": "Aligarh",
+"source": "team csv"
 },
 "82": {
-"area": "Etah district",
-"office": "Etah"
+"place": "Etah",
+"source": "team csv"
 },
 "83": {
-"area": "Firozabad district",
-"office": "Firozabad"
+"place": "Firozabad",
+"source": "team csv"
 },
 "84": {
-"area": "Mainpuri district",
-"office": "Mainpuri"
+"place": "Mainpuri",
+"source": "team csv"
 },
 "85": {
-"area": "Mathura district",
-"office": "Mathura"
+"place": "Mathura",
+"source": "team csv"
 },
 "86": {
-"area": "Hathras district",
-"office": "Hathras"
+"place": "Hathras",
+"source": "team csv"
 },
 "87": {
-"area": "Kasganj district",
-"office": "Kasganj"
+"place": "Kasganj",
+"source": "team csv"
 },
 "90": {
-"area": "Banda district",
-"office": "Banda"
+"place": "Banda",
+"source": "team csv"
 },
 "91": {
-"area": "Hamirpur district",
-"office": "Hamirpur"
+"place": "Hamirpur",
+"source": "team csv"
 },
 "92": {
-"area": "Jalaun district",
-"office": "Jalaun"
+"place": "Jalaun",
+"source": "team csv"
 },
 "93": {
-"area": "Jhansi district",
-"office": "Jhansi"
+"place": "Jhansi",
+"source": "team csv"
 },
 "94": {
-"area": "Lalitpur district",
-"office": "Lalitpur"
+"place": "Lalitpur",
+"source": "team csv"
 },
 "95": {
-"area": "Mahoba district",
-"office": "Mahoba"
+"place": "Mahoba",
+"source": "team csv"
 },
 "96": {
-"area": "Chitrakoot district",
-"office": "Chitrakoot Dham"
+"place": "Chitrakoot Dham (Chitrakoot district)",
+"source": "team csv"
 }
 },
 "name": "Uttar Pradesh"
@@ -4938,400 +5017,400 @@
 "WB": {
 "codes": {
 "01": {
-"area": "Kolkata district",
-"office": "Beltala (two Wheelers)"
+"place": "Beltala, two-wheelers (Kolkata district)",
+"source": "team csv"
 },
 "02": {
-"area": "Kolkata district",
-"office": "Beltala (four Wheelers private vehicles)"
+"place": "Beltala, four-wheeler private vehicles (Kolkata district)",
+"source": "team csv"
 },
 "03": {
-"area": "Kolkata district",
-"office": "Beltala (commercial goods carriages)"
+"place": "Beltala, commercial goods carriages (Kolkata district)",
+"source": "team csv"
 },
 "04": {
-"area": "Kolkata district",
-"office": "Beltala (commercial passenger vehicles)"
+"place": "Beltala, commercial passenger vehicles (Kolkata district)",
+"source": "team csv"
 },
 "05": {
-"area": "Kolkata district",
-"office": "Kasba (commercial vehicles)"
+"place": "Kasba, commercial vehicles (Kolkata district)",
+"source": "team csv"
 },
 "06": {
-"area": "Kolkata district",
-"office": "Kasba (private vehicles)"
+"place": "Kasba, private vehicles (Kolkata district)",
+"source": "team csv"
 },
 "07": {
-"area": "Kolkata district",
-"office": "Salt Lake (commercial vehicles)"
+"place": "Salt Lake, commercial vehicles (Kolkata district)",
+"source": "team csv"
 },
 "08": {
-"area": "Kolkata district",
-"office": "Salt Lake (private vehicles)"
+"place": "Salt Lake, private vehicles (Kolkata district)",
+"source": "team csv"
 },
 "09": {
-"area": "Kolkata district",
-"office": "Behala (commercial vehicles)"
+"place": "Behala, commercial vehicles (Kolkata district)",
+"source": "team csv"
 },
 "10": {
-"area": "Kolkata district",
-"office": "Behala (private vehicles)"
+"place": "Behala, private vehicles (Kolkata district)",
+"source": "team csv"
 },
 "11": {
-"area": "Howrah district",
-"office": "Howrah (commercial vehicles)"
+"place": "Howrah, commercial vehicles (Howrah district)",
+"source": "team csv"
 },
 "12": {
-"area": "Howrah district",
-"office": "Howrah (private vehicles)"
+"place": "Howrah, private vehicles (Howrah district)",
+"source": "team csv"
 },
 "13": {
-"area": "Howrah district",
-"office": "Uluberia (commercial vehicles)"
+"place": "Uluberia, commercial vehicles (Howrah district)",
+"source": "team csv"
 },
 "14": {
-"area": "Howrah district",
-"office": "Uluberia (private vehicles)"
+"place": "Uluberia, private vehicles (Howrah district)",
+"source": "team csv"
 },
 "15": {
-"area": "Hooghly district",
-"office": "Chinsurah (commercial vehicles)"
+"place": "Chinsurah, commercial vehicles (Hooghly district)",
+"source": "team csv"
 },
 "16": {
-"area": "Hooghly district",
-"office": "Chinsurah (private vehicles)"
+"place": "Chinsurah, private vehicles (Hooghly district)",
+"source": "team csv"
 },
 "17": {
-"area": "Hooghly district",
-"office": "Serampore (commercial vehicles)"
+"place": "Serampore, commercial vehicles (Hooghly district)",
+"source": "team csv"
 },
 "18": {
-"area": "Hooghly district",
-"office": "Serampore (private vehicles)"
+"place": "Serampore, private vehicles (Hooghly district)",
+"source": "team csv"
 },
 "19": {
-"area": "South 24 Parganas district",
-"office": "Alipore (commercial vehicles)"
+"place": "Alipore, commercial vehicles (South 24 Parganas district)",
+"source": "team csv"
 },
 "20": {
-"area": "South 24 Parganas district",
-"office": "Alipore (private vehicles)"
+"place": "Alipore, private vehicles (South 24 Parganas district)",
+"source": "team csv"
 },
 "21": {
-"area": "North 24 Parganas district",
-"office": "Basirhat (commercial vehicles)"
+"place": "Basirhat, commercial vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "22": {
-"area": "North 24 Parganas district",
-"office": "Basirhat (private vehicles)"
+"place": "Basirhat, private vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "23": {
-"area": "North 24 Parganas district",
-"office": "Barrackpore (commercial vehicles)"
+"place": "Barrackpore, commercial vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "24": {
-"area": "North 24 Parganas district",
-"office": "Barrackpore (private vehicles)"
+"place": "Barrackpore, private vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "25": {
-"area": "North 24 Parganas district",
-"office": "Barasat (commercial vehicles)"
+"place": "Barasat, commercial vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "26": {
-"area": "North 24 Parganas district",
-"office": "Barasat (private vehicles)"
+"place": "Barasat, private vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "27": {
-"area": "North 24 Parganas district",
-"office": "Bangaon (commercial vehicles)"
+"place": "Bangaon, commercial vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "28": {
-"area": "North 24 Parganas district",
-"office": "Bangaon (private vehicles)"
+"place": "Bangaon, private vehicles (North 24 Parganas district)",
+"source": "team csv"
 },
 "29": {
-"area": "Purba Medinipur district",
-"office": "Tamluk (commercial vehicles)"
+"place": "Tamluk, commercial vehicles (Purba Medinipur district)",
+"source": "team csv"
 },
 "30": {
-"area": "Purba Medinipur district",
-"office": "Tamluk (private vehicles)"
+"place": "Tamluk, private vehicles (Purba Medinipur district)",
+"source": "team csv"
 },
 "31": {
-"area": "Purba Medinipur district",
-"office": "Contai (commercial vehicles)"
+"place": "Contai, commercial vehicles (Purba Medinipur district)",
+"source": "team csv"
 },
 "32": {
-"area": "Purba Medinipur district",
-"office": "Contai (private vehicles)"
+"place": "Contai, private vehicles (Purba Medinipur district)",
+"source": "team csv"
 },
 "33": {
-"area": "Paschim Medinipur district",
-"office": "Medinipur (commercial vehicles)"
+"place": "Medinipur, commercial vehicles (Paschim Medinipur district)",
+"source": "team csv"
 },
 "34": {
-"area": "Paschim Medinipur district",
-"office": "Medinipur (private vehicles)"
+"place": "Medinipur, private vehicles (Paschim Medinipur district)",
+"source": "team csv"
 },
 "35": {
-"area": "Paschim Medinipur district",
-"office": "Kharagpur (commercial vehicles)"
+"place": "Kharagpur, commercial vehicles (Paschim Medinipur district)",
+"source": "team csv"
 },
 "36": {
-"area": "Paschim Medinipur district",
-"office": "Kharagpur (private vehicles)"
+"place": "Kharagpur, private vehicles (Paschim Medinipur district)",
+"source": "team csv"
 },
 "37": {
-"area": "Paschim Bardhaman district",
-"office": "Asansol (commercial vehicles)"
+"place": "Asansol, commercial vehicles (Paschim Bardhaman district)",
+"source": "team csv"
 },
 "38": {
-"area": "Paschim Bardhaman district",
-"office": "Asansol (private vehicles)"
+"place": "Asansol, private vehicles (Paschim Bardhaman district)",
+"source": "team csv"
 },
 "39": {
-"area": "Paschim Bardhaman district",
-"office": "Durgapur (commercial vehicles), also SBSTC buses are registered here."
+"place": "Durgapur, commercial vehicles; also SBSTC buses (Paschim Bardhaman district)",
+"source": "team csv"
 },
 "40": {
-"area": "Paschim Bardhaman district",
-"office": "Durgapur (private vehicles)"
+"place": "Durgapur, private vehicles (Paschim Bardhaman district)",
+"source": "team csv"
 },
 "41": {
-"area": "Purba Bardhaman district",
-"office": "Bardhaman (commercial vehicles)"
+"place": "Bardhaman, commercial vehicles (Purba Bardhaman district)",
+"source": "team csv"
 },
 "42": {
-"area": "Purba Bardhaman district",
-"office": "Bardhaman (private vehicles)"
+"place": "Bardhaman, private vehicles (Purba Bardhaman district)",
+"source": "team csv"
 },
 "43": {
-"area": "Purba Bardhaman district",
-"office": "Kalna (commercial vehicles)"
+"place": "Kalna, commercial vehicles (Purba Bardhaman district)",
+"source": "team csv"
 },
 "44": {
-"area": "Purba Bardhaman district",
-"office": "Kalna (private vehicles)"
+"place": "Kalna, private vehicles (Purba Bardhaman district)",
+"source": "team csv"
 },
 "45": {
-"area": "Birbhum district",
-"office": "Rampurhat (commercial vehicles)"
+"place": "Rampurhat, commercial vehicles (Birbhum district)",
+"source": "team csv"
 },
 "46": {
-"area": "Birbhum district",
-"office": "Rampurhat (private vehicles)"
+"place": "Rampurhat, private vehicles (Birbhum district)",
+"source": "team csv"
 },
 "47": {
-"area": "Birbhum district",
-"office": "Bolpur (commercial vehicles)"
+"place": "Bolpur, commercial vehicles (Birbhum district)",
+"source": "team csv"
 },
 "48": {
-"area": "Birbhum district",
-"office": "Bolpur (private vehicles)"
+"place": "Bolpur, private vehicles (Birbhum district)",
+"source": "team csv"
 },
 "49": {
-"area": "Jhargram district",
-"office": "Jhargram (commercial vehicles)"
+"place": "Jhargram, commercial vehicles (Jhargram district)",
+"source": "team csv"
 },
 "50": {
-"area": "Jhargram district",
-"office": "Jhargram (private vehicles)"
+"place": "Jhargram, private vehicles (Jhargram district)",
+"source": "team csv"
 },
 "51": {
-"area": "Nadia district",
-"office": "Krishnanagar (commercial vehicles)"
+"place": "Krishnanagar, commercial vehicles (Nadia district)",
+"source": "team csv"
 },
 "52": {
-"area": "Nadia district",
-"office": "Krishnanagar (private vehicles)"
+"place": "Krishnanagar, private vehicles (Nadia district)",
+"source": "team csv"
 },
 "53": {
-"area": "Birbhum district",
-"office": "Birbhum (commercial vehicles)"
+"place": "Birbhum, commercial vehicles (Birbhum district)",
+"source": "team csv"
 },
 "54": {
-"area": "Birbhum district",
-"office": "Birbhum (private vehicles)"
+"place": "Birbhum, private vehicles (Birbhum district)",
+"source": "team csv"
 },
 "55": {
-"area": "Purulia district",
-"office": "Purulia (commercial vehicles)"
+"place": "Purulia, commercial vehicles (Purulia district)",
+"source": "team csv"
 },
 "56": {
-"area": "Purulia district",
-"office": "Purulia (private vehicles)"
+"place": "Purulia, private vehicles (Purulia district)",
+"source": "team csv"
 },
 "57": {
-"area": "Murshidabad district",
-"office": "Murshidabad (commercial vehicles)"
+"place": "Murshidabad, commercial vehicles (Murshidabad district)",
+"source": "team csv"
 },
 "58": {
-"area": "Murshidabad district",
-"office": "Murshidabad (private vehicles)"
+"place": "Murshidabad, private vehicles (Murshidabad district)",
+"source": "team csv"
 },
 "59": {
-"area": "Uttar Dinajpur district",
-"office": "Raiganj (commercial vehicles)"
+"place": "Raiganj, commercial vehicles (Uttar Dinajpur district)",
+"source": "team csv"
 },
 "60": {
-"area": "Uttar Dinajpur district",
-"office": "Raiganj (private vehicles)"
+"place": "Raiganj, private vehicles (Uttar Dinajpur district)",
+"source": "team csv"
 },
 "61": {
-"area": "Dakshin Dinajpur district",
-"office": "Balurghat (commercial vehicles)"
+"place": "Balurghat, commercial vehicles (Dakshin Dinajpur district)",
+"source": "team csv"
 },
 "62": {
-"area": "Dakshin Dinajpur district",
-"office": "Balurghat (private vehicles)"
+"place": "Balurghat, private vehicles (Dakshin Dinajpur district)",
+"source": "team csv"
 },
 "63": {
-"area": "Cooch Behar district",
-"office": "Cooch Behar (commercial vehicles), also NBSTC buses are registered here."
+"place": "Cooch Behar, commercial vehicles; also NBSTC buses (Cooch Behar district)",
+"source": "team csv"
 },
 "64": {
-"area": "Cooch Behar district",
-"office": "Cooch Behar (private vehicles)"
+"place": "Cooch Behar, private vehicles (Cooch Behar district)",
+"source": "team csv"
 },
 "65": {
-"area": "Malda district",
-"office": "Malda City (commercial vehicles)"
+"place": "Malda City, commercial vehicles (Malda district)",
+"source": "team csv"
 },
 "66": {
-"area": "Malda district",
-"office": "Malda City (private vehicles)"
+"place": "Malda City, private vehicles (Malda district)",
+"source": "team csv"
 },
 "67": {
-"area": "Bankura district",
-"office": "Bankura (commercial vehicles)"
+"place": "Bankura, commercial vehicles (Bankura district)",
+"source": "team csv"
 },
 "68": {
-"area": "Bankura district",
-"office": "Bankura (private vehicles)"
+"place": "Bankura, private vehicles (Bankura district)",
+"source": "team csv"
 },
 "69": {
-"area": "Alipurduar district",
-"office": "Alipurduar (commercial vehicles)"
+"place": "Alipurduar, commercial vehicles (Alipurduar district)",
+"source": "team csv"
 },
 "70": {
-"area": "Alipurduar district",
-"office": "Alipurduar (private vehicles)"
+"place": "Alipurduar, private vehicles (Alipurduar district)",
+"source": "team csv"
 },
 "71": {
-"area": "Jalpaiguri district",
-"office": "Jalpaiguri (commercial vehicles)"
+"place": "Jalpaiguri, commercial vehicles (Jalpaiguri district)",
+"source": "team csv"
 },
 "72": {
-"area": "Jalpaiguri district",
-"office": "Jalpaiguri (private vehicles)"
+"place": "Jalpaiguri, private vehicles (Jalpaiguri district)",
+"source": "team csv"
 },
 "73": {
-"area": "Darjeeling district",
-"office": "Siliguri (commercial vehicles)"
+"place": "Siliguri, commercial vehicles (Darjeeling district)",
+"source": "team csv"
 },
 "74": {
-"area": "Darjeeling district",
-"office": "Siliguri (private vehicles)"
+"place": "Siliguri, private vehicles (Darjeeling district)",
+"source": "team csv"
 },
 "75": {
-"area": "Purba Bardhaman district",
-"office": "Katwa (private and commercial vehicles)"
+"place": "Katwa, private and commercial vehicles (Purba Bardhaman district)",
+"source": "team csv"
 },
 "76": {
-"area": "Darjeeling district",
-"office": "Darjeeling (commercial vehicles)"
+"place": "Darjeeling, commercial vehicles (Darjeeling district)",
+"source": "team csv"
 },
 "77": {
-"area": "Darjeeling district",
-"office": "Darjeeling (private vehicles)"
+"place": "Darjeeling, private vehicles (Darjeeling district)",
+"source": "team csv"
 },
 "78": {
-"area": "Kalimpong district",
-"office": "Kalimpong (commercial vehicles)"
+"place": "Kalimpong, commercial vehicles (Kalimpong district)",
+"source": "team csv"
 },
 "79": {
-"area": "Kalimpong district",
-"office": "Kalimpong (private vehicles)"
+"place": "Kalimpong, private vehicles (Kalimpong district)",
+"source": "team csv"
 },
 "80": {
-"area": "Purulia district",
-"office": "Manbazar (private and commercial vehicles)"
+"place": "Manbazar, private and commercial vehicles (Purulia district)",
+"source": "team csv"
 },
 "81": {
-"area": "Purulia district",
-"office": "Raghunathpur (commercial vehicles)"
+"place": "Raghunathpur, commercial vehicles (Purulia district)",
+"source": "team csv"
 },
 "82": {
-"area": "Purulia district",
-"office": "Raghunathpur (private vehicles)"
+"place": "Raghunathpur, private vehicles (Purulia district)",
+"source": "team csv"
 },
 "83": {
-"area": "Malda district",
-"office": "Chanchal (commercial vehicles)"
+"place": "Chanchal, commercial vehicles (Malda district)",
+"source": "team csv"
 },
 "84": {
-"area": "Malda district",
-"office": "Chanchal (private vehicles)"
+"place": "Chanchal, private vehicles (Malda district)",
+"source": "team csv"
 },
 "85": {
-"area": "Cooch Behar district",
-"office": "Mathabhanga (commercial vehicles)"
+"place": "Mathabhanga, commercial vehicles (Cooch Behar district)",
+"source": "team csv"
 },
 "86": {
-"area": "Cooch Behar district",
-"office": "Mathabhanga (private vehicles)"
+"place": "Mathabhanga, private vehicles (Cooch Behar district)",
+"source": "team csv"
 },
 "87": {
-"area": "Bankura district",
-"office": "Bishnupur (commercial vehicles)"
+"place": "Bishnupur, commercial vehicles (Bankura district)",
+"source": "team csv"
 },
 "88": {
-"area": "Bankura district",
-"office": "Bishnupur (private vehicles)"
+"place": "Bishnupur, private vehicles (Bankura district)",
+"source": "team csv"
 },
 "89": {
-"area": "Nadia district",
-"office": "Kalyani (commercial vehicles)"
+"place": "Kalyani, commercial vehicles (Nadia district)",
+"source": "team csv"
 },
 "90": {
-"area": "Nadia district",
-"office": "Kalyani (private vehicles)"
+"place": "Kalyani, private vehicles (Nadia district)",
+"source": "team csv"
 },
 "91": {
-"area": "Uttar Dinajpur district",
-"office": "Islampur (commercial vehicles)"
+"place": "Islampur, commercial vehicles (Uttar Dinajpur district)",
+"source": "team csv"
 },
 "92": {
-"area": "Uttar Dinajpur district",
-"office": "Islampur (private vehicles)"
+"place": "Islampur, private vehicles (Uttar Dinajpur district)",
+"source": "team csv"
 },
 "93": {
-"area": "Murshidabad district",
-"office": "Jangipur (commercial vehicles)"
+"place": "Jangipur, commercial vehicles (Murshidabad district)",
+"source": "team csv"
 },
 "94": {
-"area": "Murshidabad district",
-"office": "Jangipur (private vehicles)"
+"place": "Jangipur, private vehicles (Murshidabad district)",
+"source": "team csv"
 },
 "95": {
-"area": "South 24 Parganas district",
-"office": "Baruipur (commercial vehicles)"
+"place": "Baruipur, commercial vehicles (South 24 Parganas district)",
+"source": "team csv"
 },
 "96": {
-"area": "South 24 Parganas district",
-"office": "Baruipur (private vehicles)"
+"place": "Baruipur, private vehicles (South 24 Parganas district)",
+"source": "team csv"
 },
 "97": {
-"area": "South 24 Parganas district",
-"office": "Diamond Harbour (commercial vehicles)"
+"place": "Diamond Harbour, commercial vehicles (South 24 Parganas district)",
+"source": "team csv"
 },
 "98": {
-"area": "South 24 Parganas district",
-"office": "Canning (All vehicles)"
+"place": "Canning, all vehicles (South 24 Parganas district)",
+"source": "team csv"
 },
 "99": {
-"area": "Murshidabad district",
-"office": "Kandi (Private and Commercial vehicles)"
+"place": "Kandi, private and commercial vehicles (Murshidabad district)",
+"source": "team csv"
 }
 },
 "name": "West Bengal"

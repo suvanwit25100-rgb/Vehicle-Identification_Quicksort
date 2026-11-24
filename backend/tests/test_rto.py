@@ -12,13 +12,13 @@ def fused(plate, unread=(), conf=0.8):
 def test_the_table_loaded_with_many_states_and_codes():
     t = rto._table()["states"]
     assert len(t) >= 30 and sum(len(v["codes"]) for v in t.values()) > 1000
-    assert t["WB"]["codes"]["06"]["area"] == "Kolkata district" and t["CG"]["codes"]["04"]["area"] == "Raipur district"
-    assert "wikipedia" in rto.source().lower()
+    assert "Kolkata" in t["WB"]["codes"]["06"]["place"] and "Raipur" in t["CG"]["codes"]["04"]["place"]
+    assert "csv" in rto.source().lower() and "wikipedia" in rto.source().lower()
 
 
 def test_a_real_code_matches_with_the_readers_confidence():
     r = rto.check(fused("CG04KA2819", conf=0.8))
-    assert r["status"] == "match" and r["code"] == "CG-04" and r["state"] == "Chhattisgarh" and 0.8 <= r["confidence"] <= 1 and r["chars_used"] == 4
+    assert r["status"] == "match" and r["code"] == "CG-04" and r["state"] == "Chhattisgarh" and "Raipur" in r["region"] and 0.8 <= r["confidence"] <= 1 and r["chars_used"] == 4
 
 
 def test_a_one_digit_district_uses_three_characters():

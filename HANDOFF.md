@@ -497,3 +497,6 @@ The project is now called **ExLex** (earlier names: Netra, PlateTrace). It is sh
   or `unreadable` (state or district characters unread; nothing guessed). Served with each job (`rto` field, never stored), shown in the console result panel and the PDF.
 - **It is a region check, not a registry match.** The registry banner still says "No confident match" when no registry entry fits. Measured on the stored
   Kolkata job: 3 of 22 vehicles with plate reads had a checkable code (all matched), 19 had unread state or district characters.
+- **RTO list is now the team's `rto_codes.csv`** (kept at `backend/data/source/rto_codes_user.csv`, merged by `scripts/merge_rto_csv.py`; 1,289 codes from the CSV,
+  13 gap-fills from Wikipedia; 36 states/territories incl. Andaman and Nicobar). The result panel shows a "Region" line (state, place) above the scores; when only the
+  state letters were read it shows the state alone. Codes with letter suffixes (HP-08AA, TN-57W) are not in the lookup.

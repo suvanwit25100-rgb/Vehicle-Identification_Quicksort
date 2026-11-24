@@ -1,7 +1,7 @@
 """RTO code check: the first characters of a plate (state letters, district number) against the public list of RTO codes.
 
-Data: data/rto_codes.json, built by scripts/make_rto_codes.py from Wikipedia's "List of Regional Transport Office districts in India"
-(CC BY-SA 4.0, volunteer-edited, can be out of date). It is a region lookup. It holds no vehicle or owner data, and a match here says the plate
+Data: data/rto_codes.json: the team's rto_codes.csv (scripts/merge_rto_csv.py), gaps filled from Wikipedia's "List of Regional Transport Office
+districts in India" (scripts/make_rto_codes.py; CC BY-SA 4.0, volunteer-edited, can be out of date). It is a region lookup. It holds no vehicle or owner data, and a match here says the plate
 starts with a real code for a place; it does not say the vehicle is registered or whose it is.
 
 Confidence = average confidence of the characters used for the code (state letters plus district digits), straight from the reader.
@@ -24,6 +24,16 @@ def source() -> str:
     return _table()["source"]
 
 
+def _place(row: dict, state: str) -> str:
+    p = row["place"]
+    return f"various districts of {state} (one code is used across the state)" if len(p) > 140 else p
+
+
+def _state_name(code: str) -> str | None:
+    e = _table()["states"].get(code)
+    return e["name"] if e else None
+
+
 def check(fused) -> dict:
     slots = fused.slots
     s = lambda i: slots[i] if slots[i].char and slots[i].char != "-" else None
@@ -34,10 +44,12 @@ def check(fused) -> dict:
     state = state_slots[0].char + state_slots[1].char
     used = state_slots[:]
     if d1 is None or not d1.char.isdigit():
-        return {"status": "unreadable", "state_code": state, "message": f"The district number after {state} was not readable, so the RTO code cannot be checked."}
+        name = _state_name(state)
+        return {"status": "unreadable", "state_code": state, "region": name, "message": f"The district number after {state} was not readable, so the RTO code cannot be checked."
+                + (f" The state letters {state} were read: {name}." if name else "")}
     used.append(d1)
     if d2.char is None:
-        return {"status": "unreadable", "state_code": state, "message": f"The second district character after {state}{d1.char} was not readable (it could be a digit or the series letter), so the RTO code cannot be checked."}
+        return {"status": "unreadable", "state_code": state, "region": _state_name(state), "message": f"The second district character after {state}{d1.char} was not readable (it could be a digit or the series letter), so the RTO code cannot be checked."}
     district = d1.char
     if d2.char.isdigit():
         district += d2.char
@@ -50,10 +62,11 @@ def check(fused) -> dict:
                 "message": f"{state} is not a state or territory code in the list, so one of those letters may be misread."}
     row = entry["codes"].get(district.zfill(2))
     if row is None:
-        return {"status": "unknown_code", "code": code, "state": entry["name"], "confidence": None, "chars_used": len(used),
+        return {"status": "unknown_code", "code": code, "state": entry["name"], "region": entry["name"], "confidence": None, "chars_used": len(used),
                 "message": f"{code} is not in the list of {entry['name']} RTO codes, so a character may be misread (or the list is out of date)."}
-    return {"status": "match", "code": code, "state": entry["name"], "office": row["office"], "area": row["area"], "confidence": conf, "chars_used": len(used),
-            "message": f"{code} is a real RTO code: {entry['name']}, {row['area']} ({row['office']}). Average reader confidence over its {len(used)} characters."}
+    place = _place(row, entry["name"])
+    return {"status": "match", "code": code, "state": entry["name"], "place": place, "region": f"{entry['name']} · {place}", "confidence": conf, "chars_used": len(used),
+            "message": f"{code} is a real RTO code: {entry['name']}, {place}. Average reader confidence over its {len(used)} characters."}
 
 
 def attach(result: AnalysisResult) -> AnalysisResult:

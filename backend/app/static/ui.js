@@ -84,8 +84,10 @@
     const stat = (value, label) => h("div", { class: "stat" }, h("span", { class: "num" }, value), h("span", { class: "lab" }, label));
     const rtoStat = rto ? h("div", { class: `stat rto ${rto.status}`, title: rto.message },
       h("span", { class: "num" }, rto.status === "match" ? rto.confidence.toFixed(2) : "n/a"),
-      h("span", { class: "lab" }, rto.status === "match" ? `RTO code match · ${rto.code} · ${rto.area} (${rto.office})` : `RTO code check · ${rto.message}`)) : null;
+      h("span", { class: "lab" }, rto.status === "match" ? `RTO code match · ${rto.code}` : `RTO code check · ${rto.message}`)) : null;
+    const region = rto && rto.region ? h("div", { class: "region" }, h("span", { class: "k" }, "Region"), h("span", { class: "v" }, rto.region)) : null;
     return h("div", { class: "scores" },
+      region,
       rtoStat,
       stat(read === null ? "n/a" : read.toFixed(2), `Plate read confidence · average of ${known.length} readable of ${expected.length} characters`),
       stat(best ? best.confidence.toFixed(2) : "none", best ? "Best registry fit (match confidence)" : "Best registry fit · no registry entry close enough"));
