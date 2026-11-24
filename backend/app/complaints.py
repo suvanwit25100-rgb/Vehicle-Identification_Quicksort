@@ -172,7 +172,9 @@ class ComplaintStore:
         with self.db() as c:
             c.execute(SCHEMA)
             have = {r[1] for r in c.execute("PRAGMA table_info(complaints)")}
-            for col, ddl in (("source", "TEXT NOT NULL DEFAULT 'citizen'"), ("job_id", "TEXT"), ("track_id", "INTEGER")):
+            c.execute("""CREATE TABLE IF NOT EXISTS case_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, complaint_id TEXT NOT NULL, at TEXT NOT NULL, actor TEXT NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL)""")
+            for col, ddl in (("source", "TEXT NOT NULL DEFAULT 'citizen'"), ("job_id", "TEXT"), ("track_id", "INTEGER"), ("assigned_to", "TEXT")):
                 if col not in have:                      # older databases: add the columns, keep every existing report
                     c.execute(f"ALTER TABLE complaints ADD COLUMN {col} {ddl}")
 
@@ -256,7 +258,20 @@ class ComplaintStore:
         with self.db() as c:
             return c.execute("SELECT * FROM complaints WHERE id=?", (cid,)).fetchone()
 
-    def list(self, status: str | None = None, department: str | None = None, limit: int = 200) -> list[sqlite3.Row]:
+    def add_event(self, cid: str, actor: str, kind: str, text: str) -> None:
+        with self.db() as c:
+            c.execute("INSERT INTO case_events (complaint_id, at, actor, kind, text) VALUES (?,?,?,?,?)", (cid, now_iso(), actor, kind, text[:1000]))
+
+    def events(self, cid: str) -> list[dict]:
+        with self.db() as c:
+            return [dict(r) for r in c.execute("SELECT at, actor, kind, text FROM case_events WHERE complaint_id=? ORDER BY id", (cid,))]
+
+    def assign(self, cid: str, username: str | None) -> bool:
+        with self.db() as c:
+            return c.execute("UPDATE complaints SET assigned_to=?, updated_at=? WHERE id=?", (username, now_iso(), cid)).rowcount > 0
+
+    def list(self, status: str | None = None, department: str | None = None, limit: int = 200,
+             assigned: str | None = None, q_text: str | None = None) -> list[sqlite3.Row]:
         q, args = "SELECT * FROM complaints WHERE 1=1", []
         if status:
             q += " AND status=?"
@@ -264,6 +279,15 @@ class ComplaintStore:
         if department:
             q += " AND department=?"
             args.append(department)
+        if assigned == "unassigned":
+            q += " AND assigned_to IS NULL"
+        elif assigned:
+            q += " AND assigned_to=?"
+            args.append(assigned)
+        if q_text:
+            like = f"%{q_text.strip().upper().replace('%', '')}%"
+            q += " AND (UPPER(plate_read) LIKE ? OR UPPER(COALESCE(plate_confirmed,'')) LIKE ? OR UPPER(id) LIKE ? OR UPPER(location_text) LIKE ? OR UPPER(description) LIKE ?)"
+            args += [like] * 5
         with self.db() as c:
             return c.execute(q + " ORDER BY created_at DESC LIMIT ?", (*args, limit)).fetchall()
 

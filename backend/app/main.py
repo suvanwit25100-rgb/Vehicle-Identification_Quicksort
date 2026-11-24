@@ -16,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from . import complaints as cm
+from . import officers as of
 from .brains import brain_status
 from .config import get_department, load_departments
 from .fusion import fuse_frames
@@ -229,10 +230,8 @@ def calibration():
 # ---------------------------------------------------------------- citizen complaints
 # The officer key gates every /api/desk route. There is no built-in default: set EXLEX_OFFICER_KEY (NETRA_OFFICER_KEY still works), or a random key
 # is generated for this run and printed once in the server log at start-up.
-_ENV_KEY = os.environ.get("EXLEX_OFFICER_KEY") or os.environ.get("NETRA_OFFICER_KEY")
-OFFICER_KEY = _ENV_KEY or secrets.token_urlsafe(9)
-if not _ENV_KEY:
-    logging.getLogger("uvicorn.error").warning("EXLEX_OFFICER_KEY is not set. Officer key for this run: %s", OFFICER_KEY)
+OFFICER_KEY, _KEY_SOURCE = of.load_or_create_key(DATA_DIR, os.environ.get("EXLEX_OFFICER_KEY") or os.environ.get("NETRA_OFFICER_KEY"))
+logging.getLogger("uvicorn.error").warning("Officer master key comes from: %s", _KEY_SOURCE)
 limiter = cm.RateLimiter()
 
 
@@ -380,6 +379,7 @@ def flag_vehicle(job_id: str, track_id: int, body: FlagIn, request: Request):
     cid = store.flag_track(job_id, track_id, body.model_dump(), (d / photo_name).read_bytes(), crop, track.match.fused.model_dump_json(),
                            track.match.pattern, track.colour, bool(crop))
     dept = get_department(cm.CATEGORIES[body.category][1])
+    _officers().log({"username": "console", "role": "-"}, "report.flag", cid, f"{job_id}/{track_id}")
     return {"complaint_id": cid, "status": "new", "department": dept.name, "plate": track.match.fused.display}
 
 
@@ -394,9 +394,25 @@ def complaint_status(cid: str):
 
 
 # ---------------------------------------------------------------- officer desk
-def require_officer(x_officer_key: str | None = Header(None)):
-    if not x_officer_key or not secrets.compare_digest(x_officer_key.encode(), OFFICER_KEY.encode()):
-        raise HTTPException(status_code=401, detail="A valid officer key is required.")
+def _officers() -> of.OfficerStore:
+    return of.OfficerStore(DATA_DIR)
+
+
+def require_officer(x_officer_key: str | None = Header(None), authorization: str | None = Header(None)) -> dict:
+    """Who is calling: a signed-in officer (Bearer token) or the master key (an administrator). Anything else is refused."""
+    if authorization and authorization.lower().startswith("bearer "):
+        ident = _officers().identity(authorization[7:].strip())
+        if ident:
+            return ident
+    elif x_officer_key and secrets.compare_digest(x_officer_key.encode(), OFFICER_KEY.encode()):
+        return dict(of.KEY_IDENTITY)
+    raise HTTPException(status_code=401, detail="Sign in as an officer to continue.")
+
+
+def require_admin(who: dict = Depends(require_officer)) -> dict:
+    if who["role"] != "admin":
+        raise HTTPException(status_code=403, detail="Only an administrator can do that.")
+    return who
 
 
 def _summary(row) -> dict:
@@ -405,14 +421,17 @@ def _summary(row) -> dict:
             "department_name": get_department(row["department"]).name, "plate_read": row["plate_read"].replace("-", ""),
             "plate_confirmed": row["plate_confirmed"], "status": row["status"], "location_text": row["location_text"],
             "observed_at": row["observed_at"], "plate_found": bool(row["plate_found"]), "vehicle_found": bool(row["vehicle_found"]),
-            "source": row["source"], "job_id": row["job_id"], "track_id": row["track_id"]}
+            "source": row["source"], "job_id": row["job_id"], "track_id": row["track_id"], "assigned_to": row["assigned_to"]}
 
 
 @app.get("/api/desk/complaints", dependencies=[Depends(require_officer)])
-def desk_list(status: str | None = None, department: str | None = None):
+def desk_list(status: str | None = None, department: str | None = None, assigned: str | None = None, q: str | None = None,
+              who: dict = Depends(require_officer)):
     if status and status not in cm.STATUSES:
         raise HTTPException(status_code=422, detail=f"status must be one of {cm.STATUSES}")
-    return [_summary(r) for r in _store().list(status, department)]
+    if assigned == "me":
+        assigned = who["username"]
+    return [_summary(r) for r in _store().list(status, department, assigned=assigned, q_text=(q or "")[:60] or None)]
 
 
 @app.get("/api/desk/complaints/{cid}", dependencies=[Depends(require_officer)])
@@ -435,12 +454,78 @@ def desk_detail(cid: str):
 
 
 @app.patch("/api/desk/complaints/{cid}", dependencies=[Depends(require_officer)])
-def desk_update(cid: str, body: DeskUpdate):
+def desk_update(cid: str, body: DeskUpdate, who: dict = Depends(require_officer)):
     if body.status not in cm.STATUSES:
         raise HTTPException(status_code=422, detail=f"status must be one of {cm.STATUSES}")
-    if not _store().update(cid, body.status, body.note):
+    store = _store()
+    row = store.get(cid)
+    if row is None:
         raise HTTPException(status_code=404, detail="report not found")
+    store.update(cid, body.status, body.note)
+    if row["status"] != body.status:
+        store.add_event(cid, who["username"], "status", f"{row['status']} -> {body.status}")
+        _officers().log(who, "report.status", cid, f"{row['status']} -> {body.status}")
+    if body.note and body.note.strip() != (row["officer_note"] or "").strip():
+        store.add_event(cid, who["username"], "note", body.note.strip())
+        _officers().log(who, "report.note", cid)
     return {"complaint_id": cid, "status": body.status}
+
+
+class AssignIn(BaseModel):
+    to: str | None = None
+
+
+class NoteIn(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+
+
+@app.post("/api/desk/complaints/{cid}/assign")
+def desk_assign(cid: str, body: AssignIn, who: dict = Depends(require_officer)):
+    store = _store()
+    if store.get(cid) is None:
+        raise HTTPException(status_code=404, detail="report not found")
+    to = (body.to or "").strip().lower() or None
+    if to and to != "key" and not (_officers().by_username(to) or {}).get("active"):
+        raise HTTPException(status_code=422, detail="No active officer with that username.")
+    store.assign(cid, to)
+    store.add_event(cid, who["username"], "assign", f"assigned to {to}" if to else "unassigned")
+    _officers().log(who, "report.assign", cid, to or "unassigned")
+    return {"complaint_id": cid, "assigned_to": to}
+
+
+@app.post("/api/desk/complaints/{cid}/notes")
+def desk_note(cid: str, body: NoteIn, who: dict = Depends(require_officer)):
+    store = _store()
+    if store.get(cid) is None:
+        raise HTTPException(status_code=404, detail="report not found")
+    store.add_event(cid, who["username"], "note", body.text.strip())
+    _officers().log(who, "report.note", cid)
+    return {"ok": True}
+
+
+@app.get("/api/desk/complaints/{cid}/timeline", dependencies=[Depends(require_officer)])
+def desk_timeline(cid: str):
+    store = _store()
+    row = store.get(cid)
+    if row is None:
+        raise HTTPException(status_code=404, detail="report not found")
+    filed = "flagged from the console" if row["source"] == "console" else "filed by a citizen"
+    return [{"at": row["created_at"], "actor": "system", "kind": "filed", "text": filed}, *store.events(cid)]
+
+
+@app.get("/api/desk/complaints.csv", dependencies=[Depends(require_officer)])
+def desk_csv(who: dict = Depends(require_officer)):
+    import csv
+    import io
+
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["id", "filed", "source", "category", "agency", "status", "assigned_to", "plate_read", "plate_typed", "location", "observed_at", "analysis", "vehicle"])
+    for r in _store().list(limit=5000):
+        w.writerow([r["id"], r["created_at"], r["source"], r["category"], r["department"], r["status"], r["assigned_to"] or "", r["plate_read"].replace("-", ""),
+                    r["plate_confirmed"] or "", r["location_text"], r["observed_at"] or "", r["job_id"] or "", r["track_id"] if r["track_id"] is not None else ""])
+    _officers().log(who, "report.export", None, "csv")
+    return Response(buf.getvalue(), media_type="text/csv", headers={"Content-Disposition": 'attachment; filename="reports.csv"'})
 
 
 @app.get("/api/desk/complaints/{cid}/photo", dependencies=[Depends(require_officer)])
@@ -480,22 +565,25 @@ def desk_watchlist():
 
 
 @app.post("/api/desk/watchlist", dependencies=[Depends(require_officer)])
-def desk_watch_add(body: WatchIn):
+def desk_watch_add(body: WatchIn, who: dict = Depends(require_officer)):
     try:
-        return _watch().add(body.plate, body.reason)
+        entry = _watch().add(body.plate, body.reason)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
+    _officers().log(who, "watchlist.add", entry["id"], entry["plate"])
+    return entry
 
 
 @app.delete("/api/desk/watchlist/{wid}", dependencies=[Depends(require_officer)])
-def desk_watch_remove(wid: str):
+def desk_watch_remove(wid: str, who: dict = Depends(require_officer)):
     if not _watch().remove(wid):
         raise HTTPException(status_code=404, detail="No such entry.")
+    _officers().log(who, "watchlist.remove", wid)
     return {"removed": wid}
 
 
 @app.get("/api/desk/jobs/{job_id}/tracks/{track_id}/challan.pdf", dependencies=[Depends(require_officer)])
-def desk_challan(job_id: str, track_id: int):
+def desk_challan(job_id: str, track_id: int, who: dict = Depends(require_officer)):
     """A DRAFT e-challan for a document violation. Officer key required; never an official document."""
     from . import agency_tools as at, pdf_report
 
@@ -508,8 +596,179 @@ def desk_challan(job_id: str, track_id: int):
         raise HTTPException(status_code=409, detail="No challan can be drafted: it needs a confirmed match with a recorded document violation, for the police or MoRTH/NHAI.")
     if not pdf_report.available():
         raise HTTPException(status_code=501, detail="PDF export needs the reportlab package (pip install reportlab).")
+    _officers().log(who, "challan.draft", f"{job_id}/{track_id}", track.match.fused.display)
     return Response(at.render_challan(result, track, d), media_type="application/pdf",
                     headers={"Content-Disposition": f'inline; filename="draft-challan-{job_id}-{track_id}.pdf"'})
+
+
+# ---------------------------------------------------------------- officer accounts, sign-in, audit, dashboard
+class LoginIn(BaseModel):
+    username: str | None = Field(None, max_length=40)
+    password: str | None = Field(None, max_length=200)
+    key: str | None = Field(None, max_length=200)
+
+
+def _bearer(authorization: str | None) -> str | None:
+    return authorization[7:].strip() if authorization and authorization.lower().startswith("bearer ") else None
+
+
+@app.post("/api/officer/login")
+def officer_login(body: LoginIn, request: Request):
+    """Sign in with a username and password, or with the master key (administrator). Failed attempts are limited and logged."""
+    client = _client_id(request)
+    if not limiter.allow(client, "login", 12, 900):
+        raise HTTPException(status_code=429, detail="Too many sign-in attempts. Wait a few minutes.")
+    store = _officers()
+    if body.key:
+        if not secrets.compare_digest(body.key.encode(), OFFICER_KEY.encode()):
+            store.log({"username": "key", "role": "-"}, "login.failed", None, "master key")
+            raise HTTPException(status_code=401, detail="That key was not accepted.")
+        ident = dict(of.KEY_IDENTITY)
+        token = store.open_session(ident)
+    elif body.username and body.password:
+        got = store.login(body.username, body.password)
+        if got is None:
+            store.log({"username": body.username.strip().lower()[:40], "role": "-"}, "login.failed")
+            raise HTTPException(status_code=401, detail="Wrong username or password, or the account is switched off.")
+        token, ident = got
+    else:
+        raise HTTPException(status_code=422, detail="Give a username and password, or the officer key.")
+    store.log(ident, "login")
+    return {"token": token, "officer": ident, "expires_in_hours": of.SESSION_HOURS}
+
+
+@app.get("/api/officer/me")
+def officer_me(who: dict = Depends(require_officer)):
+    return who
+
+
+@app.post("/api/officer/logout")
+def officer_logout(authorization: str | None = Header(None), who: dict = Depends(require_officer)):
+    tok = _bearer(authorization)
+    if tok:
+        _officers().logout(tok)
+    _officers().log(who, "logout")
+    return {"ok": True}
+
+
+class PasswordIn(BaseModel):
+    current: str = Field(max_length=200)
+    new: str = Field(max_length=200)
+
+
+@app.post("/api/officer/password")
+def officer_password(body: PasswordIn, who: dict = Depends(require_officer)):
+    if who["id"] == "key":
+        raise HTTPException(status_code=409, detail="The master key has no password. Change it by setting EXLEX_OFFICER_KEY or editing data/officer_key.txt.")
+    store = _officers()
+    got = store.login(who["username"], body.current)
+    if got is None:
+        raise HTTPException(status_code=401, detail="The current password is wrong.")
+    try:
+        store.update(who["id"], password=body.new)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    store.log(who, "account.password")
+    return {"ok": True}
+
+
+class NewOfficer(BaseModel):
+    username: str = Field(max_length=40)
+    name: str = Field(max_length=100)
+    role: str = "officer"
+    password: str = Field(max_length=200)
+
+
+class OfficerPatch(BaseModel):
+    role: str | None = None
+    active: bool | None = None
+    password: str | None = Field(None, max_length=200)
+
+
+@app.get("/api/officer/team", dependencies=[Depends(require_officer)])
+def team_list():
+    """Names and roles of the active team, so a report can be assigned. Admins see everything on /api/officer/team/all."""
+    return [{"username": o["username"], "name": o["name"], "role": o["role"]} for o in _officers().team() if o["active"]]
+
+
+@app.get("/api/officer/team/all", dependencies=[Depends(require_admin)])
+def team_all():
+    return _officers().team()
+
+
+@app.post("/api/officer/team")
+def team_create(body: NewOfficer, who: dict = Depends(require_admin)):
+    try:
+        o = _officers().create(body.username, body.name, body.role, body.password)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    _officers().log(who, "team.create", o["username"], o["role"])
+    return o
+
+
+@app.patch("/api/officer/team/{oid}")
+def team_update(oid: str, body: OfficerPatch, who: dict = Depends(require_admin)):
+    if oid == who["id"] and (body.active is False or (body.role and body.role != who["role"])):
+        raise HTTPException(status_code=409, detail="You cannot switch off or demote your own account.")
+    store = _officers()
+    target = store.get(oid)
+    if target is None:
+        raise HTTPException(status_code=404, detail="No such officer.")
+    if target["role"] == "admin" and (body.active is False or body.role == "officer") and store.admins_active() <= 1:
+        raise HTTPException(status_code=409, detail="That is the last active administrator.")
+    try:
+        o = store.update(oid, role=body.role, active=body.active, password=body.password)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    what = ", ".join(k for k, v in (("role", body.role), ("active", body.active), ("password reset", body.password)) if v is not None)
+    store.log(who, "team.update", target["username"], what)
+    return o
+
+
+@app.get("/api/officer/audit", dependencies=[Depends(require_admin)])
+def audit_log(limit: int = 200, actor: str | None = None, action: str | None = None):
+    return _officers().audit(max(1, min(limit, 1000)), actor, action)
+
+
+@app.get("/api/officer/dashboard")
+def officer_dashboard(who: dict = Depends(require_officer)):
+    from collections import Counter
+    from datetime import datetime, timedelta, timezone
+
+    from . import watchlist as wl
+
+    store = _store()
+    rows = store.list(limit=5000)
+    now = datetime.now(timezone.utc)
+    open_states = {"new", "under_review"}
+    aging = 0
+    per_day: Counter = Counter()
+    for r in rows:
+        try:
+            t = datetime.fromisoformat(r["created_at"])
+        except ValueError:
+            continue
+        if r["status"] == "new" and now - t > timedelta(hours=48):
+            aging += 1
+        if now - t <= timedelta(days=7):
+            per_day[t.date().isoformat()] += 1
+    days = [(now - timedelta(days=i)).date().isoformat() for i in range(6, -1, -1)]
+    mine = sum(1 for r in rows if r["assigned_to"] == who["username"] and r["status"] in open_states)
+    entries = _watch().entries()
+    alerts = wl.alerts(DATA_DIR, entries) if entries else []
+    jobs = job_summary(DATA_DIR)
+    counts = store.counts()
+    return {
+        "reports": {"total": counts["total"], "by_status": counts["by_status"], "by_agency": counts["by_department"],
+                    "unassigned_open": sum(1 for r in rows if r["assigned_to"] is None and r["status"] in open_states),
+                    "mine_open": mine, "aging_new_over_48h": aging, "from_console": sum(1 for r in rows if r["source"] == "console"),
+                    "per_day": [{"date": d, "count": per_day.get(d, 0)} for d in days]},
+        "analyses": {"stored": jobs["stored_videos"], "distinct_videos": jobs["distinct_videos"], "vehicles": jobs.get("vehicles"), "readable": jobs.get("readable")},
+        "watchlist": {"entries": len(entries), "hits_exact": sum(a["level"] == "exact" for a in alerts), "hits_possible": sum(a["level"] == "possible" for a in alerts)},
+        "repeat_plates": len(wl.repeat_groups(wl.all_sightings(DATA_DIR))),
+        "recent_activity": _officers().audit(8) if who["role"] == "admin" else [],
+        "you": who,
+    }
 
 
 # the static site is mounted last, so it can never shadow an API route

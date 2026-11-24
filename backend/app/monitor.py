@@ -35,7 +35,7 @@ class Metrics:
     @staticmethod
     def group(path: str) -> str:
         for prefix, name in (("/api/analyze", "analyses"), ("/api/match", "plate matches"), ("/api/complaints", "citizen reports"),
-                             ("/api/desk", "officer desk"), ("/api/jobs", "stored results")):
+                             ("/api/desk", "officer desk"), ("/api/officer", "officer desk"), ("/api/jobs", "stored results")):
             if path.startswith(prefix):
                 return name
         return "other"

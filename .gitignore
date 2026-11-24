@@ -25,3 +25,4 @@ training/eval_*.json
 
 # local tool settings
 .claude/settings.local.json
+backend/data/officer_key.txt

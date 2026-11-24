@@ -100,17 +100,21 @@ def test_validation(client, over, code):
 
 
 def test_there_is_no_built_in_officer_key():
-    import os
-    import subprocess
-    import sys
     from pathlib import Path
 
-    # a fresh interpreter with the variable unset must generate a random key, and two runs must differ
-    code = "import os; os.environ.pop('NETRA_OFFICER_KEY', None); os.environ.pop('EXLEX_OFFICER_KEY', None); from app import main; print(main.OFFICER_KEY)"
-    env = {k: v for k, v in os.environ.items() if k not in ("NETRA_OFFICER_KEY", "EXLEX_OFFICER_KEY")}
-    keys = [subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=Path(main.__file__).parents[1], env=env).stdout.strip()
-            for _ in range(2)]
-    assert all(len(k) >= 12 for k in keys) and keys[0] != keys[1]
+    from app import officers as of
+
+    # with no environment variable the key is generated once and kept in a file: random, long, never in the source, and stable between runs
+    import tempfile
+
+    with tempfile.TemporaryDirectory() as d:
+        k1, src1 = of.load_or_create_key(Path(d), None)
+        k2, _ = of.load_or_create_key(Path(d), None)
+        other, _ = of.load_or_create_key(Path(d) / "elsewhere", None)
+        assert k1 == k2 and k1 != other and len(k1) >= 12 and src1.endswith("officer_key.txt")
+        assert (Path(d) / "officer_key.txt").stat().st_mode & 0o077 == 0          # readable by the owner only
+        assert of.load_or_create_key(Path(d), "from-env-123456")[0] == "from-env-123456"
+    assert k1 not in Path(main.__file__).read_text()
 
 
 def test_officer_key_is_required_and_checked(client):
