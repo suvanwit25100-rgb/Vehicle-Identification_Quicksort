@@ -27,7 +27,8 @@ from .export import build_case_zip
 from .report import render_report
 from .schemas import AnalysisResult, Evidence, FusedPlate, MatchResult
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+# Where analyses, reports, accounts and the key are kept. On a host with a persistent disk, point EXLEX_DATA_DIR at it.
+DATA_DIR = Path(os.environ["EXLEX_DATA_DIR"]) if os.environ.get("EXLEX_DATA_DIR") else Path(__file__).resolve().parent.parent / "data"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 ALLOWED_EXT = {".mp4", ".avi", ".mov", ".mkv"}
 MAX_UPLOAD_MB = 300
@@ -35,6 +36,15 @@ JOB_ID_RE = re.compile(r"[0-9a-f]{12}")
 CROP_RE = re.compile(r"track\d+_(?:plate\d+|vehicle|evidence)\.jpg")
 
 app = FastAPI(title="ExLex API")
+
+
+if os.environ.get("EXLEX_CORS_ORIGINS"):
+    # Only needed when the pages are served from another address than the API (for example pages on Vercel, API elsewhere). Tokens travel in a
+    # header, never a cookie, so no credentials are allowed.
+    from fastapi.middleware.cors import CORSMiddleware
+
+    app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in os.environ["EXLEX_CORS_ORIGINS"].split(",") if o.strip()],
+                       allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"], allow_headers=["Authorization", "Content-Type", "X-Officer-Key"], allow_credentials=False)
 
 
 @app.middleware("http")

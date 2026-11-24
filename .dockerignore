@@ -1,0 +1,16 @@
+.git
+.venv
+**/.venv
+**/__pycache__
+**/*.pyc
+.pytest_cache
+training
+backend/models/clip-vit-b32
+backend/data/jobs
+backend/data/uploads
+backend/data/complaints
+backend/data/netra.db
+backend/data/officer_key.txt
+backend/tests
+*.mp4
+*.pdf

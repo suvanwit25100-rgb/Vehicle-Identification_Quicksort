@@ -214,7 +214,7 @@ $("#upload").addEventListener("submit", async (ev) => {
   $("#go").disabled = true;
   const t0 = Date.now();
   const tick = setInterval(() => { $("#status").innerHTML = `<span class="spinner"></span>Analysing… ${Math.round((Date.now() - t0) / 1000)} s. Longer clips take a minute or two on CPU.`; $("#status").className = "status-line"; }, 500);
-  try { await render(await api("/api/analyze", { method: "POST", body: fd })); setStatus("Done."); loadRecent(); }
+  try { await render(await api((window.EXLEX?.uploadBase || "") + "/api/analyze", { method: "POST", body: fd })); setStatus("Done."); loadRecent(); }
   catch (e) { setStatus("Analysis failed: " + e.message, true); }
   finally { clearInterval(tick); $("#go").disabled = false; }
 });

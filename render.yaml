@@ -1,0 +1,22 @@
+# Render blueprint for the ExLex backend. Create it from the Render dashboard: New > Blueprint > pick this repository.
+# The analysis models need about 2 GB of memory, so the free and starter plans will not run it.
+services:
+  - type: web
+    name: exlex-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: standard
+    healthCheckPath: /api/health
+    disk:
+      name: exlex-data
+      mountPath: /var/data
+      sizeGB: 10
+    envVars:
+      - key: EXLEX_DATA_DIR
+        value: /var/data
+      - key: EXLEX_OFFICER_KEY
+        sync: false            # you type the master officer key into the dashboard; it is never stored in the repository
+      - key: EXLEX_CORS_ORIGINS
+        sync: false            # the address of your Vercel site, e.g. https://exlex.vercel.app
+      - key: EXLEX_PUBLIC_URL
+        sync: false            # the address people use for the site (used in password-reset links)

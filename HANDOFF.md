@@ -420,6 +420,12 @@ Not built, on purpose: live camera streams, helmet/rider checks, FASTag/permit c
 - Per-agency permissions and the session list/revoke screen were already built earlier (the "not built" list pasted by the user was out of date).
 - 273 tests pass (17 new in `test_security_features.py`). Browser-checked on scratch data: enrol (QR, 8 codes), sign-in with and without the code, wrong code, forgot and reset flow, alert pop-up and unread count.
 
+### Going online (2026-11-24)
+- Asked to deploy; the user chose a public link from the Mac, then asked about Vercel and chose "Vercel front end + backend elsewhere". **Nothing is deployed.** Cloudflare quick tunnels were tried and are blocked on the network in use (connection reset three times); `cloudflared` was installed with Homebrew and is still on the Mac.
+- Prepared: `Dockerfile` + `deploy/start.sh` (CPU PyTorch, no CLIP), `render.yaml` (standard plan, 10 GB disk, secrets left blank), `vercel.json` (static output `backend/app/static`, `/api` rewrites), `deploy/set_backend.py` (fills in the backend address), `DEPLOY.md` (steps).
+- Code changes for hosting: `EXLEX_DATA_DIR` (data, key and database on a persistent disk), `EXLEX_CORS_ORIGINS` (off unless set; no credentials), `static/config.js` (`uploadBase` so large uploads go straight to the API), real visitor address behind a proxy for rate limits, 300 MB upload cap and analysis limit (30/hour/visitor), security headers, `robots.txt` disallowing indexing.
+- **Not verified:** the Docker image was never built (no Docker here); Vercel rewrites were not exercised against a live backend. The local dry run of the start command (proxy headers, per-visitor limits) did pass. 280 tests pass.
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.
