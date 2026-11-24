@@ -110,6 +110,7 @@ class VideoInfo(BaseModel):
     fps: float
     duration_s: float | None = None
     frames_total: int | None = None
+    kind: str = "video"     # "image" for a single still picture
 
 
 class TrackAnalysis(BaseModel):

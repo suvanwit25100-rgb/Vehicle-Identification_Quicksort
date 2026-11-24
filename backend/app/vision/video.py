@@ -17,7 +17,19 @@ def laplacian_var(image: np.ndarray) -> float:
     return float(cv2.Laplacian(gray, cv2.CV_64F).var())
 
 
+IMAGE_EXT = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+
+
+def is_image(path: str | Path) -> bool:
+    return Path(path).suffix.lower() in IMAGE_EXT
+
+
 def sample_frames(path: str | Path, target_fps: float = 6.0, max_frames: int = 240) -> list[SampledFrame]:
+    if is_image(path):                       # a still image is one frame: there is nothing to fuse across
+        img = cv2.imread(str(path))
+        if img is None:
+            raise ValueError(f"cannot open image: {path}")
+        return [SampledFrame(frame_id=0, t=0.0, image=img)]
     cap = cv2.VideoCapture(str(path))
     if not cap.isOpened():
         raise ValueError(f"cannot open video: {path}")

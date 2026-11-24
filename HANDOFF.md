@@ -517,3 +517,9 @@ The project is now called **ExLex** (earlier names: Netra, PlateTrace). It is sh
 - It is the default when the file exists; a fresh clone without it falls back to the 334-row demo registry. Matching uses a numpy prefilter (`matcher.py`, identical answers, tested).
   Measured: load 2.3 s, about 930 MB RAM, 22 vehicles matched in 0.17 s, registry search 0.3 s. Stored plates re-matched: 60 match, 32 no confident match, 221 insufficient evidence (unchanged: random plates almost never collide with a real read).
 - Hosting note: 930 MB of RAM for this registry is too much for a small free tier.
+
+### 8i. Image input (2026-11-24)
+- The console has a Footage / Image toggle. A still image (JPG, PNG, WEBP, BMP) goes through the same endpoint and pipeline as a one-frame clip (`vision/video.py::sample_frames`),
+  so there is no multi-frame fusion: expect more unknown characters than from footage. Stored jobs and the PDF say "still image". Batch upload works for images too.
+- Measured on one case: re-analysing the saved, annotated, downscaled evidence frame of Kolkata vehicle 5 as an image read only `WB04??????` (the video gave `WB04E6202`),
+  which is the single-frame limit in action. Not a general accuracy figure.

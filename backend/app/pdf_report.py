@@ -103,7 +103,7 @@ def render_pdf(result: AnalysisResult, job_dir: Path | None = None) -> bytes:
         meta.append(f"File: {_t(result.source_filename)}")
     if result.video:
         v = result.video
-        meta.append(f"{v.width}x{v.height} at {v.fps:g} fps" + (f", {v.duration_s:g} s" if v.duration_s else ""))
+        meta.append((f"{v.width}x{v.height} still image" if v.kind == "image" else f"{v.width}x{v.height} at {v.fps:g} fps" + (f", {v.duration_s:g} s" if v.duration_s else "")))
     if result.body_model:
         meta.append(f"Body type: {_t(result.body_model)}")
     if result.second_reader_used:

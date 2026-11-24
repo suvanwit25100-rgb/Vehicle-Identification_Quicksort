@@ -181,7 +181,7 @@ def render_report(result: AnalysisResult, job_dir: Path | None = None) -> str:
         meta2.append(f"File: {escape(result.source_filename)}")
     if result.video:
         v = result.video
-        meta2.append(f"{v.width}x{v.height} at {v.fps:g} fps" + (f", {v.duration_s:g} s" if v.duration_s else ""))
+        meta2.append((f"{v.width}x{v.height} still image" if v.kind == "image" else f"{v.width}x{v.height} at {v.fps:g} fps" + (f", {v.duration_s:g} s" if v.duration_s else "")))
     if result.body_model:
         meta2.append(f"Body type: {escape(result.body_model)}")
     if result.second_reader_used:

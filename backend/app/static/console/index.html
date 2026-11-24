@@ -26,6 +26,10 @@
     <section class="panel" aria-labelledby="new-h">
       <h3 id="new-h">New analysis</h3>
       <form id="upload" class="stack-form">
+        <div class="mode" role="radiogroup" aria-label="What are you uploading?">
+          <button type="button" class="on" role="radio" aria-checked="true" data-mode="video">Footage</button>
+          <button type="button" role="radio" aria-checked="false" data-mode="image">Image</button>
+        </div>
         <label class="drop" id="drop" for="file">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
           <strong id="drop-title">Drop a clip (or several) here, or click to choose</strong>

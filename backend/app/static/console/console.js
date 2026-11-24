@@ -180,7 +180,7 @@ async function render(result) {
         result.source_filename ? `File: ${result.source_filename}` : null,
         result.camera || result.camera_place ? `Camera: ${[result.camera, result.camera_place].filter(Boolean).join(", ")}` : null,
         result.recorded_at ? `Recorded: ${result.recorded_at.replace("T", " ")}` : null,
-        result.video ? `${result.video.width}×${result.video.height} at ${result.video.fps} fps${result.video.duration_s ? `, ${result.video.duration_s} s` : ""}` : null,
+        result.video ? (result.video.kind === "image" ? `${result.video.width}×${result.video.height} still image, one frame: no multi-frame fusion` : `${result.video.width}×${result.video.height} at ${result.video.fps} fps${result.video.duration_s ? `, ${result.video.duration_s} s` : ""}`) : null,
         result.processing_seconds != null ? `analysed in ${result.processing_seconds} s` : null,
         result.body_model ? `body type: ${result.body_model}` : null,
         result.second_reader_used ? `second reader: ${result.second_reader_used}` : null,
@@ -216,16 +216,34 @@ async function loadRecent() {
 
 /* ---------- upload ---------- */
 const fileIn = $("#file"), drop = $("#drop");
+const MODES = {
+  video: { accept: ".mp4,.avi,.mov,.mkv,video/*", re: /\.(mp4|avi|mov|mkv)$/i, noun: "clip", title: "Drop a clip (or several) here, or click to choose", sub: "MP4, AVI, MOV or MKV. About 40 seconds of footage is analysed.", one: "Analyse clip" },
+  image: { accept: ".jpg,.jpeg,.png,.webp,.bmp,image/*", re: /\.(jpe?g|png|webp|bmp)$/i, noun: "image", title: "Drop an image (or several) here, or click to choose", sub: "JPG, PNG, WEBP or BMP. One picture is one frame, so characters cannot be combined across frames: expect more unknowns than from footage.", one: "Analyse image" },
+};
+let mode = "video";
+const isMode = (f) => MODES[mode].re.test(f.name);
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll(".mode button").forEach((b) => { const on = b.dataset.mode === m; b.classList.toggle("on", on); b.setAttribute("aria-checked", String(on)); });
+  fileIn.accept = MODES[m].accept; fileIn.value = ""; showFile();
+}
+document.querySelectorAll(".mode button").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
 function showFile() {
-  const fs = [...fileIn.files], f = fs[0], mb = fs.reduce((a, x) => a + x.size, 0) / 1048576;
-  $("#drop-title").textContent = fs.length > 1 ? `${fs.length} clips chosen` : f ? f.name : "Drop a clip (or several) here, or click to choose";
-  $("#drop-sub").textContent = f ? (fs.length > 1 ? `${mb.toFixed(1)} MB in all. They are analysed one after another.` : `${mb.toFixed(1)} MB, ready to analyse`) : "MP4, AVI, MOV or MKV. About 40 seconds of footage is analysed.";
-  $("#go").textContent = fs.length > 1 ? `Analyse ${fs.length} clips` : "Analyse clip";
+  const M = MODES[mode], fs = [...fileIn.files], f = fs[0], mb = fs.reduce((a, x) => a + x.size, 0) / 1048576;
+  $("#drop-title").textContent = fs.length > 1 ? `${fs.length} ${M.noun}s chosen` : f ? f.name : M.title;
+  $("#drop-sub").textContent = f ? (fs.length > 1 ? `${mb.toFixed(1)} MB in all. They are analysed one after another.` : `${mb.toFixed(1)} MB, ready to analyse`) : M.sub;
+  $("#go").textContent = fs.length > 1 ? `Analyse ${fs.length} ${M.noun}s` : M.one;
 }
 fileIn.addEventListener("change", showFile);
 ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
-drop.addEventListener("drop", (e) => { if (e.dataTransfer.files.length) { fileIn.files = e.dataTransfer.files; showFile(); } });
+drop.addEventListener("drop", (e) => {
+  const fs = [...e.dataTransfer.files];
+  if (!fs.length) return;
+  const other = mode === "video" ? "image" : "video";
+  if (fs.every((f) => !isMode(f)) && fs.every((f) => MODES[other].re.test(f.name))) setMode(other);      // dropped the other kind: switch to it
+  fileIn.files = e.dataTransfer.files; showFile();
+});
 
 function uploadForm(file) {
   const fd = new FormData();
@@ -240,7 +258,7 @@ const QSTATE = { waiting: "waiting", analysing: "analysing…", done: "done", fa
 /* Several clips at once: one after another, each through the same endpoint a single clip uses. */
 async function runBatch(files) {
   const q = $("#queue");
-  const rows = files.map((f) => ({ f, state: /\.(mp4|avi|mov|mkv)$/i.test(f.name) ? "waiting" : "skipped", note: /\.(mp4|avi|mov|mkv)$/i.test(f.name) ? "" : "Not a video file." }));
+  const rows = files.map((f) => ({ f, state: isMode(f) ? "waiting" : "skipped", note: isMode(f) ? "" : `Not ${mode === "video" ? "a video" : "an image"} file.` }));
   let stop = false;
   const stopBtn = h("button", { class: "btn sm", type: "button" }, "Stop after this clip");
   stopBtn.addEventListener("click", () => { stop = true; stopBtn.disabled = true; stopBtn.textContent = "Stopping…"; });

@@ -31,7 +31,7 @@ from .schemas import AnalysisResult, Evidence, FusedPlate, MatchResult
 # Where analyses, reports, accounts and the key are kept. On a host with a persistent disk, point EXLEX_DATA_DIR at it.
 DATA_DIR = Path(os.environ["EXLEX_DATA_DIR"]) if os.environ.get("EXLEX_DATA_DIR") else Path(__file__).resolve().parent.parent / "data"
 STATIC_DIR = Path(__file__).resolve().parent / "static"
-ALLOWED_EXT = {".mp4", ".avi", ".mov", ".mkv"}
+ALLOWED_EXT = {".mp4", ".avi", ".mov", ".mkv", ".jpg", ".jpeg", ".png", ".webp", ".bmp"}   # footage, or a single still image
 MAX_UPLOAD_MB = 300
 JOB_ID_RE = re.compile(r"[0-9a-f]{12}")
 CROP_RE = re.compile(r"track\d+_(?:plate\d+|vehicle|evidence)\.jpg")

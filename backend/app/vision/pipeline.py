@@ -18,7 +18,7 @@ from .attributes import BODY_PROMPTS, average_distributions, body_distribution, 
 from .rows import read_plate
 from .plate_text import align_to_slots
 from .stitch import group_tracks
-from .video import laplacian_var, sample_frames
+from .video import is_image, laplacian_var, sample_frames
 
 MIN_VEHICLE_PX = 40
 PLATE_PAD = 0.06
@@ -50,6 +50,9 @@ def plate_layout(reads: list[FrameRead]) -> str | None:
 
 
 def _video_info(path: Path) -> VideoInfo | None:
+    if is_image(path):
+        img = cv2.imread(str(path))
+        return None if img is None else VideoInfo(width=img.shape[1], height=img.shape[0], fps=0.0, duration_s=None, frames_total=1, kind="image")
     cap = cv2.VideoCapture(str(path))
     try:
         w, h = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
