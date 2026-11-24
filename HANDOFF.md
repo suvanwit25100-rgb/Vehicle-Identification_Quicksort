@@ -370,6 +370,14 @@ All use the existing pretrained models; nothing was trained.
 - Checked by extracting the text of the generated PDF (tests) and of a real job; not looked at page by page as images (no PDF rasteriser here). Core Latin-1 font: non-Latin characters in a file name print as `?`.
 - 204 tests pass (5 new in `test_pdf_report.py`).
 
+### Feature 5: agency tools (`app/agency_tools.py`)
+- `GET /api/jobs/{id}/actions` returns suggested next steps per vehicle, **only for a confirmed "match"** (ambiguous gets "verify manually", refusals get nothing). Driven by the registry flags (demo data, synthetic):
+  police: stolen = verify against live records first; expired insurance/PUC = document lead with a draft challan. MoRTH/NHAI: document violations get a draft challan, stolen is referred to police. BSF/SSB/Customs: stolen is referred to police, documents only noted.
+- `GET /api/desk/jobs/{id}/tracks/{tid}/challan.pdf` (officer key) returns a **DRAFT e-challan** (police and MoRTH/NHAI, document violations only; 409 elsewhere): watermarked DRAFT, evidence frame and plate crop, video hash, how sure the plate is,
+  blank place/officer fields, no fine amount. Not an official document and nothing is sent anywhere. The console shows the steps and a button; it uses the key stored by the officer-desk sign-in.
+- **Not built:** FASTag class check, permit/route check, convoy detection, challans for citizen reports, real registry data. Fine amounts and legal sections were deliberately left out rather than guessed.
+- 212 tests pass in total (8 new in `test_agency_tools.py`). The site's features, landing and roadmap lists were updated to match what is built.
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

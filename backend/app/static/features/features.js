@@ -85,7 +85,7 @@ const V = {
   agencies: () => slot(api("/api/departments").catch(() => null), (ds) => [h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Agency", "Needs", "Threshold"].map((t) => h("th", {}, t)))),
     h("tbody", {}, ds.map((d) => h("tr", {}, h("td", {}, d.id.replace("_", " / ").toUpperCase()), h("td", { class: "mono" }, `${d.min_known_chars} of 10`), h("td", { class: "mono" }, d.match_threshold.toFixed(2))))))), cap("Live from the agency configuration file.")]),
 
-  roadmap: () => h("div", {}, [["partial", "Insurance and PUC status flags"], ["planned", "Watch-list alerts across cameras"], ["planned", "FASTag class mismatch check"], ["planned", "Repeat-crossing detection (border)"], ["planned", "Permit and route check (customs)"], ["planned", "Draft e-challan from the shortlist"]]
+  roadmap: () => h("div", {}, [["built", "Insurance and PUC status flags on a confirmed match"], ["built", "Watch-list with hits across stored videos"], ["built", "Repeat sightings across different videos"], ["built", "Draft e-challan (PDF) for an officer to complete"], ["planned", "FASTag class mismatch check"], ["planned", "Permit and route check (customs)"], ["planned", "Watch-list alerts across live cameras"]]
     .map(([s, t]) => h("div", { class: "mini", style: "padding:5px 0" }, h("span", {}, t), h("span", { class: `chip ${s}`, style: "padding:3px 8px" }, s)))),
 
   report: () => slot(monitor(), (m) => [h("div", { class: "flow" }, h("b", {}, "Photo"), "→", h("b", {}, "Plate read"), "→", h("b", {}, "You check it"), "→", h("b", {}, "Department queue")),
@@ -129,7 +129,7 @@ const V = {
       cap("Live from the server. Search by a whole or partial plate to find the same vehicle in other videos.")];
   }),
 
-  notbuilt: () => h("div", {}, ["PDF export of the report (it prints to PDF from the browser)", "Make and model recognition, and cross-camera tracking", "Individual officer accounts and citizen OTP sign-in", "Face blurring, retention and deletion rules", "Linking several citizens' reports of one vehicle", "Deleting stored analyses: videos stay until removed by hand"]
+  notbuilt: () => h("div", {}, ["Live camera streams: analysis is of uploaded clips", "Real registry (VAHAN) or FASTag data: the registry is synthetic", "Make and model recognition, and cross-camera tracking", "Individual officer accounts and citizen OTP sign-in", "Face blurring, retention and deletion rules", "Linking several citizens' reports of one vehicle", "Deleting stored analyses: videos stay until removed by hand"]
     .map((t) => h("div", { class: "tick off" }, h("i", {}, "–"), t))),
 };
 
@@ -144,6 +144,12 @@ const GROUPS = [
       ["Position 4 may be a letter or a digit (Delhi RTO codes such as 1L and 8C)", "O/0, I/1 and S/5 are corrected by position, with a confidence discount", "One extra or missing end character is tolerated", "A 9-character plate with a single series letter is read as it is: the empty second series position is shown as a gap, not as unreadable", "Still not handled: three series letters, and numbers shorter than four digits"], "grammar"],
     ["built", "Motorcycles and two-row plates", "Most Indian two-wheelers carry a two-row plate. A reader built for one line turns it into fragments, so each row is read as its own line and joined.",
       ["A plate that is not clearly one line is read both ways, and the reading that fits the plate format better wins", "A one-row plate is never split, so cars are unaffected (identical results in the measurement)", "Honest limits: tiny or blurry two-row plates still cannot be read, and only one clear two-row plate in our real clip could be checked"], "tworow"],
+    ["built", "Repeat sightings and an officer watch-list", "The same vehicle seen in different videos is grouped on the archive page. Officers can list plates to flag, with a reason, and see where they appear.",
+      ["Needs two different videos (by file hash): re-analysing one clip is not a repeat", "Unknown characters never create a hit: a partial read is only ever 'possible'", "The list and its reasons need the officer key and never appear in public responses", "Not built: live alerts; hits are shown on the desk on request"], "stitch"],
+    ["built", "Agency next steps and a draft e-challan", "On a confirmed match only, each agency is told what the registry flags mean for it. Police and MoRTH/NHAI can open a draft e-challan PDF for an officer to complete.",
+      ["Stolen: police verify first, other agencies refer it to the police", "Expired insurance or PUC: a draft challan, behind the officer key", "The draft has no fine amount, is watermarked, and nothing is sent anywhere", "The registry is synthetic, so the flags are demonstration data"], "rank"],
+    ["built", "PDF report", "Every analysis can be downloaded as a PDF as well as a web page, and the PDF is also inside the case-file ZIP.",
+      ["Same content: plate, confidence per slot, second reader, images, candidates, reasons, models", "Unknown characters stay ?", "Images are reduced for size; the ZIP keeps the originals"], "report"],
     ["partial", "Track stitching", "Trackers sometimes split one vehicle into several tracks. Fragments that clearly carry the same plate are joined.",
       ["Merge only if the plates agree on 6 or more characters and clash on none", "A group grows only if every pair in it is compatible", "Honest gap: on one real clip nothing needed merging, and unreadable fragments stay separate"], "stitch"],
     ["built", "Too small to read", "A vehicle with a tiny plate is not forced into a read. It is listed with the reason.",

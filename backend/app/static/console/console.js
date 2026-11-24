@@ -37,7 +37,29 @@ function wholeReads(t) {
   return top.length ? h("p", { class: "attrs" }, "Whole-plate reads before fitting to ten slots: ", ...top.map(([r, n], i) => [i ? " · " : "", h("span", { class: "mono" }, r), h("span", { class: "muted" }, ` ×${n}`)])) : null;
 }
 
-function trackView(jobId, t) {
+const ACTION_TONE = { alert: "bad", refer: "warn", document: "warn", verify: "warn", note: "", clear: "" };
+async function draftChallan(jobId, trackId, btn, out) {
+  let key = "";
+  try { key = sessionStorage.getItem("officerKey") || ""; } catch (e) { /* storage blocked */ }
+  if (!key) { out.textContent = "Sign in on the Officer desk first: a draft challan needs the officer key."; return; }
+  btn.disabled = true; out.textContent = "Preparing the draft…";
+  try {
+    const r = await fetch(`/api/desk/jobs/${jobId}/tracks/${trackId}/challan.pdf`, { headers: { "X-Officer-Key": key } });
+    if (!r.ok) throw new Error(r.status === 401 ? "The officer key was not accepted. Sign in again on the Officer desk." : ((await r.json().catch(() => ({}))).detail || `Failed (${r.status})`));
+    window.open(URL.createObjectURL(await r.blob()), "_blank", "noopener");
+    out.textContent = "Draft opened in a new tab. It is a draft for an officer to check; nothing was sent.";
+  } catch (e) { out.textContent = e.message; } finally { btn.disabled = false; }
+}
+function actionsView(jobId, t, acts) {
+  if (!acts || !acts.length) return null;
+  return h("div", { class: "agency-actions" }, h("h4", { style: "margin-top:22px" }, "Suggested next steps"),
+    acts.map((a) => { const out = h("span", { class: "muted", style: "font-size:12.5px" });
+      const btn = a.challan ? h("button", { class: "btn sm", type: "button" }, "Draft e-challan (PDF)") : null;
+      if (btn) btn.addEventListener("click", () => draftChallan(jobId, t.track_id, btn, out));
+      return h("div", { class: `act ${ACTION_TONE[a.kind] || ""}` }, h("b", {}, a.title), h("p", { class: "muted", style: "margin:4px 0 8px;font-size:13.5px" }, a.detail), btn, btn ? h("div", {}, out) : null); }));
+}
+
+function trackView(jobId, t, acts) {
   const m = t.match;
   const merged = (t.merged_from || []).length;
   return h("article", { class: "panel track" },
@@ -60,7 +82,7 @@ function trackView(jobId, t) {
           t.vehicle_crop ? h("img", { class: "vehimg", src: `/api/jobs/${jobId}/crops/${t.vehicle_crop}`, alt: `Vehicle ${t.track_id}`, loading: "lazy" }) : null) : null),
       h("div", {}, banner(m),
         m.candidates.length ? h("h4", { style: "margin-top:22px" }, "Ranked candidates") : null,
-        m.candidates.map((c, i) => candidateView(c, i + 1)))),
+        m.candidates.map((c, i) => candidateView(c, i + 1)), actionsView(jobId, t, acts))),
     h("details", { class: "frames-d" }, h("summary", {}, `Characters read in each frame (${t.frame_reads.length})`), framesTable(t.frame_reads)));
 }
 
@@ -72,7 +94,9 @@ function unreadView(tracks) {
     h("div", { class: "tablewrap", style: "margin-top:16px" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Track"), h("th", {}, "Vehicle"), h("th", {}, "Frames"), h("th", {}, "Why no plate was read"))), h("tbody", {}, rows))));
 }
 
-function render(result) {
+async function render(result) {
+  let acts = {};
+  try { acts = (await api(`/api/jobs/${encodeURIComponent(result.job_id)}/actions`)).actions || {}; } catch (e) { /* suggestions are optional */ }
   const box = $("#results");
   const shown = result.tracks.filter(isReadable);
   const unread = result.tracks.filter((t) => !isReadable(t));
@@ -81,7 +105,8 @@ function render(result) {
       h("div", { class: "sum-top" }, h("h3", { style: "margin:0" }, "Analysis result"),
         h("div", { class: "row-btns", style: "margin:0" },
           h("a", { class: "btn primary sm", href: `/api/jobs/${result.job_id}/download`, download: `case-${result.job_id}.zip` }, "Download full report (ZIP)"),
-          h("a", { class: "btn sm", href: `/api/jobs/${result.job_id}/report`, target: "_blank", rel: "noopener" }, "Open printable report"))),
+          h("a", { class: "btn sm", href: `/api/jobs/${result.job_id}/report`, target: "_blank", rel: "noopener" }, "Open printable report"),
+          h("a", { class: "btn sm", href: `/api/jobs/${result.job_id}/report.pdf`, target: "_blank", rel: "noopener" }, "PDF"))),
       h("div", { class: "kpis", style: "margin-top:18px" },
         ...[[result.tracks.length, "vehicles tracked"], [shown.length, "with a readable plate"], [result.frames_sampled, "frames sampled"], [result.department.replace("_", " / ").toUpperCase(), "agency"]]
           .map(([n, l]) => h("div", { class: "kpi" }, h("div", { class: "n", style: typeof n === "string" ? "font-size:26px;padding-top:12px" : "" }, String(n)), h("div", { class: "l" }, l)))),
@@ -95,7 +120,7 @@ function render(result) {
       h("p", { class: "attrs" }, "Everything about this video is stored on the server: the original, every image, and the data. The ZIP holds all of it."),
       h("p", { class: "hash" }, "Job ", h("span", { class: "mono" }, result.job_id), "  ·  SHA-256 ", h("span", { class: "mono" }, result.source_sha256))),
     ...(!result.tracks.length ? [h("section", { class: "panel" }, "No vehicles were tracked in this clip.")]
-      : [...(shown.length ? shown.map((t) => trackView(result.job_id, t)) : [h("section", { class: "panel" }, "No plate could be read for any vehicle in this clip.")]),
+      : [...(shown.length ? shown.map((t) => trackView(result.job_id, t, acts[t.track_id])) : [h("section", { class: "panel" }, "No plate could be read for any vehicle in this clip.")]),
          ...(unread.length ? [unreadView(unread)] : [])]));
   box.hidden = false;
   history.replaceState(null, "", `?job=${result.job_id}`);
@@ -105,7 +130,7 @@ function render(result) {
 /* ---------- loading jobs, recent list ---------- */
 async function openJob(id) {
   setStatus("Loading job…");
-  try { render(await api(`/api/jobs/${encodeURIComponent(id)}`)); setStatus(""); }
+  try { await render(await api(`/api/jobs/${encodeURIComponent(id)}`)); setStatus(""); }
   catch (e) { setStatus("Could not open job: " + e.message, true); }
 }
 
@@ -141,7 +166,7 @@ $("#upload").addEventListener("submit", async (ev) => {
   $("#go").disabled = true;
   const t0 = Date.now();
   const tick = setInterval(() => { $("#status").innerHTML = `<span class="spinner"></span>Analysing… ${Math.round((Date.now() - t0) / 1000)} s. Longer clips take a minute or two on CPU.`; $("#status").className = "status-line"; }, 500);
-  try { render(await api("/api/analyze", { method: "POST", body: fd })); setStatus("Done."); loadRecent(); }
+  try { await render(await api("/api/analyze", { method: "POST", body: fd })); setStatus("Done."); loadRecent(); }
   catch (e) { setStatus("Analysis failed: " + e.message, true); }
   finally { clearInterval(tick); $("#go").disabled = false; }
 });

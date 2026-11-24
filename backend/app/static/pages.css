@@ -154,3 +154,8 @@ tr.sel td { background: var(--red-soft); }
 .chip.partial { opacity: .75; }
 .watch-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
 .watch-form .grow { flex: 1 1 260px; }
+
+/* suggested next steps (console) */
+.agency-actions .act { padding: 12px 14px; margin-top: 10px; border: 1px solid var(--rule-2); border-left: 3px solid var(--rule-2); border-radius: 10px; background: var(--panel-2); }
+.agency-actions .act.bad { border-left-color: var(--red); }
+.agency-actions .act.warn { border-left-color: #d9a23b; }

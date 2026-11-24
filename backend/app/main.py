@@ -162,6 +162,17 @@ def job_report_pdf(job_id: str):
                     headers={"Content-Disposition": f'inline; filename="report-{job_id}.pdf"'})
 
 
+@app.get("/api/jobs/{job_id}/actions")
+def job_actions(job_id: str):
+    """What the agency is told to do with each confirmed match (only for a 'match'; derived from the registry flags)."""
+    from . import agency_tools as at
+
+    d = _job_dir(job_id)
+    result = AnalysisResult.model_validate_json((d / "result.json").read_text())
+    return {"department": result.department, "actions": at.actions_for(result),
+            "note": "Suggestions follow the registry flags, and the demo registry is synthetic. They are leads for an officer, not decisions."}
+
+
 @app.get("/api/jobs/{job_id}/crops/{name}")
 def job_crop(job_id: str, name: str):
     d = _job_dir(job_id)
@@ -436,6 +447,24 @@ def desk_watch_remove(wid: str):
     if not _watch().remove(wid):
         raise HTTPException(status_code=404, detail="No such entry.")
     return {"removed": wid}
+
+
+@app.get("/api/desk/jobs/{job_id}/tracks/{track_id}/challan.pdf", dependencies=[Depends(require_officer)])
+def desk_challan(job_id: str, track_id: int):
+    """A DRAFT e-challan for a document violation. Officer key required; never an official document."""
+    from . import agency_tools as at, pdf_report
+
+    d = _job_dir(job_id)
+    result = AnalysisResult.model_validate_json((d / "result.json").read_text())
+    track = next((t for t in result.tracks if t.track_id == track_id), None)
+    if track is None:
+        raise HTTPException(status_code=404, detail="no such vehicle in this analysis")
+    if not at.challan_available(result.department, track.match):
+        raise HTTPException(status_code=409, detail="No challan can be drafted: it needs a confirmed match with a recorded document violation, for the police or MoRTH/NHAI.")
+    if not pdf_report.available():
+        raise HTTPException(status_code=501, detail="PDF export needs the reportlab package (pip install reportlab).")
+    return Response(at.render_challan(result, track, d), media_type="application/pdf",
+                    headers={"Content-Disposition": f'inline; filename="draft-challan-{job_id}-{track_id}.pdf"'})
 
 
 # the static site is mounted last, so it can never shadow an API route

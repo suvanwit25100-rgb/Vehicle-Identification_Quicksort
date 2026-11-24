@@ -200,8 +200,8 @@ new IntersectionObserver((es, obs) => { if (es.some((e) => e.isIntersecting) && 
 /* ---------- agencies ---------- */
 const DEPT_META = {
   police: { blurb: "Leads for hit-and-run and violation cases, with an evidence report.", feats: [["done", "Evidence report with per-character confidence"], ["done", "Stolen and expired-document flags on candidates"], ["plan", "Watch-list alerts across cameras"]] },
-  morth_nhai: { blurb: "Toll and highway compliance checks.", feats: [["part", "Insurance and PUC status flags"], ["plan", "FASTag class mismatch check"], ["plan", "Draft e-challan from the shortlist"]] },
-  bsf: { blurb: "Border checkpoints, where a wrong match is worse than none.", feats: [["done", "Strict mode: no character mismatches allowed"], ["plan", "Repeat-crossing detection"], ["plan", "Night-mode tuning"]] },
+  morth_nhai: { blurb: "Toll and highway compliance checks.", feats: [["done", "Insurance and PUC status flags on a confirmed match"], ["done", "Draft e-challan (PDF) for an officer to complete"], ["plan", "FASTag class mismatch check"]] },
+  bsf: { blurb: "Border checkpoints, where a wrong match is worse than none.", feats: [["done", "Strict mode: no character mismatches allowed"], ["done", "Repeat sightings across stored videos"], ["plan", "Night-mode tuning"]] },
   ssb: { blurb: "Open-border traffic dominated by two-wheelers and small vehicles.", feats: [["part", "Body type weighted higher"], ["plan", "Crossing-frequency log"], ["plan", "Offline mode"]] },
   customs: { blurb: "Commercial vehicles, permits and routes.", feats: [["part", "Truck and tempo weighting"], ["plan", "Permit and route check"], ["plan", "Convoy detection"]] },
 };

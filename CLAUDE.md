@@ -7,7 +7,7 @@ machines never edit the same files.
 ## What this is
 Hackathon problem AIML-01 Option A: vehicle identification from CCTV footage. It recovers a plate across many frames,
 marks unreadable characters as unknown, extracts colour and body type, matches a registry (ranked top 5 with reasons),
-or says "no confident match". FastAPI backend, YOLO + PP-OCR + CLIP, multi-page static site. The monitor page shows measured data only (no simulated or hard-coded figures). 168 tests.
+or says "no confident match". FastAPI backend, YOLO + PP-OCR + CLIP, multi-page static site. The monitor page shows measured data only (no simulated or hard-coded figures). 212 tests.
 
 ## Deadline
 Submission: **morning of 2026-11-25**. The model stack is final (see `MODELS.md`): pretrained only, no further model changes. Keep a working demo at every step; never leave the app broken.
@@ -17,6 +17,9 @@ The user decided not to train our own models. The from-scratch kit in `training/
 point was answered by comparing ready-made plate readers (HANDOFF.md section 7a): none clearly beats the current
 PP-OCR alone, but two readers agreeing was right about 98% of the time on synthetic plates, so a lightweight second reader
 (fast-plate-ocr, MIT, 5 MB) now cross-checks every plate (HANDOFF.md 7a-2). Everything analysed is stored, and downloadable as a ZIP case file.
+
+## Post-freeze features (2026-11-24, all built, see HANDOFF.md 8b)
+Two-row plates, nine-character plates, repeat sightings + watch-list, PDF report, agency next steps + draft e-challan. Still no training and no new models.
 
 ## Open work (ask the user which one you take)
 0. **Models: final** (MODELS.md; one second reader was added late, 2026-11-24). Do not swap or add models before submission.
