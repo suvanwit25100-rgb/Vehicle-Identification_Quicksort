@@ -37,8 +37,8 @@ async function loadList() {
     const rows = await call("/api/desk/complaints?" + q);
     $("#list").replaceChildren(rows.length ? h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Plate", "Report", "Agency", "Status"].map((t) => h("th", {}, t)))),
       h("tbody", {}, rows.map((r) => h("tr", { class: "click" + (r.id === selected ? " sel" : ""), tabindex: 0, onclick: () => openReport(r.id), onkeydown: (e) => { if (e.key === "Enter") openReport(r.id); } },
-        h("td", { class: "mono" }, r.plate_confirmed || r.plate_read, r.plate_confirmed ? h("small", {}, "typed by citizen") : h("small", {}, "system read")),
-        h("td", {}, r.category_label.split("(")[0].trim(), h("small", { style: "display:block;color:var(--muted);font-size:11px" }, when(r.created_at))),
+        h("td", { class: "mono" }, r.plate_confirmed || r.plate_read, r.plate_confirmed ? h("small", {}, "typed by citizen") : h("small", {}, r.source === "console" ? "fused from video" : "system read")),
+        h("td", {}, r.source === "console" ? h("span", { class: "chip built", style: "margin-right:6px" }, "console") : null, r.category_label.split("(")[0].trim(), h("small", { style: "display:block;color:var(--muted);font-size:11px" }, when(r.created_at))),
         h("td", {}, AGENCY[r.department]), h("td", {}, h("span", { class: `chip ${r.status}` }, STATUS_LABEL[r.status]))))))) : h("p", { class: "empty" }, "No reports match these filters."));
     note(`${rows.length} report${rows.length === 1 ? "" : "s"}`);
   } catch (e) { if (e.status === 401) signedOut("That key was not accepted."); else note(e.message, true); }
@@ -62,8 +62,9 @@ async function openReport(id) {
     box.replaceChildren(
       h("div", { class: "d-head" }, h("h3", { style: "margin:0" }, `Report ${d.id}`), h("span", { class: `chip ${d.status}` }, STATUS_LABEL[d.status])),
       h("p", { class: "muted", style: "font-size:13.5px;margin:6px 0 18px" }, `${d.category_label} · ${d.department_name} · filed ${when(d.created_at)}`),
+      d.source === "console" ? h("p", { class: "from-console" }, h("span", { class: "chip built" }, "flagged from the console"), " ", h("a", { href: `/console/?job=${d.job_id}` }, `open analysis ${d.job_id}, vehicle ${d.track_id}`)) : null,
       h("div", { class: "d-imgs" }, photo ? h("img", { src: photo, alt: "Citizen photo", class: "preview" }) : h("p", { class: "empty" }, "Photo unavailable."), crop ? h("img", { src: crop, alt: "Plate crop", class: "crop-img" }) : null),
-      h("h4", {}, "System read of the photo"), slotsView(d.read_slots),
+      h("h4", {}, d.source === "console" ? "Plate fused across the video's frames" : "System read of the photo"), slotsView(d.read_slots),
       d.plate_confirmed ? h("p", { class: "typed" }, "Citizen typed: ", h("span", { class: "mono" }, d.plate_confirmed)) : h("p", { class: "typed muted" }, "The citizen did not type a plate."),
       h("h4", { style: "margin-top:24px" }, "Registry match"), h("p", { class: "muted", style: "font-size:13px;margin-bottom:10px" }, `Basis: ${d.match_basis}.`),
       banner(m), m.candidates.map((c, i) => candidateView(c, i + 1)),

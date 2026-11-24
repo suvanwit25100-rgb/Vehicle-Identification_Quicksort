@@ -378,6 +378,14 @@ All use the existing pretrained models; nothing was trained.
 - **Not built:** FASTag class check, permit/route check, convoy detection, challans for citizen reports, real registry data. Fine amounts and legal sections were deliberately left out rather than guessed.
 - 212 tests pass in total (8 new in `test_agency_tools.py`). The site's features, landing and roadmap lists were updated to match what is built.
 
+### Flag a vehicle from the console (post-freeze, requested after Feature 5)
+- Each readable vehicle in the console has "Flag this vehicle": category, what was seen, where. `POST /api/jobs/{id}/tracks/{tid}/flag` files a report straight into the complaints store
+  (`ComplaintStore.flag_track`): the video's evidence frame is the photo, the first plate crop is the plate image, and the fused plate is the read. The report is routed by category like any citizen report.
+- The complaints table gained `source` ('citizen' or 'console'), `job_id`, `track_id` (existing databases are upgraded in place; old reports keep working, tested). The officer desk marks console reports and links back to the analysis.
+  `GET /api/jobs/{id}/flags` tells the console which vehicles are already flagged; a second flag of the same vehicle is refused (409). Rate limited to 30 per hour per connection.
+- **Gap:** the console has no sign-in, so anyone who can reach it can flag (a flag is only a lead in the officer queue). Add the officer key here if that is a concern. Real UI check was done on a scratch copy of one job so no real report was created.
+- 218 tests pass (6 new in `test_flag_vehicle.py`).
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

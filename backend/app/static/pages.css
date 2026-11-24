@@ -159,3 +159,11 @@ tr.sel td { background: var(--red-soft); }
 .agency-actions .act { padding: 12px 14px; margin-top: 10px; border: 1px solid var(--rule-2); border-left: 3px solid var(--rule-2); border-radius: 10px; background: var(--panel-2); }
 .agency-actions .act.bad { border-left-color: var(--red); }
 .agency-actions .act.warn { border-left-color: #d9a23b; }
+
+/* flag a vehicle (console) */
+.flagbox { margin-top: 6px; }
+.flagform { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--rule-2); border-radius: 10px; background: var(--panel-2); }
+.flagform label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+.flagform select, .flagform textarea, .flagform input { width: 100%; }
+.flagged { padding: 10px 14px; border-left: 3px solid #3fb27f; background: var(--panel-2); border-radius: 8px; font-size: 14px; }
+.from-console { margin: -8px 0 14px; font-size: 13.5px; }

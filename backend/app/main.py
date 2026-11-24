@@ -269,6 +269,13 @@ class ComplaintIn(BaseModel):
     consent: bool
 
 
+class FlagIn(BaseModel):
+    category: str
+    description: str = Field(min_length=5, max_length=1000)
+    location_text: str = Field(min_length=3, max_length=200)
+    observed_at: str | None = Field(None, max_length=40)
+
+
 class DeskUpdate(BaseModel):
     status: str
     note: str | None = Field(None, max_length=1000)
@@ -342,6 +349,40 @@ def submit_complaint(body: ComplaintIn, request: Request):
             "message": "Your report was received. It is a lead for an officer to review, not a verdict on anyone."}
 
 
+@app.get("/api/jobs/{job_id}/flags")
+def job_flags(job_id: str):
+    """Which vehicles of this analysis were already flagged, and the report each one became."""
+    _job_dir(job_id)
+    return {str(t): cid for t, cid in _store().flagged_for(job_id).items()}
+
+
+@app.post("/api/jobs/{job_id}/tracks/{track_id}/flag")
+def flag_vehicle(job_id: str, track_id: int, body: FlagIn, request: Request):
+    """Flag an analysed vehicle: it becomes a report on the officer desk, with the evidence frame, the fused plate and a link back here.
+    Nothing here accuses anyone; like every report it is a lead for an officer to check."""
+    d = _job_dir(job_id)
+    if body.category not in cm.CATEGORIES:
+        raise HTTPException(status_code=422, detail="unknown category")
+    if not limiter.allow(_client_id(request), "flag", 30):
+        raise HTTPException(status_code=429, detail="Too many flags from this connection. Try again later.")
+    result = AnalysisResult.model_validate_json((d / "result.json").read_text())
+    track = next((t for t in result.tracks if t.track_id == track_id), None)
+    if track is None:
+        raise HTTPException(status_code=404, detail="no such vehicle in this analysis")
+    store = _store()
+    already = store.flagged_for(job_id).get(track_id)
+    if already:
+        raise HTTPException(status_code=409, detail=f"This vehicle was already flagged (report {already}).")
+    photo_name = next((n for n in (track.evidence_frame, track.vehicle_crop) if n and (d / n).exists()), None)
+    if photo_name is None:
+        raise HTTPException(status_code=409, detail="This analysis kept no image of the vehicle, so it cannot be flagged.")
+    crop = next(((d / n).read_bytes() for n in track.plate_crops if (d / n).exists()), None)
+    cid = store.flag_track(job_id, track_id, body.model_dump(), (d / photo_name).read_bytes(), crop, track.match.fused.model_dump_json(),
+                           track.match.pattern, track.colour, bool(crop))
+    dept = get_department(cm.CATEGORIES[body.category][1])
+    return {"complaint_id": cid, "status": "new", "department": dept.name, "plate": track.match.fused.display}
+
+
 @app.get("/api/complaints/{cid}/status")
 def complaint_status(cid: str):
     """What a citizen may see about their own report: its state, never registry data or officer notes."""
@@ -363,7 +404,8 @@ def _summary(row) -> dict:
             "category_label": cm.CATEGORIES[row["category"]][0], "department": row["department"],
             "department_name": get_department(row["department"]).name, "plate_read": row["plate_read"].replace("-", ""),
             "plate_confirmed": row["plate_confirmed"], "status": row["status"], "location_text": row["location_text"],
-            "observed_at": row["observed_at"], "plate_found": bool(row["plate_found"]), "vehicle_found": bool(row["vehicle_found"])}
+            "observed_at": row["observed_at"], "plate_found": bool(row["plate_found"]), "vehicle_found": bool(row["vehicle_found"]),
+            "source": row["source"], "job_id": row["job_id"], "track_id": row["track_id"]}
 
 
 @app.get("/api/desk/complaints", dependencies=[Depends(require_officer)])
@@ -386,7 +428,9 @@ def desk_detail(cid: str):
     return {**_summary(row), "description": row["description"], "lat": row["lat"], "lon": row["lon"],
             "contact": row["contact"], "image_sha256": row["image_sha256"], "officer_note": row["officer_note"],
             "updated_at": row["updated_at"], "read_slots": [s.model_dump() for s in read.slots],
-            "match_basis": "plate typed by the citizen (unverified)" if typed else "system read of one photo (unverified)",
+            "match_basis": ("plate typed by the citizen (unverified)" if typed else
+                            f"fused read of the video (analysis {row['job_id']}, vehicle {row['track_id']})" if row["source"] == "console"
+                            else "system read of one photo (unverified)"),
             "match": match.model_dump(), "statuses": cm.STATUSES}
 
 

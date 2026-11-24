@@ -171,6 +171,10 @@ class ComplaintStore:
         self.db_path = root / "netra.db"
         with self.db() as c:
             c.execute(SCHEMA)
+            have = {r[1] for r in c.execute("PRAGMA table_info(complaints)")}
+            for col, ddl in (("source", "TEXT NOT NULL DEFAULT 'citizen'"), ("job_id", "TEXT"), ("track_id", "INTEGER")):
+                if col not in have:                      # older databases: add the columns, keep every existing report
+                    c.execute(f"ALTER TABLE complaints ADD COLUMN {col} {ddl}")
 
     @contextmanager
     def db(self):
@@ -221,6 +225,30 @@ class ComplaintStore:
                  f.get("plate_confirmed") or None, f.get("contact") or None, json.dumps(meta.get("colour")),
                  int(meta["vehicle_found"]), int(meta["plate_found"]), meta["sha256"], ts))
         return cid
+
+    def flag_track(self, job_id: str, track_id: int, f: dict, photo: bytes, crop: bytes | None, fused_json: str, pattern: str,
+                   colour: dict | None, plate_found: bool) -> str:
+        """File a report straight from an analysed vehicle. The video's evidence frame is the photo; the fused plate is the read."""
+        cid = uuid.uuid4().hex[:12]
+        (self.dir / f"{cid}.jpg").write_bytes(photo)
+        if crop:
+            (self.dir / f"{cid}_plate.jpg").write_bytes(crop)
+        ts = now_iso()
+        with self.db() as c:
+            c.execute(
+                """INSERT INTO complaints (id, created_at, category, department, description, location_text, lat, lon,
+                   observed_at, plate_read, fused_json, plate_confirmed, contact, colour_json, vehicle_found,
+                   plate_found, image_sha256, status, officer_note, updated_at, source, job_id, track_id)
+                   VALUES (?,?,?,?,?,?,NULL,NULL,?,?,?,NULL,NULL,?,1,?,?,'new','',?,'console',?,?)""",
+                (cid, ts, f["category"], CATEGORIES[f["category"]][1], f["description"], f["location_text"], f.get("observed_at"),
+                 pattern, fused_json, json.dumps(colour), int(plate_found), sha256_bytes(photo), ts, job_id, track_id))
+        return cid
+
+    def flagged_for(self, job_id: str) -> dict[int, str]:
+        """track id -> report id, for every vehicle of this analysis that has already been flagged."""
+        with self.db() as c:
+            rows = c.execute("SELECT track_id, id FROM complaints WHERE source='console' AND job_id=? ORDER BY created_at", (job_id,)).fetchall()
+        return {r["track_id"]: r["id"] for r in rows}
 
     def get(self, cid: str) -> sqlite3.Row | None:
         if not ID_RE.fullmatch(cid):

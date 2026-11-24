@@ -50,6 +50,48 @@ async function draftChallan(jobId, trackId, btn, out) {
     out.textContent = "Draft opened in a new tab. It is a draft for an officer to check; nothing was sent.";
   } catch (e) { out.textContent = e.message; } finally { btn.disabled = false; }
 }
+let flagCategories = null;
+async function categories() {
+  if (!flagCategories) flagCategories = await api("/api/complaints/categories");
+  return flagCategories;
+}
+function flagView(jobId, t, flags, result) {
+  const box = h("div", { class: "flagbox" });
+  const done = (id) => box.replaceChildren(h("p", { class: "flagged" }, h("b", {}, "Flagged. "), `Filed as report `, h("span", { class: "mono" }, id),
+    ". It is now in the reporting section for an officer to review: ", h("a", { href: "/desk/" }, "open the officer desk"), "."));
+  if (flags[t.track_id]) { done(flags[t.track_id]); return box; }
+  const open = h("button", { class: "btn sm", type: "button" }, "Flag this vehicle");
+  open.addEventListener("click", async () => {
+    open.disabled = true;
+    let cats = [];
+    try { cats = await categories(); } catch (e) { box.append(h("p", { class: "err" }, "Could not load the report types: " + e.message)); open.disabled = false; return; }
+    const plate = t.match.fused.slots.map((s) => (s.char && s.char !== "-" ? s.char : s.char ? "" : "?")).join("");
+    const cat = h("select", { "aria-label": "What is being flagged" }, h("option", { value: "" }, "Choose one…"), ...cats.map((c) => h("option", { value: c.id }, c.label)));
+    const desc = h("textarea", { maxlength: 1000, rows: 3, "aria-label": "What was seen" }, `Seen in analysed footage${result.source_filename ? ` (${result.source_filename})` : ""}, vehicle ${t.track_id}, plate read as ${plate}. `);
+    const where = h("input", { type: "text", maxlength: 200, placeholder: "Where was this filmed? (road, junction, camera)", "aria-label": "Where it was filmed" });
+    const msg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+    const send = h("button", { class: "btn primary sm", type: "button" }, "File the report");
+    const cancel = h("button", { class: "btn sm", type: "button" }, "Cancel");
+    cancel.addEventListener("click", () => box.replaceChildren(open) || (open.disabled = false));
+    send.addEventListener("click", async () => {
+      if (!cat.value) { msg.textContent = "Choose what you are flagging."; msg.className = "status-line error"; return; }
+      if (desc.value.trim().length < 5) { msg.textContent = "Say what was seen (a few words)."; msg.className = "status-line error"; return; }
+      if (where.value.trim().length < 3) { msg.textContent = "Say where this was filmed."; msg.className = "status-line error"; return; }
+      send.disabled = true; msg.textContent = "Filing…"; msg.className = "status-line";
+      try {
+        const r = await api(`/api/jobs/${jobId}/tracks/${t.track_id}/flag`, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ category: cat.value, description: desc.value.trim(), location_text: where.value.trim(), observed_at: result.created_at || null }) });
+        done(r.complaint_id);
+      } catch (e) { msg.textContent = e.message; msg.className = "status-line error"; send.disabled = false; }
+    });
+    box.replaceChildren(h("div", { class: "flagform" }, h("label", {}, "What are you flagging", cat), h("label", {}, "What was seen", desc), h("label", {}, "Where", where),
+      h("p", { class: "hint-s" }, "This files a report on the officer desk with the evidence frame and the fused plate. It is a lead for an officer to check, not an accusation."),
+      h("div", { class: "row-btns" }, send, cancel), msg));
+  });
+  box.append(open);
+  return box;
+}
+
 function actionsView(jobId, t, acts) {
   if (!acts || !acts.length) return null;
   return h("div", { class: "agency-actions" }, h("h4", { style: "margin-top:22px" }, "Suggested next steps"),
@@ -59,7 +101,7 @@ function actionsView(jobId, t, acts) {
       return h("div", { class: `act ${ACTION_TONE[a.kind] || ""}` }, h("b", {}, a.title), h("p", { class: "muted", style: "margin:4px 0 8px;font-size:13.5px" }, a.detail), btn, btn ? h("div", {}, out) : null); }));
 }
 
-function trackView(jobId, t, acts) {
+function trackView(jobId, t, acts, flags, result) {
   const m = t.match;
   const merged = (t.merged_from || []).length;
   return h("article", { class: "panel track" },
@@ -82,7 +124,8 @@ function trackView(jobId, t, acts) {
           t.vehicle_crop ? h("img", { class: "vehimg", src: `/api/jobs/${jobId}/crops/${t.vehicle_crop}`, alt: `Vehicle ${t.track_id}`, loading: "lazy" }) : null) : null),
       h("div", {}, banner(m),
         m.candidates.length ? h("h4", { style: "margin-top:22px" }, "Ranked candidates") : null,
-        m.candidates.map((c, i) => candidateView(c, i + 1)), actionsView(jobId, t, acts))),
+        m.candidates.map((c, i) => candidateView(c, i + 1)), actionsView(jobId, t, acts),
+        h("h4", { style: "margin-top:22px" }, "Flag"), flagView(jobId, t, flags, result))),
     h("details", { class: "frames-d" }, h("summary", {}, `Characters read in each frame (${t.frame_reads.length})`), framesTable(t.frame_reads)));
 }
 
@@ -95,7 +138,8 @@ function unreadView(tracks) {
 }
 
 async function render(result) {
-  let acts = {};
+  let acts = {}, flags = {};
+  try { flags = await api(`/api/jobs/${encodeURIComponent(result.job_id)}/flags`); } catch (e) { /* flags are optional */ }
   try { acts = (await api(`/api/jobs/${encodeURIComponent(result.job_id)}/actions`)).actions || {}; } catch (e) { /* suggestions are optional */ }
   const box = $("#results");
   const shown = result.tracks.filter(isReadable);
@@ -120,7 +164,7 @@ async function render(result) {
       h("p", { class: "attrs" }, "Everything about this video is stored on the server: the original, every image, and the data. The ZIP holds all of it."),
       h("p", { class: "hash" }, "Job ", h("span", { class: "mono" }, result.job_id), "  ·  SHA-256 ", h("span", { class: "mono" }, result.source_sha256))),
     ...(!result.tracks.length ? [h("section", { class: "panel" }, "No vehicles were tracked in this clip.")]
-      : [...(shown.length ? shown.map((t) => trackView(result.job_id, t, acts[t.track_id])) : [h("section", { class: "panel" }, "No plate could be read for any vehicle in this clip.")]),
+      : [...(shown.length ? shown.map((t) => trackView(result.job_id, t, acts[t.track_id], flags, result)) : [h("section", { class: "panel" }, "No plate could be read for any vehicle in this clip.")]),
          ...(unread.length ? [unreadView(unread)] : [])]));
   box.hidden = false;
   history.replaceState(null, "", `?job=${result.job_id}`);
