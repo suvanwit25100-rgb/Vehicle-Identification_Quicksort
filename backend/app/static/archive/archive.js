@@ -59,3 +59,52 @@ async function loadRepeats() {
   } catch (e) { box.replaceChildren(h("p", { class: "err" }, "Could not load sightings: " + e.message)); }
 }
 loadRepeats();
+
+/* ---------- follow a plate across cameras ---------- */
+let leafletReady;
+function loadLeaflet() {
+  if (window.L) return Promise.resolve();
+  leafletReady ??= new Promise((ok, fail) => {
+    document.head.append(h("link", { rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" }));
+    const js = h("script", { src: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" });
+    js.onload = ok; js.onerror = () => fail(new Error("The map could not be loaded (offline?)."));
+    document.head.append(js);
+  });
+  return leafletReady;
+}
+$("#trail-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const q = $("#trail-q").value.trim(), out = $("#trail-out");
+  if (!q) return;
+  out.replaceChildren(h("p", { class: "empty" }, h("span", { class: "spinner" }), "Looking…"));
+  try {
+    const groups = await api(`/api/trail?plate=${encodeURIComponent(q)}`);
+    if (!groups.length) return out.replaceChildren(h("p", { class: "empty" }, "No stored video has a plate that fits that. Unknown characters (?) match anything, so this is a real absence, not a misread."));
+    out.replaceChildren(...groups.map((g) => trailView(g)));
+  } catch (e) { out.replaceChildren(h("p", { class: "err" }, e.status === 422 ? "Type at least 4 known characters." : e.message)); }
+});
+function trailView(g) {
+  const withPos = g.stops.filter((s) => s.lat != null && s.lon != null);
+  const map = withPos.length ? h("div", { class: "map", role: "img", "aria-label": `Map of where ${g.plate} was seen` }) : null;
+  const box = h("div", { class: "trail" },
+    h("div", { class: "repeat-head" }, h("span", { class: "mono repeat-plate" }, g.plate), h("span", { class: "chip" + (g.complete ? "" : " partial") }, g.complete ? "whole plate" : "partly read"),
+      h("span", { class: "muted", style: "font-size:13px" }, `${g.stops.length} sighting${g.stops.length === 1 ? "" : "s"} in ${g.footage_count} video${g.footage_count === 1 ? "" : "s"} · ordered by ${g.ordered_by}`)),
+    map,
+    h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["#", "When", "Camera", "Place", "Video", ""].map((t) => h("th", {}, t)))),
+      h("tbody", {}, g.stops.map((s, i) => h("tr", {}, h("td", { class: "mono" }, String(i + 1)), h("td", {}, s.recorded_at ? when(s.recorded_at) : h("span", { class: "muted" }, `${when(s.when)} (analysed)`)),
+        h("td", {}, s.camera || h("span", { class: "muted" }, "not given")), h("td", {}, s.place || (s.lat != null ? `${s.lat.toFixed(4)}, ${s.lon.toFixed(4)}` : h("span", { class: "muted" }, "not given"))),
+        h("td", {}, s.filename || s.job_id), h("td", {}, h("a", { class: "btn sm", href: `/console/?job=${s.job_id}` }, "Open"))))))),
+    withPos.length < g.stops.length ? h("p", { class: "hint-s" }, `${g.stops.length - withPos.length} sighting${g.stops.length - withPos.length === 1 ? " has" : "s have"} no location, so ${g.stops.length - withPos.length === 1 ? "it is" : "they are"} not on the map.`) : null);
+  if (map) setTimeout(async () => {
+    try { await loadLeaflet(); } catch (e) { map.replaceChildren(h("p", { class: "err" }, e.message + " The table still lists every stop.")); return; }
+    const m = L.map(map, { scrollWheelZoom: false });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(m);
+    const pts = withPos.map((s) => [s.lat, s.lon]);
+    if (pts.length > 1) L.polyline(pts, { color: "#ff2a3f", weight: 3, opacity: .7, dashArray: "6 8" }).addTo(m);
+    withPos.forEach((s, i) => L.marker ? L.circleMarker([s.lat, s.lon], { radius: 11, color: "#fff", weight: 2, fillColor: "#ff2a3f", fillOpacity: .95 })
+      .bindTooltip(String(g.stops.indexOf(s) + 1), { permanent: true, direction: "center", className: "trail-n" })
+      .bindPopup(h("div", {}, h("b", {}, s.camera || "Camera"), h("br"), s.place || "", s.place ? h("br") : null, s.recorded_at ? when(s.recorded_at) : when(s.when) + " (analysed)")).addTo(m) : null);
+    m.fitBounds(L.latLngBounds(pts).pad(0.3), { maxZoom: 16 });
+  }, 0);
+  return box;
+}

@@ -144,6 +144,12 @@ class AnalysisResult(BaseModel):
     processing_seconds: float | None = None
     body_model: str | None = None
     second_reader_used: str | None = None
+    # where and when the footage was filmed, if the operator said (enables the cross-camera trail)
+    camera: str | None = None
+    camera_place: str | None = None
+    camera_lat: float | None = None
+    camera_lon: float | None = None
+    recorded_at: str | None = None
 
 
 class MatchResult(BaseModel):

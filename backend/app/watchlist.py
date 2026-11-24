@@ -161,6 +161,7 @@ def all_sightings(data_dir: Path) -> list[dict]:
             if t.match.fused.known_count >= MIN_KNOWN_TO_LIST:
                 out.append({"job_id": r.job_id, "track_id": t.track_id, "when": r.created_at or datetime.fromtimestamp(f.stat().st_mtime, timezone.utc).isoformat(timespec="seconds"),
                             "filename": r.source_filename, "footage": footage, "slots": t.match.pattern, "known": t.match.fused.known_count,
+                            "camera": r.camera, "place": r.camera_place, "lat": r.camera_lat, "lon": r.camera_lon, "recorded_at": r.recorded_at,
                             "vehicle": t.vehicle_label, "department": r.department})
     return out
 
@@ -192,7 +193,8 @@ def repeat_groups(sightings: list[dict], min_footage: int = 2, plate: str | None
         out.append({
             "plate": shown(g["slots"]), "slots": g["slots"], "complete": "?" not in g["slots"],
             "footage_count": len(footage), "sighting_count": len(ss), "first_seen": ss[0]["when"], "last_seen": ss[-1]["when"],
-            "sightings": [{k: s[k] for k in ("job_id", "track_id", "when", "filename", "slots", "vehicle", "department")} | {"plate": shown(s["slots"])} for s in ss],
+            "sightings": [{k: s[k] for k in ("job_id", "track_id", "when", "filename", "slots", "vehicle", "department", "camera", "place", "lat", "lon", "recorded_at")}
+                          | {"plate": shown(s["slots"])} for s in ss],
         })
     return sorted(out, key=lambda g: (-g["footage_count"], g["plate"]))
 

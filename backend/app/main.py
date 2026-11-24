@@ -90,7 +90,8 @@ def brains():
 
 
 @app.post("/api/analyze", response_model=AnalysisResult)
-def analyze(request: Request, file: UploadFile = File(...), department: str = Form("police")):
+def analyze(request: Request, file: UploadFile = File(...), department: str = Form("police"), camera: str = Form(""), place: str = Form(""),
+            lat: str = Form(""), lon: str = Form(""), recorded_at: str = Form("")):
     from .vision.pipeline import analyze_video
 
     if not limiter.allow(_client_id(request), "analyze", 30):
@@ -106,6 +107,7 @@ def analyze(request: Request, file: UploadFile = File(...), department: str = Fo
     if ext not in ALLOWED_EXT:
         raise HTTPException(status_code=415, detail=f"unsupported file type '{ext}'; use one of {sorted(ALLOWED_EXT)}")
 
+    where = _camera_fields(camera, place, lat, lon, recorded_at)
     upload_dir = DATA_DIR / "uploads"
     upload_dir.mkdir(parents=True, exist_ok=True)
     dest = upload_dir / f"{uuid.uuid4().hex}{ext}"
@@ -118,11 +120,48 @@ def analyze(request: Request, file: UploadFile = File(...), department: str = Fo
     tracker, plate_detector, clip = _models()
     result = analyze_video(dest, department, tracker, plate_detector, out_dir=DATA_DIR / "jobs", body_classifier=clip,
                            source_name=file.filename, second_reader=_second_reader())
+    result.camera, result.camera_place, result.camera_lat, result.camera_lon, result.recorded_at = where
     save_job(result)
     _alert_watch_hits(result)
     # keep the original video with the rest of the case, so one folder holds everything about this analysis
     shutil.move(str(dest), str(DATA_DIR / "jobs" / result.job_id / f"source{ext}"))
     return result
+
+
+def _camera_fields(camera: str, place: str, lat: str, lon: str, recorded_at: str):
+    """Optional camera details from the upload form, cleaned. A bad value is refused rather than silently dropped."""
+    from datetime import datetime
+
+    camera, place = " ".join(camera.split())[:80] or None, " ".join(place.split())[:120] or None
+    la = lo = None
+    if lat.strip() or lon.strip():
+        try:
+            la, lo = float(lat), float(lon)
+        except ValueError:
+            raise HTTPException(status_code=422, detail="Latitude and longitude must be numbers.")
+        if not (-90 <= la <= 90 and -180 <= lo <= 180):
+            raise HTTPException(status_code=422, detail="Latitude must be between -90 and 90 and longitude between -180 and 180.")
+    rec = None
+    if recorded_at.strip():
+        try:
+            rec = datetime.fromisoformat(recorded_at.strip()).isoformat(timespec="minutes")
+        except ValueError:
+            raise HTTPException(status_code=422, detail="The recording time is not a valid date and time.")
+    return camera, place, la, lo, rec
+
+
+@app.get("/api/trail")
+def trail(plate: str):
+    """Where one plate was seen, in order, across cameras. Time is when the footage was recorded if the operator said, else when it was analysed."""
+    from . import watchlist as wl
+
+    groups = wl.repeat_groups(wl.all_sightings(DATA_DIR), min_footage=1, plate=plate)
+    out = []
+    for g in groups:
+        stops = sorted(g["sightings"], key=lambda s: s["recorded_at"] or s["when"])
+        out.append({"plate": g["plate"], "complete": g["complete"], "footage_count": g["footage_count"], "stops": stops,
+                    "ordered_by": "recording time" if all(s["recorded_at"] for s in stops) else "analysis time where a recording time was not given"})
+    return out
 
 
 def _alert_watch_hits(result: AnalysisResult) -> None:

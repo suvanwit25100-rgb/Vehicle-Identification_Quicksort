@@ -169,3 +169,11 @@ tr.sel td { background: var(--red-soft); }
 .from-console { margin: -8px 0 14px; font-size: 13.5px; }
 
 .advice .note-l { font-size: 15px; margin: 6px 0; }
+
+/* camera details on the upload form */
+.cam-d summary { cursor: pointer; }
+.cam-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 12px; align-items: end; }
+.map { width: 100%; max-width: 100%; height: 380px; border-radius: 12px; overflow: hidden; border: 1px solid var(--rule); margin: 14px 0; }
+.trail-n { background: transparent; border: 0; box-shadow: none; color: #fff; font: 700 12px var(--mono); }
+.trail-n::before { display: none; }
+.trail { margin-top: 18px; }

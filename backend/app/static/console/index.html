@@ -36,6 +36,19 @@
           <select id="department" name="department"></select>
           <span class="hint" id="dept-info"></span>
         </label>
+        <details class="cam-d">
+          <summary>Where and when was this filmed? (optional)</summary>
+          <p class="hint-s">Add it and this clip joins the cross-camera trail: the same plate seen at different cameras, in order, on a map.</p>
+          <div class="cam-grid">
+            <label class="f" for="camera">Camera name<input id="camera" maxlength="80" placeholder="e.g. Telibandha gate 2" autocomplete="off"></label>
+            <label class="f" for="place">Place<input id="place" maxlength="120" placeholder="Road, junction or area" autocomplete="off"></label>
+            <label class="f" for="recorded">Recorded at<input id="recorded" type="datetime-local"></label>
+            <label class="f" for="lat">Latitude<input id="lat" inputmode="decimal" placeholder="21.2399"></label>
+            <label class="f" for="lon">Longitude<input id="lon" inputmode="decimal" placeholder="81.6523"></label>
+            <button class="btn sm" id="geo" type="button">Use my location</button>
+          </div>
+          <p class="status-line" id="geo-status" role="status" aria-live="polite"></p>
+        </details>
         <button class="btn primary" id="go" type="submit">Analyse clip</button>
         <p class="status-line" id="status" role="status" aria-live="polite"></p>
       </form>

@@ -22,6 +22,16 @@
     <p class="lede">Each analysis is stored on the server with its original video, every image and all of its data. Open it, print it, or download the whole case as one file. Search by plate to find the same vehicle in other videos.</p>
   </div>
 
+  <section class="panel" id="trail-panel">
+    <h3 style="margin:0 0 6px">Follow a plate across cameras</h3>
+    <p class="hint-s" style="margin:0 0 14px">Type a plate (a whole one, or part of one with ? for unknown characters). You get every video it appears in, in order, and a map of the cameras that have a location. Order uses the recording time when it was given at upload, and the analysis time otherwise.</p>
+    <form id="trail-form" class="search-row">
+      <label class="f" for="trail-q">Plate<input id="trail-q" type="text" class="plate-input" maxlength="12" placeholder="UP14CA0914" autocomplete="off" spellcheck="false"></label>
+      <button class="btn sm" type="submit">Follow</button>
+    </form>
+    <div id="trail-out"></div>
+  </section>
+
   <section class="panel" id="repeats-panel">
     <h3 style="margin:0 0 6px">Seen more than once</h3>
     <p class="hint-s" style="margin:0 0 14px">Plates that appear in two or more different videos. The same video analysed twice does not count. A plate with unreadable characters is grouped only when nothing it did read disagrees.</p>

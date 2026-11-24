@@ -158,6 +158,8 @@ async function render(result) {
           .map(([n, l]) => h("div", { class: "kpi" }, h("div", { class: "n", style: typeof n === "string" ? "font-size:26px;padding-top:12px" : "" }, String(n)), h("div", { class: "l" }, l)))),
       h("p", { class: "attrs", style: "margin-top:18px" }, [
         result.source_filename ? `File: ${result.source_filename}` : null,
+        result.camera || result.camera_place ? `Camera: ${[result.camera, result.camera_place].filter(Boolean).join(", ")}` : null,
+        result.recorded_at ? `Recorded: ${result.recorded_at.replace("T", " ")}` : null,
         result.video ? `${result.video.width}×${result.video.height} at ${result.video.fps} fps${result.video.duration_s ? `, ${result.video.duration_s} s` : ""}` : null,
         result.processing_seconds != null ? `analysed in ${result.processing_seconds} s` : null,
         result.body_model ? `body type: ${result.body_model}` : null,
@@ -211,12 +213,20 @@ $("#upload").addEventListener("submit", async (ev) => {
   const fd = new FormData();
   fd.append("file", file);
   fd.append("department", $("#department").value);
+  [["camera", "#camera"], ["place", "#place"], ["lat", "#lat"], ["lon", "#lon"], ["recorded_at", "#recorded"]].forEach(([k, s]) => { if ($(s).value.trim()) fd.append(k, $(s).value.trim()); });
   $("#go").disabled = true;
   const t0 = Date.now();
   const tick = setInterval(() => { $("#status").innerHTML = `<span class="spinner"></span>Analysing… ${Math.round((Date.now() - t0) / 1000)} s. Longer clips take a minute or two on CPU.`; $("#status").className = "status-line"; }, 500);
   try { await render(await api((window.EXLEX?.uploadBase || "") + "/api/analyze", { method: "POST", body: fd })); setStatus("Done."); loadRecent(); }
   catch (e) { setStatus("Analysis failed: " + e.message, true); }
   finally { clearInterval(tick); $("#go").disabled = false; }
+});
+$("#geo").addEventListener("click", () => {
+  const s = $("#geo-status");
+  if (!navigator.geolocation) { s.textContent = "This device cannot share a location."; s.className = "status-line error"; return; }
+  s.textContent = "Asking for your location…"; s.className = "status-line";
+  navigator.geolocation.getCurrentPosition((p) => { $("#lat").value = p.coords.latitude.toFixed(5); $("#lon").value = p.coords.longitude.toFixed(5); s.textContent = "Location added."; },
+    () => { s.textContent = "Location was not shared. Type it instead."; s.className = "status-line error"; }, { enableHighAccuracy: true, timeout: 10000 });
 });
 $("#lookup").addEventListener("submit", (ev) => { ev.preventDefault(); const id = $("#jobid").value.trim(); if (id) openJob(id); });
 
