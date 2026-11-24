@@ -46,6 +46,20 @@
       <section class="panel list-panel"><div id="list"></div></section>
       <section class="panel detail-panel" id="detail"><p class="empty">Choose a report from the list.</p></section>
     </div>
+
+    <section class="panel" id="watch" style="margin-top:22px">
+      <h3 style="margin:0 0 6px">Watch-list</h3>
+      <p class="hint-s" style="margin:0 0 14px">Plates you want flagged when they appear in any stored video. Officers only. A hit is a lead to check against the video: “possible” means what was read agrees but some characters could not be read. A plate is never flagged on a character that was not read.</p>
+      <form id="watch-form" class="watch-form">
+        <label class="f" for="w-plate">Plate<input id="w-plate" class="plate-input" maxlength="12" placeholder="UP14CA0914  or  DL8C??4767" autocomplete="off" spellcheck="false"></label>
+        <label class="f grow" for="w-reason">Reason<input id="w-reason" maxlength="200" placeholder="Why is it listed? (shown to officers only)" autocomplete="off"></label>
+        <button class="btn primary sm" type="submit">Add</button>
+      </form>
+      <p class="status-line" id="watch-status" role="status" aria-live="polite"></p>
+      <div id="watch-list"></div>
+      <h4 style="margin-top:22px">Hits in stored videos</h4>
+      <div id="watch-alerts"></div>
+    </section>
   </div>
 </main>
 <footer id="foot"></footer>

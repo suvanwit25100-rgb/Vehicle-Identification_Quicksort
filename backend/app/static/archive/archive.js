@@ -45,3 +45,16 @@ $("#clear").addEventListener("click", () => { $("#q").value = ""; load(); });
 const preset = new URLSearchParams(location.search).get("plate");
 if (preset) $("#q").value = preset;
 load();
+
+async function loadRepeats() {
+  const box = $("#repeats");
+  try {
+    const groups = await api("/api/sightings");
+    box.replaceChildren(...(groups.length ? groups.map((g) => h("div", { class: "repeat" },
+      h("div", { class: "repeat-head" }, h("span", { class: "mono repeat-plate" }, g.plate), h("span", { class: "chip" + (g.complete ? "" : " partial") }, g.complete ? "whole plate" : "partly read"),
+        h("span", { class: "muted", style: "font-size:13px" }, `${g.footage_count} videos · first ${when(g.first_seen)} · last ${when(g.last_seen)}`)),
+      h("div", { class: "platechips" }, g.sightings.map((x) => h("a", { class: "hit", href: `/console/?job=${x.job_id}`, title: `${x.filename || x.job_id}, vehicle ${x.track_id}` }, `${x.filename || x.job_id} #${x.track_id}`))))) :
+      [h("p", { class: "empty" }, "No plate has appeared in more than one video yet. Repeat sightings show up here once the same vehicle is read in a second, different video.")]));
+  } catch (e) { box.replaceChildren(h("p", { class: "err" }, "Could not load sightings: " + e.message)); }
+}
+loadRepeats();

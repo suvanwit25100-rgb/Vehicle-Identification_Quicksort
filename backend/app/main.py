@@ -121,6 +121,14 @@ def jobs(plate: str | None = None, limit: int = 200):
     return list_jobs(DATA_DIR, plate=plate, limit=max(1, min(limit, 500)))
 
 
+@app.get("/api/sightings")
+def sightings(plate: str | None = None, min_videos: int = 2):
+    """Plates seen in more than one distinct video. The same video analysed twice is not a repeat."""
+    from . import watchlist as wl
+
+    return wl.repeat_groups(wl.all_sightings(DATA_DIR), min_footage=max(1, min(min_videos, 50)), plate=plate)
+
+
 @app.get("/api/jobs/{job_id}/download")
 def job_download(job_id: str, include_video: bool = True):
     """The whole case as one .zip: report, data tables, images, the original video and a manifest with hashes."""
@@ -379,4 +387,44 @@ def desk_image(cid: str, request: Request):
     return FileResponse(p, media_type="image/jpeg")
 
 
+
+
+# ---------------------------------------------------------------- officer watch-list (never part of a public response)
+class WatchIn(BaseModel):
+    plate: str
+    reason: str
+
+
+def _watch():
+    from . import watchlist as wl
+
+    return wl.WatchStore(DATA_DIR)
+
+
+@app.get("/api/desk/watchlist", dependencies=[Depends(require_officer)])
+def desk_watchlist():
+    from . import watchlist as wl
+
+    entries = _watch().entries()
+    hits = wl.alerts(DATA_DIR, entries)
+    return {"entries": entries, "alerts": hits,
+            "note": "A hit is a lead to verify against the video, not a conclusion. 'possible' means the read agrees but some characters were unreadable."}
+
+
+@app.post("/api/desk/watchlist", dependencies=[Depends(require_officer)])
+def desk_watch_add(body: WatchIn):
+    try:
+        return _watch().add(body.plate, body.reason)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.delete("/api/desk/watchlist/{wid}", dependencies=[Depends(require_officer)])
+def desk_watch_remove(wid: str):
+    if not _watch().remove(wid):
+        raise HTTPException(status_code=404, detail="No such entry.")
+    return {"removed": wid}
+
+
+# the static site is mounted last, so it can never shadow an API route
 app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="ui")

@@ -88,6 +88,7 @@ function enter() {
   $("#f-status").replaceChildren(h("option", { value: "" }, "All statuses"), ...Object.keys(STATUS_LABEL).filter((s) => ["new", "under_review", "verified", "forwarded", "closed", "rejected"].includes(s)).map((s) => h("option", { value: s }, STATUS_LABEL[s])));
   $("#f-dept").replaceChildren(h("option", { value: "" }, "All agencies"), ...Object.entries(AGENCY).map(([k, v]) => h("option", { value: k }, v)));
   loadList();
+  loadWatch();
 }
 $("#login-form").addEventListener("submit", async (ev) => {
   ev.preventDefault();
@@ -101,3 +102,24 @@ $("#refresh").addEventListener("click", loadList);
 $("#f-status").addEventListener("change", loadList);
 $("#f-dept").addEventListener("change", loadList);
 if (key) { call("/api/desk/complaints").then(enter).catch(() => signedOut()); }
+
+/* ---------- watch-list ---------- */
+const wnote = (msg, err = false) => { const e = $("#watch-status"); e.textContent = msg; e.className = "status-line" + (err ? " error" : ""); };
+async function loadWatch() {
+  try {
+    const d = await call("/api/desk/watchlist");
+    $("#watch-list").replaceChildren(d.entries.length ? h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Plate", "Reason", "Listed", ""].map((t) => h("th", {}, t)))),
+      h("tbody", {}, d.entries.map((e) => h("tr", {}, h("td", { class: "mono" }, e.plate), h("td", {}, e.reason), h("td", {}, when(e.created_at)),
+        h("td", {}, h("button", { class: "btn sm", type: "button", onclick: async () => { try { await call(`/api/desk/watchlist/${e.id}`, { method: "DELETE" }); loadWatch(); } catch (x) { wnote(x.message, true); } } }, "Remove"))))))) : h("p", { class: "empty" }, "Nothing on the watch-list."));
+    $("#watch-alerts").replaceChildren(d.alerts.length ? h("div", { class: "tablewrap" }, h("table", {}, h("thead", {}, h("tr", {}, ["Hit", "Listed plate", "Read as", "Video", "Reason"].map((t) => h("th", {}, t)))),
+      h("tbody", {}, d.alerts.map((a) => h("tr", {}, h("td", {}, h("span", { class: "chip " + (a.level === "exact" ? "verified" : "under_review") }, a.level)), h("td", { class: "mono" }, a.watch_plate), h("td", { class: "mono" }, a.read),
+        h("td", {}, h("a", { href: `/console/?job=${a.job_id}` }, `${a.filename || a.job_id} #${a.track_id}`)), h("td", {}, a.reason)))))) : h("p", { class: "empty" }, d.entries.length ? "No stored video contains a plate that fits the list." : "Add a plate to start watching."));
+  } catch (e) { if (e.status === 401) signedOut("That key was not accepted."); else wnote(e.message, true); }
+}
+$("#watch-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  try {
+    await call("/api/desk/watchlist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plate: $("#w-plate").value, reason: $("#w-reason").value }) });
+    $("#w-plate").value = ""; $("#w-reason").value = ""; wnote("Added."); loadWatch();
+  } catch (e) { wnote(e.message, true); }
+});

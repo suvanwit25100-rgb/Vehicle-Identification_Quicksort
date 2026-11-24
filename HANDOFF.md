@@ -355,6 +355,14 @@ All use the existing pretrained models; nothing was trained.
 - **Measured:** real clip track 90 was `DL1L??2711` and is now `DL1LR-2711` (second reader agrees); the other tracks are unchanged. 186 tests pass (7 new in `test_variable_length.py`).
 - **Not handled:** three series letters, numbers shorter than four digits, and Bharat-series plates (`22BH1234AA`).
 
+### Feature 3: repeat sightings and an officer watch-list (`app/watchlist.py`)
+- **Repeat sightings** (`GET /api/sightings`, public like the archive; panel on the archive page): readable plates (7+ characters) from all stored analyses are grouped when no character clashes and 7+ agree
+  (`?` and the absent marker never count). A repeat needs **two or more distinct videos**, identified by the SHA-256 of the video file, so analysing one clip several times is not a repeat. On our real data (one clip analysed many times) the list is correctly empty.
+- **Watch-list** (officer key only: `GET/POST /api/desk/watchlist`, `DELETE /api/desk/watchlist/{id}`; panel on the officer desk): an entry is a plate with unknown characters allowed (at least 4 known) and a reason. Hits are found in all stored videos:
+  "exact" if every character the entry names was read and agrees, "possible" if the read agrees but some of it is unreadable; any clash, or fewer than 6 agreeing characters, is never a hit. Removing an entry is a soft delete (kept for the record). The watch-list and its reasons never appear in public responses (tested).
+- **Not done:** hits are shown on the desk on request, not pushed as notifications; citizen-report plates are not checked against the list; one shared officer key.
+- 199 tests pass (13 new in `test_watchlist.py`).
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.
