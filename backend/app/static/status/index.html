@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>try{if(sessionStorage.getItem('nav')){document.documentElement.classList.add('arrived');sessionStorage.removeItem('nav')}}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Track a report · ExLex</title>
+<meta name="theme-color" content="#030612">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/pages.css">
+<link rel="stylesheet" href="/status/status.css">
+</head>
+<body data-page="report">
+<header class="bar" id="bar"></header>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Track a report</span>
+    <h1 class="h2">Where is my report?<br><em>In plain words.</em></h1>
+    <p class="lede">Enter the 12-character ID you were given when you filed it. You will see what has happened so far. You will never see officer notes, owner details or anyone's plate here.</p>
+  </div>
+  <section class="panel narrow">
+    <form id="f" class="lookup">
+      <label class="sr" for="cid">Report ID</label>
+      <input id="cid" type="text" maxlength="12" placeholder="e.g. 4f3f7be6c9f9" autocomplete="off" spellcheck="false">
+      <button class="btn primary" type="submit">Show my report</button>
+    </form>
+    <p class="status-line" id="msg" role="status" aria-live="polite" style="margin-top:12px"></p>
+  </section>
+  <section class="panel narrow" id="out" hidden></section>
+</main>
+<footer id="foot"></footer>
+<script src="/ui.js"></script>
+<script src="/status/status.js"></script>
+</body>
+</html>

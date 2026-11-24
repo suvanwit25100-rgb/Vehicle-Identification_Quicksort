@@ -1,0 +1,12 @@
+.narrow { max-width: 680px; margin: 0 auto 20px; }
+.st-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.st-meaning { font-size: 17px; margin: 14px 0 20px; }
+.st-steps { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0 0 22px; }
+.st-steps li { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border: 1px solid var(--rule); border-radius: 999px; font: 500 13px var(--font); color: var(--dim); }
+.st-steps li span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--rule-2); font: 600 11px var(--mono); }
+.st-steps li.done { color: var(--muted); border-color: rgba(61, 220, 151, .4); }
+.st-steps li.done span { background: rgba(61, 220, 151, .15); border-color: rgba(61, 220, 151, .5); }
+.st-steps li.now { color: var(--fg); border-color: rgba(255, 42, 63, .55); background: var(--red-soft); }
+.st-timeline { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.st-timeline li { padding: 10px 14px; border-left: 2px solid var(--rule-2); background: var(--panel-2); border-radius: 0 10px 10px 0; font-size: 14px; }
+.st-timeline small { display: block; color: var(--dim); font: 500 11.5px var(--mono); margin-bottom: 2px; }

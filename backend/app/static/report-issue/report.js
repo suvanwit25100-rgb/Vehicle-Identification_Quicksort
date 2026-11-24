@@ -101,6 +101,7 @@ $("#details").addEventListener("submit", async (ev) => {
         plate_confirmed: cleanPlate($("#plate").value) || null, contact: $("#contact").value.trim() || null, consent: true }),
     });
     $("#done-id").textContent = r.complaint_id;
+    $("#track").href = `/status/?id=${r.complaint_id}`;
     $("#done-msg").textContent = `${r.message} It was sent to: ${r.department}.`;
     $("#cid").value = r.complaint_id;
     setStep(4);

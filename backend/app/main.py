@@ -481,6 +481,42 @@ def flag_vehicle(job_id: str, track_id: int, body: FlagIn, request: Request):
     return {"complaint_id": cid, "status": "new", "department": dept.name, "plate": track.match.fused.display}
 
 
+PUBLIC_STEPS = ["new", "under_review", "verified", "forwarded", "closed"]
+PUBLIC_WORDS = {
+    "new": ("Received", "We have your report. An officer has not looked at it yet."),
+    "under_review": ("Being looked at", "An officer is reviewing your report and the evidence in it."),
+    "verified": ("Checked", "An officer checked the evidence and found it worth acting on."),
+    "forwarded": ("Passed on", "Your report was passed to the agency that handles this."),
+    "closed": ("Finished", "The agency has finished with this report."),
+    "rejected": ("Reviewed, no action", "An officer reviewed it and no action will be taken, for example because it could not be checked. This is not a judgement about you."),
+}
+
+
+@app.get("/api/complaints/{cid}/progress")
+def complaint_progress(cid: str, request: Request):
+    """The story of a report in plain words, for the person who filed it. Never officer names, notes, registry data or anyone's plate."""
+    if not limiter.allow(_client_id(request), "progress", 60, 3600):
+        raise HTTPException(status_code=429, detail="Too many lookups. Try again later.")
+    store = _store()
+    row = store.get(cid)
+    if row is None:
+        raise HTTPException(status_code=404, detail="report not found")
+    timeline = [{"at": row["created_at"], "text": "You filed this report."}]
+    for e in store.events(cid):
+        if e["kind"] == "assign":
+            timeline.append({"at": e["at"], "text": "An officer took your report." if "assigned to" in e["text"] else "Your report is waiting for an officer."})
+        elif e["kind"] == "status" and " -> " in e["text"]:
+            new = e["text"].split(" -> ")[1]
+            if new in PUBLIC_WORDS:
+                timeline.append({"at": e["at"], "text": f"Status changed to “{PUBLIC_WORDS[new][0]}”."})
+    label, meaning = PUBLIC_WORDS[row["status"]] if row["status"] in PUBLIC_WORDS else (row["status"], "")
+    dept = get_department(row["department"])
+    return {"complaint_id": row["id"], "status": row["status"], "label": label, "meaning": meaning, "category": cm.CATEGORIES[row["category"]][0],
+            "department": dept.name, "filed_at": row["created_at"], "updated_at": row["updated_at"],
+            "steps": [{"id": s, "label": PUBLIC_WORDS[s][0]} for s in PUBLIC_STEPS], "rejected": row["status"] == "rejected", "timeline": timeline,
+            "note": "Your report is a lead for an officer to check, not a verdict on anyone. Owner and registry details are never shown here."}
+
+
 @app.get("/api/complaints/{cid}/status")
 def complaint_status(cid: str):
     """What a citizen may see about their own report: its state, never registry data or officer notes."""
