@@ -16,16 +16,23 @@ COCO_TO_BODY = {
 }
 
 
+# Prompts were tuned on 87 real vehicle crops from the sample clip (hand-labelled, HANDOFF.md 8c):
+# 75 -> 78 correct. Two or more prompts per class are averaged, so one odd phrase cannot decide alone.
 BODY_PROMPTS = {
-    "car": ["a photo of a hatchback car", "a photo of a sedan car"],
-    "suv": ["a photo of an SUV", "a photo of a large SUV"],
-    "two_wheeler": ["a photo of a motorcycle", "a photo of a scooter"],
-    "auto_rickshaw": ["a photo of an auto rickshaw", "a photo of a three-wheeled tuk-tuk"],
+    "car": ["a photo of a hatchback car", "a photo of a sedan car", "a photo of a small compact car", "a photo of a car seen from behind"],
+    "suv": ["a photo of an SUV", "a photo of a large SUV with a tall boxy body"],
+    "two_wheeler": ["a photo of a motorcycle with a rider", "a photo of a scooter with a rider"],
+    "auto_rickshaw": ["a photo of an auto rickshaw", "a photo of a three-wheeled tuk-tuk",
+                      "a photo of an electric e-rickshaw with passenger seats",
+                      "a photo of the back of a yellow and green CNG auto rickshaw"],
     "truck": ["a photo of a large cargo truck", "a photo of a lorry"],
-    "tempo": ["a photo of a small pickup truck", "a photo of a mini cargo van"],
+    "tempo": ["a photo of a pickup truck with an open cargo bed", "a photo of a white delivery van with no side windows"],
     "bus": ["a photo of a bus"],
     "tractor": ["a photo of a farm tractor"],
 }
+# Types that look alike from a CCTV angle. The matcher gives partial credit when the registry says
+# one and the camera says the other, because telling a hatchback from a small SUV is a coin flip.
+NEAR_BODY = {"car": {"suv": 0.5}, "suv": {"car": 0.5}, "truck": {"tempo": 0.5}, "tempo": {"truck": 0.5}}
 PRIOR_FLOOR = 0.05
 
 

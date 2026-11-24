@@ -14,6 +14,9 @@ from .report import STATUS_LABEL, VERDICT_TEXT, is_readable
 from .schemas import AnalysisResult, TrackAnalysis
 
 
+MAX_FRAMES = 30
+
+
 def available() -> bool:
     try:
         import reportlab  # noqa: F401
@@ -156,16 +159,33 @@ def render_pdf(result: AnalysisResult, job_dir: Path | None = None) -> bytes:
                 story.append(KeepTogether([
                     Paragraph(f"<b>#{rank} <font name='Courier'>{_t(c.plate)}</font></b> - confidence {c.confidence:.2f}{flags}", body),
                     Paragraph(f"{_t(c.make)} {_t(c.model)}, {_t(c.colour)}, {_t(c.body_type)} (registry {_t(c.reg_id)})", muted),
+                    Paragraph("Score parts: " + ", ".join(f"{k.replace('_', ' ')} {v:.2f}" for k, v in c.components.items()), muted),
                     *[Paragraph(f"- {_t(r)}", muted) for r in c.reasons]]))
                 story.append(Spacer(1, 3))
-        story.append(Paragraph("Characters read per frame (first 12 frames)", h3))
+        shown_frames = t.frame_reads[:MAX_FRAMES]
+        more = f" (first {MAX_FRAMES} of {len(t.frame_reads)})" if len(t.frame_reads) > MAX_FRAMES else ""
+        story.append(Paragraph(f"Characters read per frame, with confidence{more}", h3))
+        story.append(Paragraph("Each cell is the character read in that frame; the small number under it is the reader's confidence (0 to 1). "
+                               "A dash means nothing was read at that position in that frame.", muted))
+        cs = ParagraphStyle("cell", parent=muted, fontName="Courier-Bold", fontSize=8.5, leading=9.5, alignment=1, textColor=colors.black)
+        cs_lo = ParagraphStyle("celllo", parent=cs, textColor=colors.HexColor("#a4281b"))
         rows = [["Frame", "Sharp."] + [str(i) for i in range(1, 11)]]
-        for fr in t.frame_reads[:12]:
-            rows.append([str(fr.frame_id), f"{fr.sharpness:.0f}"] + [(c.char if c else "-") for c in fr.chars])
-        ft = Table(rows, hAlign="LEFT", colWidths=[14 * mm, 14 * mm] + [9 * mm] * 10)
+        cell_style = []
+        for r, fr in enumerate(shown_frames, 1):
+            row_cells = [str(fr.frame_id), f"{fr.sharpness:.0f}"]
+            for i, c in enumerate(fr.chars):
+                if c is None:
+                    row_cells.append("-")
+                else:
+                    low = c.conf < 0.5
+                    row_cells.append(Paragraph(f"{_t(c.char)}<br/><font size='6' name='Helvetica'>{c.conf:.2f}</font>", cs_lo if low else cs))
+            rows.append(row_cells)
+        ft = Table(rows, hAlign="LEFT", colWidths=[14 * mm, 14 * mm] + [11 * mm] * 10, repeatRows=1)
         ft.setStyle(TableStyle([("FONT", (0, 0), (-1, -1), "Courier", 7.5), ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#f4f5f7")),
-                                ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#d5d7da")), ("ALIGN", (2, 1), (-1, -1), "CENTER")]))
+                                ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#d5d7da")), ("ALIGN", (2, 1), (-1, -1), "CENTER"),
+                                ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
         story.append(ft)
+        story.append(Paragraph("Confidences in red are below 0.50.", muted))
 
     if unread:
         story.append(Paragraph(f"Vehicles without a readable plate ({len(unread)})", h2))

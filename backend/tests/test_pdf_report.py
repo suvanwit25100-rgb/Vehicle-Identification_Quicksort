@@ -59,3 +59,14 @@ def test_without_reportlab_the_endpoint_says_so_and_the_case_file_still_builds(c
     assert client.get(f"/api/jobs/{result.job_id}/report.pdf").status_code == 501
     z = zipfile.ZipFile(io.BytesIO(client.get(f"/api/jobs/{result.job_id}/download").content))
     assert not any(n.endswith("report.pdf") for n in z.namelist()) and any(n.endswith("report.html") for n in z.namelist())
+
+
+def test_pdf_shows_a_confidence_for_each_character_in_each_frame(client, tmp_path):
+    result = stored_case(tmp_path)
+    r = client.get(f"/api/jobs/{result.job_id}/report.pdf")
+    text = text_of(r.content)
+    assert "Characters read per frame, with confidence" in text
+    track = next(t for t in result.tracks if t.frame_reads)
+    first = next(c for c in track.frame_reads[0].chars if c)
+    assert f"{first.conf:.2f}" in text
+    assert "Score parts:" in text

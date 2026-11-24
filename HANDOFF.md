@@ -434,7 +434,7 @@ Not built, on purpose: live camera streams, helmet/rider checks, FASTag/permit c
 5. **Night-light boost: measured and NOT shipped.** Code written, tested, then removed. Generated plates darkened and noised (300 per level): very dark 51.7% exact reads without it, 53.0% with it at selection margin 1.0 (0 readings made worse) or 54.3% at margin 0.5 (1 made worse); dim and bright within 0.6 points. That is inside the noise for 300 plates. On the real clip, 4 of 20 unique crops of the five known vehicles were dark and the boost changed none. No evidence it helps, so it is not in the product. (The evaluation script was a scratch file, not kept.)
 6. **Hindi and English** (`static/i18n.js`): swaps text that matches a dictionary entry (also text added later), covering the menu, landing hero, report-a-problem pages, track page, categories, agency names, statuses. Untranslated text stays English. `tests/test_i18n.py` fails if a translated phrase no longer exists in the pages or server text. Dates stay in English format. **The Hindi has not been reviewed by a native speaker.**
 7. **Installable app** (`manifest.webmanifest`, `sw.js`, `pwa.js`, `offline.html`, icons in `static/img`): the service worker caches only the citizen page shell, never `/api`, `/officer`, `/desk`, writes or other sites. Offline notice on the pages; a report still needs a connection. The in-app browser pane refuses to register service workers, so registration was not seen live there; the worker's logic is tested in Node with a fake cache and network (`tests/sw_harness.js`). Install on a real phone is unverified.
-- 308 tests pass.
+- 311 tests pass.
 
 ## 9. Ground rules, preferences and history
 
@@ -459,3 +459,16 @@ Not built, on purpose: live camera streams, helmet/rider checks, FASTag/permit c
 
 ## Name (2026-11-24)
 The project is now called **ExLex** (earlier names: Netra, PlateTrace). It is shown on the landing hero, the nav bar, page titles, reports, PDFs and the API title. Left as they were on purpose so nothing breaks: the database file `data/netra.db` (existing reports live in it), and the old environment variable names `NETRA_OFFICER_KEY` / `NETRA_DEVICE`, which still work next to the new `EXLEX_OFFICER_KEY` / `EXLEX_DEVICE`.
+
+### 8c. Body-type tuning and per-frame PDF confidence (2026-11-24)
+- **Measured on real crops.** 87 vehicle crops from the sample clip (about 15 distinct vehicles seen many times), labelled by eye by the
+  assistant, not by an independent annotator. Several vehicle types accept more than one answer (a van may be car or tempo; a cargo
+  three-wheeler may be auto, tempo or truck). Top-1 body type: **75/87 before, 78/87 after** new CLIP prompts. Small sample, one clip, one scene.
+- **Still wrong (zero-shot limit):** a white hatchback (Santro) is read as SUV or tempo; one e-rickshaw whose detector box says
+  "motorcycle" is read as two-wheeler; a grey van partly hidden by a motorcycle. Changes that fixed one broke another (tuned prior, softer
+  prior: 75/87), so they were not kept.
+- **Matcher fix instead of a model change:** car and SUV (and truck and tempo) are look-alikes, so the matcher gives half credit when the
+  registry says one and the camera the other, and says so in the reasons (`NEAR_BODY` in `vision/attributes.py`). Tests added.
+- **PDF:** the per-frame table now shows each character with its own confidence (red below 0.50), up to 30 frames, and each candidate lists
+  its score parts (plate, colour, body, mismatch penalty). It still shows three plate crops and one evidence frame, not every frame image.
+- Existing stored jobs keep their old body-type values; only new analyses use the new prompts.

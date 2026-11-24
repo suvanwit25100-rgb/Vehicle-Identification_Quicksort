@@ -84,3 +84,21 @@ def test_missing_attributes_do_not_crash_or_deflate_score():
     res = match_registry(fused_for(TARGET), None, None, REGISTRY, POLICE)
     assert res.status == "match"
     assert res.candidates[0].confidence >= 0.8
+
+
+def test_car_and_suv_earn_half_credit_but_unrelated_types_earn_none():
+    from app.config import get_department
+    from app.matcher import match_registry
+    from app.schemas import FusedPlate
+    from .helpers import make_frame
+    from app.fusion import fuse_frames
+
+    fused = fuse_frames([make_frame(i, TARGET) for i in range(3)])
+    cfg = get_department("police")
+    seen = {"suv": 0.8, "car": 0.1, "two_wheeler": 0.1}
+    c = lambda body: match_registry(fused, {"white": 0.9}, seen, [row("R", TARGET, "white", body)], cfg).candidates[0]
+    suv, car, bike = c("suv"), c("car"), c("two_wheeler")
+    assert car.components["body_fit"] == 0.4          # 0.8 for the neighbouring type, halved
+    assert suv.components["body_fit"] == 0.8
+    assert bike.components["body_fit"] == 0.1         # no look-alike credit for a bike
+    assert any("half credit" in r for r in car.reasons) and not any("half credit" in r for r in suv.reasons)

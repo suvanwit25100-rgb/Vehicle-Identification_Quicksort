@@ -10,6 +10,7 @@ The score is an uncalibrated confidence until tuned on held-out clips.
 """
 
 from .config import DepartmentConfig
+from .vision.attributes import NEAR_BODY
 from .schemas import ABSENT, PLATE_LEN, Candidate, FusedPlate, MatchResult, RegistryRow, to_slots
 
 SIMILAR_COLOURS = {
@@ -64,6 +65,11 @@ def _score_row(row, fused, colour, body, cfg) -> Candidate | None:
 
     colour_fit = _colour_fit(row.colour, colour) if colour else 0.0
     body_fit = body.get(row.body_type, 0.0) if body else 0.0
+    close_type = None
+    if body:
+        for other, credit in NEAR_BODY.get(row.body_type, {}).items():
+            if body.get(other, 0.0) * credit > body_fit:
+                body_fit, close_type = body[other] * credit, other
 
     score = wp * plate_fit + wc * colour_fit + wb * body_fit - w.mismatch_penalty * penalty
     score = max(0.0, min(1.0, score))
@@ -95,6 +101,7 @@ def _score_row(row, fused, colour, body, cfg) -> Candidate | None:
         verdict = "agrees with" if row.body_type == top_b else "differs from"
         reasons.append(
             f"Body type: detected {top_b} (p={body[top_b]:.2f}) {verdict} registered {row.body_type}."
+            + (f" These two look alike on camera, so it earns half credit." if close_type and row.body_type != top_b else "")
         )
     if row.flags:
         reasons.append("Registry flags: " + ", ".join(row.flags) + ".")
