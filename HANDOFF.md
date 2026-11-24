@@ -500,3 +500,10 @@ The project is now called **ExLex** (earlier names: Netra, PlateTrace). It is sh
 - **RTO list is now the team's `rto_codes.csv`** (kept at `backend/data/source/rto_codes_user.csv`, merged by `scripts/merge_rto_csv.py`; 1,289 codes from the CSV,
   13 gap-fills from Wikipedia; 36 states/territories incl. Andaman and Nicobar). The result panel shows a "Region" line (state, place) above the scores; when only the
   state letters were read it shows the state alone. Codes with letter suffixes (HP-08AA, TN-57W) are not in the lookup.
+
+### 8g. Demo registry (2026-11-24)
+- Default registry is now `data/registry_demo.csv` (`scripts/make_demo_registry.py`): the 300 random synthetic rows, the plates read in the stored clips
+  (`make_clip_registry.py`, make/model "-") and one plate typed by hand from a crop (WB06A8292, vehicle 44). **Not real data**; the clip rows come from our own
+  reads, so matching them shows the matching and reasons work, not accuracy. Re-matching the stored plates: 60 match, 32 no confident match, 221 insufficient evidence.
+- Vehicle 44 (read `??08A-8292`; the crop looks like WB06A8292) still gets no match: the 6 was read as 8, one known-character clash, and the police setting allows none.
+  That is the gate working. The matcher was not loosened.

@@ -21,7 +21,8 @@ from .schemas import RegistryRow
 DATA = Path(__file__).resolve().parent.parent / "data"
 SYNTHETIC_REGISTRY = DATA / "registry.csv"             # 300 random rows; tests and calibration only
 TEST_REGISTRY = DATA / "registry_clip_test.csv"        # plates read from the sample clip; demo only
-DEFAULT_REGISTRY = TEST_REGISTRY if TEST_REGISTRY.exists() else SYNTHETIC_REGISTRY
+DEMO_REGISTRY = DATA / "registry_demo.csv"             # synthetic rows + the clip plates; demo only
+DEFAULT_REGISTRY = next((p for p in (DEMO_REGISTRY, TEST_REGISTRY) if p.exists()), SYNTHETIC_REGISTRY)
 FEED_TIMEOUT_S = 15
 MAX_FEED_BYTES = 20_000_000
 
@@ -85,5 +86,6 @@ def load_registry(path: str | None = None) -> list[RegistryRow]:
     if not url:
         same = lambda a, b: a.resolve() == b.resolve()
         _source = ("synthetic demo registry (not real data)" if same(p, SYNTHETIC_REGISTRY) else
+                   "demo registry: random synthetic rows plus plates from the sample clip (not real data)" if same(p, DEMO_REGISTRY) else
                    "test registry built from the sample clip (not government data)" if same(p, TEST_REGISTRY) else "registry file you supplied")
     return _from_file(p)
