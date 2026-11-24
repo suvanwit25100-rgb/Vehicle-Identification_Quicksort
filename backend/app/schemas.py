@@ -129,6 +129,7 @@ class TrackAnalysis(BaseModel):
     plate_layout: str | None = None  # "one-row" or "two-row", from how most frames of this vehicle were read
     second_reader: SecondReading | None = None
     match: "MatchResult"
+    rto: dict | None = None  # filled when served (app/rto.py); never stored, so a corrected code list applies to old jobs too
 
 
 class AnalysisResult(BaseModel):

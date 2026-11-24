@@ -139,6 +139,11 @@ def render_pdf(result: AnalysisResult, job_dir: Path | None = None) -> bytes:
         story.append(slots_table(t))
         story.append(Paragraph(f"Positions marked ? could not be read reliably and are reported as unknown, never guessed. Pattern: "
                                f"<font name='Courier'>{_t(m.fused.display)}</font>", muted))
+        if t.rto:
+            r = t.rto
+            story.append(Spacer(1, 3))
+            story.append(Paragraph("<b>RTO code check</b> (public code list, a region lookup, not a registry match): " + _t(r["message"])
+                                   + (f" Confidence {r['confidence']:.2f}." if r.get("confidence") is not None and r["status"] == "match" else ""), body))
         if t.second_reader:
             s = t.second_reader
             story.append(Spacer(1, 3))

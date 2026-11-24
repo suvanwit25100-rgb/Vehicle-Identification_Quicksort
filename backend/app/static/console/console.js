@@ -142,7 +142,7 @@ function trackView(jobId, t, acts, flags, result) {
         (t.evidence_frame || t.vehicle_crop) ? h("div", { class: "media" },
           t.evidence_frame ? h("a", { href: `/api/jobs/${jobId}/crops/${t.evidence_frame}`, target: "_blank", rel: "noopener", title: "Open the full frame" }, h("img", { class: "evimg", src: `/api/jobs/${jobId}/crops/${t.evidence_frame}`, alt: `Frame the plate of vehicle ${t.track_id} was read from`, loading: "lazy" })) : null,
           t.vehicle_crop ? h("img", { class: "vehimg", src: `/api/jobs/${jobId}/crops/${t.vehicle_crop}`, alt: `Vehicle ${t.track_id}`, loading: "lazy" }) : null) : null),
-      h("div", {}, banner(m), compareView(jobId, t),
+      h("div", {}, banner(m, t.rto), compareView(jobId, t),
         m.candidates.length ? h("h4", { style: "margin-top:22px" }, "Ranked candidates") : null,
         m.candidates.map((c, i) => candidateView(c, i + 1)), actionsView(jobId, t, acts),
         h("h4", { style: "margin-top:22px" }, "Flag"), flagView(jobId, t, flags, result))),

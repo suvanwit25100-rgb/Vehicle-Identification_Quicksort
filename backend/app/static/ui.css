@@ -312,3 +312,6 @@ html[lang="hi"] * { letter-spacing: normal !important; }
 .cmp-score { display: flex; flex-direction: column; gap: 2px; margin: 10px 0 4px; }
 .cmp-score .num { font-family: "Unbounded", sans-serif; font-weight: 300; font-size: 34px; line-height: 1.1; }
 .cmp-score .lab { font-size: 12px; letter-spacing: .04em; color: var(--soft, #aab3c6); }
+
+.banner .stat.rto.match .num { color: var(--green, #3ddc97); }
+.banner .stat.rto.unknown_code .lab, .banner .stat.rto.unreadable .lab { color: var(--amber, #ffb454); }

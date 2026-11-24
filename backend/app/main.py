@@ -22,6 +22,7 @@ from .config import get_department, load_departments
 from .fusion import fuse_frames
 from .matcher import match_registry
 from .monitor import calibration_summary, host_stats, job_summary, list_jobs, metrics
+from . import rto as rto_mod
 from .registry import load_registry, registry_source
 from .export import build_case_zip
 from .report import render_report
@@ -127,7 +128,7 @@ def analyze(request: Request, file: UploadFile = File(...), department: str = Fo
     _alert_watch_hits(result)
     # keep the original video with the rest of the case, so one folder holds everything about this analysis
     shutil.move(str(dest), str(DATA_DIR / "jobs" / result.job_id / f"source{ext}"))
-    return result
+    return rto_mod.attach(result)
 
 
 def _camera_fields(camera: str, place: str, lat: str, lon: str, recorded_at: str):
@@ -222,7 +223,7 @@ def job_download(job_id: str, include_video: bool = True):
 
 @app.get("/api/jobs/{job_id}", response_model=AnalysisResult)
 def get_job(job_id: str):
-    return AnalysisResult.model_validate_json((_job_dir(job_id) / "result.json").read_text())
+    return rto_mod.attach(AnalysisResult.model_validate_json((_job_dir(job_id) / "result.json").read_text()))
 
 
 @app.get("/api/jobs/{job_id}/report", response_class=HTMLResponse)
@@ -239,7 +240,7 @@ def job_report_pdf(job_id: str):
     d = _job_dir(job_id)
     if not pdf_report.available():
         raise HTTPException(status_code=501, detail="PDF export needs the reportlab package (pip install reportlab). The HTML report still works.")
-    result = AnalysisResult.model_validate_json((d / "result.json").read_text())
+    result = rto_mod.attach(AnalysisResult.model_validate_json((d / "result.json").read_text()))
     return Response(pdf_report.render_pdf(result, d), media_type="application/pdf",
                     headers={"Content-Disposition": f'inline; filename="report-{job_id}.pdf"'})
 
