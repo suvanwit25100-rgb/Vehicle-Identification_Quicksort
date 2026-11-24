@@ -26,3 +26,7 @@ training/eval_*.json
 # local tool settings
 .claude/settings.local.json
 backend/data/officer_key.txt
+
+# 26 MB synthetic registry; regenerate with backend/scripts/make_big_registry.py
+backend/data/registry_500k.csv
+backend/data/source/vehicle_registrations_500k.csv

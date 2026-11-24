@@ -102,3 +102,18 @@ def test_car_and_suv_earn_half_credit_but_unrelated_types_earn_none():
     assert suv.components["body_fit"] == 0.8
     assert bike.components["body_fit"] == 0.1         # no look-alike credit for a bike
     assert any("half credit" in r for r in car.reasons) and not any("half credit" in r for r in suv.reasons)
+
+
+def test_the_numpy_prefilter_gives_the_same_answer_as_scoring_every_row(monkeypatch):
+    import random
+
+    from app import matcher
+    rng = random.Random(1)
+    reg = [row(f"R{i}", "".join(rng.choice("ABCDEFGH") for _ in range(2)) + f"{rng.randint(10, 99)}" + "".join(rng.choice("ABCDEFGH") for _ in range(2)) + f"{rng.randint(1000, 9999)}")
+           for i in range(400)] + [row("T", TARGET, "white", "suv")]
+    fused = fuse_frames([make_frame(i, TARGET, unread=(8, 9)) for i in range(3)])
+    cfg = get_department("police")
+    slow = match_registry(fused, {"white": 0.9}, {"suv": 0.9}, reg, cfg)
+    monkeypatch.setattr(matcher, "PREFILTER_ABOVE", 10)
+    fast = match_registry(fused, {"white": 0.9}, {"suv": 0.9}, reg, cfg)
+    assert fast.model_dump() == slow.model_dump() and slow.status == "match"

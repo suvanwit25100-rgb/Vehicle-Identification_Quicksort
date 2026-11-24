@@ -129,6 +129,41 @@ def _score_row(row, fused, colour, body, cfg) -> Candidate | None:
     )
 
 
+_INDEX: dict[tuple[int, int], tuple] = {}
+PREFILTER_ABOVE = 5000      # a small registry is scored row by row; a large one is narrowed with numpy first
+
+
+def _plate_matrix(registry):
+    """Registry plates as a (rows, 10) array of character codes, built once per registry list. Rows whose plate is not ten slots are left out."""
+    key = (id(registry), len(registry))
+    if key not in _INDEX:
+        import numpy as np
+
+        keep, rows = [], []
+        for i, r in enumerate(registry):
+            p = to_slots(r.plate)
+            if len(p) == PLATE_LEN:
+                keep.append(i)
+                rows.append(p.encode("ascii", "replace"))
+        _INDEX.clear()                                   # one registry at a time is enough
+        _INDEX[key] = (np.array(keep, dtype=np.int64), np.frombuffer(b"".join(rows), dtype=np.uint8).reshape(-1, PLATE_LEN))
+    return _INDEX[key]
+
+
+def _candidates(registry, fused, cfg):
+    """Rows with at most cfg.max_known_mismatches clashes against the characters actually read. The same rule _score_row applies, just fast."""
+    if len(registry) <= PREFILTER_ABOVE:
+        return registry
+    import numpy as np
+
+    keep, mat = _plate_matrix(registry)
+    known = [s for s in fused.slots if s.char]
+    idx = np.array([s.index for s in known], dtype=np.int64)
+    chars = np.array([ord(s.char) for s in known], dtype=np.uint8)
+    clashes = (mat[:, idx] != chars).sum(axis=1)
+    return [registry[i] for i in keep[clashes <= cfg.max_known_mismatches]]
+
+
 def match_registry(
     fused: FusedPlate,
     colour: dict[str, float] | None,
@@ -149,7 +184,7 @@ def match_registry(
             **base,
         )
 
-    scored = [c for row in registry if (c := _score_row(row, fused, colour, body, cfg))]
+    scored = [c for row in _candidates(registry, fused, cfg) if (c := _score_row(row, fused, colour, body, cfg))]
     scored.sort(key=lambda c: (-c.confidence, -c.components["plate_fit"], c.reg_id))
     listed = [c for c in scored if c.confidence >= LISTED_FLOOR][:TOP_K]
 
