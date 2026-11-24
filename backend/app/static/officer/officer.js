@@ -42,6 +42,7 @@ const table = (cols, rows, empty) => rows.length ? h("div", { class: "tablewrap"
 
 /* ---------- sign in / out ---------- */
 function showLogin(msg) {
+  stopAlerts();
   token = ""; me = null; store.set("officerToken", "");
   $("#op").hidden = true; $("#login").hidden = false;
   say($("#login-status"), msg || "", !!msg);
@@ -53,6 +54,7 @@ async function enter(info) {
   $("#who-role").textContent = me.role === "admin" ? (me.id === "key" ? "Administrator · master key" : "Administrator") : "Officer";
   try { team = await call("/api/officer/team"); } catch (e) { team = []; }
   route();
+  startAlerts();
 }
 let mode = "user";
 $("#login-tabs").addEventListener("click", (e) => {
@@ -62,6 +64,20 @@ $("#login-tabs").addEventListener("click", (e) => {
   [...$("#login-tabs").children].forEach((x) => x.setAttribute("aria-selected", String(x === b)));
   $("#f-user").hidden = mode !== "user"; $("#f-key").hidden = mode !== "key";
 });
+let challenge = "";
+function loginStep(step) {      // "main" | "2fa" | "forgot" | "reset"
+  $("#login-form").hidden = step !== "main"; $("#login-tabs").hidden = step !== "main"; $("#forgot-row").hidden = step !== "main";
+  $("#twofa-form").hidden = step !== "2fa"; $("#forgot-form").hidden = step !== "forgot"; $("#reset-form").hidden = step !== "reset";
+  say($("#login-status"), "");
+  const first = { main: "#username", "2fa": "#code", forgot: "#forgot-who", reset: "#reset-pw" }[step];
+  if (first) setTimeout(() => $(first)?.focus(), 50);
+}
+async function signedIn(r) {
+  token = r.token; store.set("officerToken", token); challenge = "";
+  ["#key", "#password", "#code", "#reset-pw"].forEach((s) => { $(s).value = ""; });
+  loginStep("main");
+  await enter(r.officer);
+}
 $("#login-form").addEventListener("submit", async (ev) => {
   ev.preventDefault();
   const body = mode === "key" ? { key: $("#key").value.trim() } : { username: $("#username").value.trim(), password: $("#password").value };
@@ -69,19 +85,43 @@ $("#login-form").addEventListener("submit", async (ev) => {
   say($("#login-status"), "Signing in…");
   try {
     const r = await api("/api/officer/login", json("POST", body));
-    token = r.token; store.set("officerToken", token);
-    $("#key").value = ""; $("#password").value = "";
-    say($("#login-status"), "");
-    await enter(r.officer);
+    if (r.needs_2fa) { challenge = r.challenge; $("#password").value = ""; loginStep("2fa"); return; }
+    await signedIn(r);
   } catch (e) { say($("#login-status"), e.message, true); }
 });
-$("#signout").addEventListener("click", async () => { try { await call("/api/officer/logout", { method: "POST" }); } catch (e) { /* already gone */ } showLogin("Signed out."); });
+$("#twofa-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const code = $("#code").value.trim();
+  if (!code) return say($("#login-status"), "Enter the code.", true);
+  say($("#login-status"), "Checking…");
+  try { await signedIn(await api("/api/officer/login/2fa", json("POST", { challenge, code }))); }
+  catch (e) { say($("#login-status"), e.message, true); if (e.status === 401) $("#code").select(); }
+});
+$("#twofa-back").addEventListener("click", () => { challenge = ""; loginStep("main"); });
+$("#forgot-link").addEventListener("click", (e) => { e.preventDefault(); loginStep("forgot"); });
+$("#forgot-back").addEventListener("click", () => loginStep("main"));
+$("#forgot-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const who = $("#forgot-who").value.trim();
+  if (!who) return say($("#login-status"), "Enter your username or email.", true);
+  try { const r = await api("/api/officer/password/forgot", json("POST", { who })); say($("#login-status"), r.message); } catch (e) { say($("#login-status"), e.message, true); }
+});
+const resetToken = () => (location.hash.match(/^#\/reset\/(.+)$/) || [])[1] || "";
+$("#reset-form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  try {
+    await api("/api/officer/password/reset", json("POST", { token: resetToken(), new: $("#reset-pw").value }));
+    $("#reset-pw").value = ""; history.replaceState(null, "", "/officer/"); loginStep("main"); say($("#login-status"), "Password changed. Sign in with the new one.");
+  } catch (e) { say($("#login-status"), e.status === 410 ? "This reset link is not valid any more. Ask for a new one." : e.message, true); }
+});
+if (resetToken()) loginStep("reset");
+$("#signout").addEventListener("click", async () => { stopAlerts(); try { await call("/api/officer/logout", { method: "POST" }); } catch (e) { /* already gone */ } showLogin("Signed out."); });
 
 /* ---------- router ---------- */
 const ROUTES = {
   dashboard: ["Dashboard", viewDashboard], reports: ["Reports", viewReports], map: ["Map", viewMap], analyses: ["Analyses", viewAnalyses], watchlist: ["Watch-list", viewWatchlist],
   sightings: ["Repeat sightings", viewSightings], outbox: ["Citizen messages", viewOutbox], audit: ["Audit trail", viewAudit, true], team: ["Team", viewTeam, true],
-  retention: ["Retention", viewRetention, true], account: ["My account", viewAccount],
+  retention: ["Retention", viewRetention, true], mail: ["Mail queue", viewMail, true], alerts: ["Alerts", viewAlerts], account: ["My account", viewAccount],
 };
 function route() {
   if (!me) return;
@@ -96,8 +136,8 @@ function route() {
   refreshBadges();
 }
 function badge(k) {
-  const n = dash && (k === "reports" ? dash.reports.unassigned_open : k === "watchlist" ? dash.watchlist.hits_exact : 0);
-  return n ? h("span", { class: "count", title: k === "reports" ? "open and unassigned" : "exact hits" }, String(n)) : null;
+  const n = k === "alerts" ? unseen : dash && (k === "reports" ? dash.reports.unassigned_open : k === "watchlist" ? dash.watchlist.hits_exact : 0);
+  return n ? h("span", { class: "count", title: k === "reports" ? "open and unassigned" : k === "alerts" ? "new since you last looked" : "exact hits" }, String(n)) : null;
 }
 async function refreshBadges() {
   try { dash = await call("/api/officer/dashboard"); } catch (e) { return; }
@@ -340,7 +380,8 @@ async function viewTeam(view) {
   const role = h("select", { "aria-label": "Role" }, h("option", { value: "officer" }, "Officer"), h("option", { value: "admin" }, "Administrator"));
   const pw = h("input", { type: "text", placeholder: "At least 10 characters, mixed case, a digit", autocomplete: "off", "aria-label": "Temporary password" });
   const boxes = Object.entries(AGENCY).map(([k, v]) => h("label", { class: "chk" }, h("input", { type: "checkbox", value: k }), v));
-  const form = h("form", { class: "inline-form" }, field("Username", u), field("Name", n), field("Role", role), field("Temporary password", pw),
+  const mail = h("input", { type: "email", placeholder: "optional, for password reset", autocomplete: "off", "aria-label": "Email" });
+  const form = h("form", { class: "inline-form" }, field("Username", u), field("Name", n), field("Email", mail), field("Role", role), field("Temporary password", pw),
     h("fieldset", { class: "agencies" }, h("legend", {}, "Agencies (none ticked = all)"), boxes),
     h("button", { class: "btn primary sm", type: "submit" }, "Create account"));
   const sess = h("div", {});
@@ -356,18 +397,19 @@ async function viewTeam(view) {
     loadSessions().catch(() => {});
     const rows = await call("/api/officer/team/all");
     team = rows.filter((o) => o.active).map((o) => ({ username: o.username, name: o.name, role: o.role }));
-    list.replaceChildren(table(["Name", "Username", "Role", "Agencies", "Last sign-in", ""], rows.map((o) => h("tr", { class: o.active ? "" : "off" }, h("td", {}, o.name), h("td", { class: "mono-s" }, o.username),
-      h("td", {}, o.role), h("td", {}, o.agencies.length ? o.agencies.map((a) => AGENCY[a] || a).join(", ") : "all"), h("td", {}, o.last_login ? when(o.last_login) : "never"),
+    list.replaceChildren(table(["Name", "Username", "Email", "Role", "Agencies", "2FA", "Last sign-in", ""], rows.map((o) => h("tr", { class: o.active ? "" : "off" }, h("td", {}, o.name), h("td", { class: "mono-s" }, o.username),
+      h("td", {}, o.email || h("span", { class: "muted" }, "none")), h("td", {}, o.role), h("td", {}, o.agencies.length ? o.agencies.map((a) => AGENCY[a] || a).join(", ") : "all"), h("td", {}, o.two_factor ? h("span", { class: "chip built" }, "on") : h("span", { class: "muted" }, "off")), h("td", {}, o.last_login ? when(o.last_login) : "never"),
       h("td", {}, h("div", { class: "act-row" },
         h("button", { class: "btn sm", type: "button", disabled: o.id === me.id, onclick: () => patch(o, { active: !o.active }, o.active ? "Account switched off and signed out." : "Account switched on.") }, o.active ? "Switch off" : "Switch on"),
         h("button", { class: "btn sm", type: "button", disabled: o.id === me.id, onclick: () => patch(o, { role: o.role === "admin" ? "officer" : "admin" }, "Role changed; they are signed out.") }, o.role === "admin" ? "Make officer" : "Make admin"),
         h("button", { class: "btn sm", type: "button", onclick: () => { const p = prompt(`Agencies for ${o.name}, comma separated from: ${Object.keys(AGENCY).join(", ")}. Leave empty for all.`, o.agencies.join(", ")); if (p !== null) patch(o, { agencies: p.split(",").map((x) => x.trim()).filter(Boolean) }, "Agencies saved; they are signed out."); } }, "Agencies"),
+        o.two_factor ? h("button", { class: "btn sm", type: "button", onclick: () => { if (confirm(`Reset two-factor for ${o.name}? They are signed out and can sign in with the password alone, then set it up again.`)) patch(o, { reset_2fa: true }, "Two-factor reset; they are signed out."); } }, "Reset 2FA") : null,
         h("button", { class: "btn sm", type: "button", onclick: () => { const p = prompt(`New temporary password for ${o.name} (10+ characters, mixed case, a digit):`); if (p) patch(o, { password: p }, "Password reset; they are signed out."); } }, "Reset password"))))), "No accounts yet. Create the first officer above."));
   }
   async function patch(o, body, ok) { try { await call(`/api/officer/team/${o.id}`, json("PATCH", body)); say(msg, ok); load(); } catch (e) { say(msg, e.message, true); } }
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    try { await call("/api/officer/team", json("POST", { username: u.value, name: n.value, role: role.value, password: pw.value, agencies: boxes.map((b) => b.firstChild).filter((i) => i.checked).map((i) => i.value) })); u.value = n.value = pw.value = ""; say(msg, "Account created."); load(); } catch (e) { say(msg, e.message, true); }
+    try { await call("/api/officer/team", json("POST", { username: u.value, name: n.value, role: role.value, password: pw.value, email: mail.value, agencies: boxes.map((b) => b.firstChild).filter((i) => i.checked).map((i) => i.value) })); u.value = n.value = pw.value = ""; say(msg, "Account created."); load(); } catch (e) { say(msg, e.message, true); }
   });
   await load();
 }
@@ -410,6 +452,7 @@ async function viewRetention(view) {
 
 /* ---------- my account ---------- */
 async function viewAccount(view) {
+  const info = await call("/api/officer/me");
   const cur = h("input", { type: "password", autocomplete: "current-password", "aria-label": "Current password" }), nw = h("input", { type: "password", autocomplete: "new-password", "aria-label": "New password" });
   const msg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
   const form = h("form", { class: "inline-form" }, field("Current password", cur), field("New password", nw), h("button", { class: "btn primary sm", type: "submit" }, "Change password"));
@@ -417,10 +460,111 @@ async function viewAccount(view) {
     ev.preventDefault();
     try { await call("/api/officer/password", json("POST", { current: cur.value, new: nw.value })); cur.value = nw.value = ""; say(msg, "Password changed."); } catch (e) { say(msg, e.message, true); }
   });
+  const email = h("input", { type: "email", value: info.email || "", placeholder: "you@example.com", autocomplete: "email", "aria-label": "Email address" });
+  const emailMsg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+  const emailForm = h("form", { class: "inline-form" }, field("Email address (used only to reset your password)", email), h("button", { class: "btn sm", type: "submit" }, "Save email"));
+  emailForm.addEventListener("submit", async (ev) => { ev.preventDefault(); try { await call("/api/officer/email", json("POST", { email: email.value })); say(emailMsg, "Saved."); } catch (e) { say(emailMsg, e.message, true); } });
+
+  const tf = h("div", {});
+  function twofaOff() {
+    const go = h("button", { class: "btn primary sm", type: "button" }, "Set up two-factor sign-in");
+    go.addEventListener("click", async () => {
+      go.disabled = true;
+      try {
+        const s = await call("/api/officer/2fa/setup", { method: "POST" });
+        const code = h("input", { inputmode: "numeric", maxlength: 8, autocomplete: "one-time-code", placeholder: "6-digit code", "aria-label": "Code from the app" });
+        const m = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+        const on = h("button", { class: "btn primary sm", type: "button" }, "Turn it on");
+        on.addEventListener("click", async () => {
+          try { const r = await call("/api/officer/2fa/enable", json("POST", { code: code.value })); showCodes(r); } catch (e) { say(m, e.message, true); }
+        });
+        tf.replaceChildren(h("ol", { class: "plain-steps" },
+          h("li", {}, "Install an authenticator app on your phone, such as Google Authenticator."),
+          h("li", {}, "In the app choose “Scan a QR code”, and scan this:", s.qr ? h("img", { class: "qr", src: s.qr, alt: "QR code for the authenticator app", width: 200, height: 200 }) : h("p", { class: "muted" }, "(QR code unavailable, use the key below.)")),
+          h("li", {}, "Or choose “Enter a setup key” and type: ", h("span", { class: "mono key-show" }, s.secret)),
+          h("li", {}, "Type the 6-digit code the app shows now, to confirm it works:")),
+          h("div", { class: "inline-form" }, field("Code", code), on), m);
+      } catch (e) { say(msg, e.message, true); go.disabled = false; }
+    });
+    tf.replaceChildren(h("p", { class: "muted", style: "margin:0 0 12px" }, "Two-factor sign-in is off. When it is on, your password alone cannot sign you in: you also need a code from your phone."), go);
+  }
+  function showCodes(r) {
+    const text = r.recovery_codes.join("\n");
+    const copy = h("button", { class: "btn sm", type: "button" }, "Copy"); copy.addEventListener("click", () => navigator.clipboard?.writeText(text).then(() => { copy.textContent = "Copied"; }));
+    const done = h("button", { class: "btn primary sm", type: "button" }, "I have saved them");
+    done.addEventListener("click", () => viewAccount(view));
+    tf.replaceChildren(h("p", {}, h("b", {}, "Two-factor sign-in is on. "), r.note), h("pre", { class: "recovery" }, text), h("div", { class: "row-btns" }, copy, done));
+  }
+  function twofaOn() {
+    const pw = h("input", { type: "password", autocomplete: "current-password", "aria-label": "Password" }), code = h("input", { inputmode: "numeric", maxlength: 8, "aria-label": "Code from the app", placeholder: "6-digit code" });
+    const m = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+    const off = h("button", { class: "btn sm", type: "button" }, "Turn off");
+    off.addEventListener("click", async () => { try { await call("/api/officer/2fa/disable", json("POST", { password: pw.value, code: code.value })); viewAccount(view); } catch (e) { say(m, e.message, true); } });
+    tf.replaceChildren(h("p", {}, h("span", { class: "chip built" }, "on"), ` ${info.recovery_left} recovery code${info.recovery_left === 1 ? "" : "s"} left. If you lose your phone, use a recovery code, or ask an administrator to reset it.`),
+      h("details", {}, h("summary", {}, "Turn two-factor off"), h("div", { class: "inline-form", style: "margin-top:10px" }, field("Password", pw), field("Code", code), off), m));
+  }
+  info.two_factor ? twofaOn() : twofaOff();
+
+  const alertBtn = h("button", { class: "btn sm", type: "button" }, "Notification" in window ? (Notification.permission === "granted" ? "Desktop alerts are on" : "Turn on desktop alerts") : "Not supported by this browser");
+  alertBtn.disabled = !("Notification" in window) || Notification.permission === "granted";
+  alertBtn.addEventListener("click", async () => { const p = await Notification.requestPermission(); alertBtn.textContent = p === "granted" ? "Desktop alerts are on" : "Blocked in the browser"; alertBtn.disabled = true; });
+
   view.replaceChildren(head("My account", "Signed in sessions last 12 hours."),
     h("section", { class: "panel" }, h("dl", { class: "dl" }, h("dt", {}, "Name"), h("dd", {}, me.name), h("dt", {}, "Username"), h("dd", { class: "mono" }, me.username), h("dt", {}, "Role"), h("dd", {}, me.role), h("dt", {}, "Agencies"), h("dd", {}, me.agencies?.length ? me.agencies.map((a) => AGENCY[a] || a).join(", ") : "all"))),
-    me.id === "key" ? h("section", { class: "panel" }, h("p", { class: "muted" }, "You are signed in with the master key, which has no password. Create your own administrator account under Team and use that day to day; keep the key for emergencies.")) :
-      h("section", { class: "panel" }, h("h3", {}, "Change password"), form, msg));
+    me.id === "key" ? h("section", { class: "panel" }, h("p", { class: "muted" }, "You are signed in with the master key, which has no password and no second step. Create your own administrator account under Team, turn on two-factor for it, and use that day to day. Keep the key for emergencies.")) :
+      h("div", { class: "op-main", style: "gap:20px" },
+        h("section", { class: "panel" }, h("h3", {}, "Two-factor sign-in"), tf),
+        h("section", { class: "panel" }, h("h3", {}, "Email for password reset"), emailForm, emailMsg),
+        h("section", { class: "panel" }, h("h3", {}, "Change password"), form, msg)),
+    h("section", { class: "panel" }, h("h3", {}, "Alerts"), h("p", { class: "muted", style: "margin:0 0 12px" }, "New reports and watch-list hits appear on screen within about 15 seconds while the portal is open."), alertBtn));
+}
+
+/* ---------- mail queue (admin) ---------- */
+async function viewMail(view) {
+  const d = await call("/api/officer/mail");
+  view.replaceChildren(head("Mail queue", d.smtp_configured ? "SMTP is configured: password-reset emails are sent for real, and listed here with the result."
+    : "SMTP is not configured, so reset emails are only queued here and nothing is sent. Set EXLEX_SMTP_HOST and EXLEX_SMTP_FROM (and optionally _PORT, _USER, _PASSWORD) to send for real."),
+    h("section", { class: "panel" }, table(["When", "To", "Subject", "State", ""], d.messages.map((m) => h("tr", {}, h("td", { style: "white-space:nowrap" }, when(m.at)), h("td", {}, m.recipient), h("td", {}, m.subject),
+      h("td", {}, h("span", { class: "chip " + (m.state === "sent" ? "built" : m.state.startsWith("failed") ? "rejected" : "planned") }, m.state)),
+      h("td", {}, h("details", {}, h("summary", {}, "Message"), h("pre", { class: "recovery", style: "white-space:pre-wrap" }, m.body))))), "No mail yet.")));
+}
+
+/* ---------- live alerts ---------- */
+let alertTimer = null, alertSince = 0, unseen = 0;
+const seenAlerts = [];
+function stopAlerts() { clearInterval(alertTimer); alertTimer = null; alertSince = 0; unseen = 0; seenAlerts.length = 0; }
+async function pollAlerts(first = false) {
+  if (!token) return;
+  let r;
+  try { r = await call(`/api/officer/alerts?since=${alertSince}`); } catch (e) { if (e.status === 401) showLogin("Your session ended. Sign in again."); return; }
+  if (first) { alertSince = r.latest; seenAlerts.push(...r.alerts.slice(0, 20)); return; }       // the history is in the Alerts view; only new ones pop up
+  if (!r.alerts.length) return;
+  alertSince = r.latest;
+  const fresh = r.alerts.slice().reverse();
+  seenAlerts.unshift(...r.alerts); seenAlerts.length = Math.min(seenAlerts.length, 50);
+  unseen += fresh.length;
+  fresh.slice(-3).forEach(toast);
+  refreshBadges(); setAlertBadge();
+}
+function toast(a) {
+  const t = h("a", { class: `toast ${a.kind}`, href: a.link && a.link.startsWith("/officer/") ? a.link.replace("/officer/", "") : a.link || "#/alerts" }, h("b", {}, a.title), h("small", {}, a.detail));
+  $("#toasts").append(t); setTimeout(() => t.remove(), 12000);
+  if ("Notification" in window && Notification.permission === "granted" && document.hidden) { try { new Notification(a.title, { body: a.detail }); } catch (e) { /* ignore */ } }
+}
+function setAlertBadge() {
+  const link = document.querySelector('#op-nav a[href="#/alerts"]');
+  if (!link) return;
+  link.querySelector(".count")?.remove();
+  if (unseen) link.append(h("span", { class: "count" }, String(unseen)));
+}
+function startAlerts() { stopAlerts(); pollAlerts(true); alertTimer = setInterval(() => pollAlerts(false), 15000); }
+async function viewAlerts(view) {
+  const r = await call("/api/officer/alerts?since=0");
+  unseen = 0; setAlertBadge(); alertSince = Math.max(alertSince, r.latest);
+  view.replaceChildren(head("Alerts", "New reports and watch-list hits, newest first. While the portal is open, new ones also pop up within about 15 seconds."),
+    h("section", { class: "panel" }, table(["When", "What", "Detail", ""], r.alerts.map((a) => h("tr", {}, h("td", { style: "white-space:nowrap" }, when(a.at)),
+      h("td", {}, h("span", { class: "chip " + (a.kind === "watchlist" ? "rejected" : "built"), style: "margin-right:8px" }, a.kind), a.title), h("td", { style: "white-space:normal;min-width:220px;color:var(--muted)" }, a.detail),
+      h("td", {}, a.link ? h("a", { class: "btn sm", href: a.link.startsWith("/officer/") ? a.link.replace("/officer/", "") : a.link }, "Open") : null))), "No alerts yet.")));
 }
 
 /* ---------- start ---------- */

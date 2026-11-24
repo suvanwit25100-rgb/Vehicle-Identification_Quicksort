@@ -7,7 +7,7 @@ machines never edit the same files.
 ## What this is
 Hackathon problem AIML-01 Option A: vehicle identification from CCTV footage. It recovers a plate across many frames,
 marks unreadable characters as unknown, extracts colour and body type, matches a registry (ranked top 5 with reasons),
-or says "no confident match". FastAPI backend, YOLO + PP-OCR + CLIP, multi-page static site. The monitor page shows measured data only (no simulated or hard-coded figures). 256 tests.
+or says "no confident match". FastAPI backend, YOLO + PP-OCR + CLIP, multi-page static site. The monitor page shows measured data only (no simulated or hard-coded figures). 273 tests.
 
 ## Deadline
 Submission: **morning of 2026-11-25**. The model stack is final (see `MODELS.md`): pretrained only, no further model changes. Keep a working demo at every step; never leave the app broken.

@@ -10,6 +10,7 @@ How access works:
 from __future__ import annotations
 
 import hashlib
+import json
 import hmac
 import re
 import secrets
@@ -19,9 +20,12 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from . import totp
+
 ROLES = ("admin", "officer")
 SESSION_HOURS = 12
 MIN_PASSWORD = 10
+EMAIL_RE = re.compile(r"[^@\s]+@[^@\s]+\.[^@\s]+")
 USERNAME_RE = re.compile(r"^[a-z0-9][a-z0-9._-]{2,31}$")
 
 SCHEMA = [
@@ -32,6 +36,15 @@ SCHEMA = [
     """CREATE TABLE IF NOT EXISTS sessions (
         token_hash TEXT PRIMARY KEY, officer_id TEXT NOT NULL, username TEXT NOT NULL, name TEXT NOT NULL, role TEXT NOT NULL,
         created_at TEXT NOT NULL, expires_at TEXT NOT NULL)""",
+    """CREATE TABLE IF NOT EXISTS challenges (
+        token_hash TEXT PRIMARY KEY, officer_id TEXT NOT NULL, expires_at TEXT NOT NULL, attempts INTEGER NOT NULL DEFAULT 0)""",
+    """CREATE TABLE IF NOT EXISTS resets (
+        token_hash TEXT PRIMARY KEY, officer_id TEXT NOT NULL, expires_at TEXT NOT NULL, used INTEGER NOT NULL DEFAULT 0)""",
+    """CREATE TABLE IF NOT EXISTS mail (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, recipient TEXT NOT NULL, subject TEXT NOT NULL, body TEXT NOT NULL, state TEXT NOT NULL)""",
+    """CREATE TABLE IF NOT EXISTS alerts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, kind TEXT NOT NULL, title TEXT NOT NULL, detail TEXT NOT NULL,
+        link TEXT, department TEXT)""",
     """CREATE TABLE IF NOT EXISTS audit (
         id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT NOT NULL, actor TEXT NOT NULL, role TEXT NOT NULL,
         action TEXT NOT NULL, target TEXT, detail TEXT)""",
@@ -88,8 +101,11 @@ class OfficerStore:
         with self.db() as c:
             for ddl in SCHEMA:
                 c.execute(ddl)
-            if "agencies" not in {r[1] for r in c.execute("PRAGMA table_info(officers)")}:
-                c.execute("ALTER TABLE officers ADD COLUMN agencies TEXT NOT NULL DEFAULT ''")
+            have = {r[1] for r in c.execute("PRAGMA table_info(officers)")}
+            for col, ddl in (("agencies", "TEXT NOT NULL DEFAULT ''"), ("email", "TEXT NOT NULL DEFAULT ''"), ("totp_secret", "TEXT NOT NULL DEFAULT ''"),
+                             ("totp_enabled", "INTEGER NOT NULL DEFAULT 0"), ("totp_last_step", "INTEGER NOT NULL DEFAULT 0"), ("recovery", "TEXT NOT NULL DEFAULT '[]'")):
+                if col not in have:
+                    c.execute(f"ALTER TABLE officers ADD COLUMN {col} {ddl}")
 
     @contextmanager
     def db(self):
@@ -106,12 +122,14 @@ class OfficerStore:
     def _agencies(value) -> str:
         return ",".join(sorted({a.strip() for a in (value or []) if a.strip()}))
 
-    def create(self, username: str, name: str, role: str, password: str, agencies: list[str] | None = None) -> dict:
+    def create(self, username: str, name: str, role: str, password: str, agencies: list[str] | None = None, email: str = "") -> dict:
         username = username.strip().lower()
         if not USERNAME_RE.fullmatch(username):
             raise ValueError("Username: 3 to 32 characters, lower-case letters, digits, dot, dash or underscore.")
         if role not in ROLES:
             raise ValueError(f"Role must be one of {ROLES}.")
+        if email and not EMAIL_RE.fullmatch(email.strip()):
+            raise ValueError("That does not look like an email address.")
         name = " ".join(name.split())
         if not (2 <= len(name) <= 80):
             raise ValueError("Give the officer's name (2 to 80 characters).")
@@ -122,8 +140,8 @@ class OfficerStore:
         oid = uuid.uuid4().hex[:10]
         try:
             with self.db() as c:
-                c.execute("INSERT INTO officers (id, username, name, role, pw_salt, pw_hash, created_at, agencies) VALUES (?,?,?,?,?,?,?,?)",
-                          (oid, username, name, role, salt, h, iso(now()), self._agencies(agencies)))
+                c.execute("INSERT INTO officers (id, username, name, role, pw_salt, pw_hash, created_at, agencies, email) VALUES (?,?,?,?,?,?,?,?,?)",
+                          (oid, username, name, role, salt, h, iso(now()), self._agencies(agencies), email.strip().lower()))
         except sqlite3.IntegrityError:
             raise ValueError("That username is taken.")
         return self.get(oid)
@@ -131,7 +149,8 @@ class OfficerStore:
     @staticmethod
     def _public(r) -> dict:
         return {"id": r["id"], "username": r["username"], "name": r["name"], "role": r["role"], "active": bool(r["active"]),
-                "created_at": r["created_at"], "last_login": r["last_login"], "agencies": [a for a in r["agencies"].split(",") if a]}
+                "created_at": r["created_at"], "last_login": r["last_login"], "agencies": [a for a in r["agencies"].split(",") if a],
+                "email": r["email"], "two_factor": bool(r["totp_enabled"]), "recovery_left": len(json.loads(r["recovery"] or "[]")) if r["totp_enabled"] else 0}
 
     def get(self, oid: str) -> dict | None:
         with self.db() as c:
@@ -179,21 +198,162 @@ class OfficerStore:
             return c.execute("SELECT COUNT(*) FROM officers WHERE role='admin' AND active=1").fetchone()[0]
 
     # ---- sessions
-    def login(self, username: str, password: str) -> tuple[str, dict] | None:
+    def check_credentials(self, username: str, password: str):
+        """The account row if the username and password are right and the account is on, else None. Costs the same time either way."""
         with self.db() as c:
             r = c.execute("SELECT * FROM officers WHERE username=?", (username.strip().lower(),)).fetchone()
-        # always run a hash so a wrong username costs the same time as a wrong password
         if r:
             ok = check_password(password, r["pw_salt"], r["pw_hash"])
         else:
             hash_password(password)
             ok = False
-        if not r or not ok or not r["active"]:
+        return r if (r and ok and r["active"]) else None
+
+    @staticmethod
+    def _ident(r) -> dict:
+        return {"id": r["id"], "username": r["username"], "name": r["name"], "role": r["role"], "agencies": [a for a in r["agencies"].split(",") if a]}
+
+    def login(self, username: str, password: str) -> dict | None:
+        """{"session": token, "officer": ident}, or {"challenge": token} when the account needs a second step, or None."""
+        r = self.check_credentials(username, password)
+        if r is None:
             return None
+        if r["totp_enabled"]:
+            return {"challenge": self.start_challenge(r["id"])}
+        return {"session": self._finish(r), "officer": self._ident(r)}
+
+    def _finish(self, r) -> str:
         with self.db() as c:
             c.execute("UPDATE officers SET last_login=? WHERE id=?", (iso(now()), r["id"]))
-        ident = {"id": r["id"], "username": r["username"], "name": r["name"], "role": r["role"], "agencies": [a for a in r["agencies"].split(",") if a]}
-        return self.open_session(ident), ident
+        return self.open_session(self._ident(r))
+
+    # ---- second step (authenticator app)
+    def start_challenge(self, oid: str) -> str:
+        token = secrets.token_urlsafe(24)
+        with self.db() as c:
+            c.execute("DELETE FROM challenges WHERE expires_at < ?", (iso(now()),))
+            c.execute("INSERT INTO challenges VALUES (?,?,?,0)", (hashlib.sha256(token.encode()).hexdigest(), oid, iso(now() + timedelta(minutes=5))))
+        return token
+
+    def finish_challenge(self, token: str, code: str) -> tuple[str, dict, str] | None:
+        """Check the code for a pending sign-in. Five wrong tries end the challenge. Returns (session, ident, how) with how = "app" or "recovery"."""
+        th = hashlib.sha256(token.encode()).hexdigest()
+        with self.db() as c:
+            ch = c.execute("SELECT * FROM challenges WHERE token_hash=?", (th,)).fetchone()
+            if not ch or ch["expires_at"] < iso(now()):
+                return None
+            r = c.execute("SELECT * FROM officers WHERE id=?", (ch["officer_id"],)).fetchone()
+            if not r or not r["active"] or not r["totp_enabled"]:
+                return None
+            how = None
+            step = totp.verify(r["totp_secret"], code, r["totp_last_step"])
+            if step is not None:
+                c.execute("UPDATE officers SET totp_last_step=? WHERE id=?", (step, r["id"])); how = "app"
+            else:
+                rec = json.loads(r["recovery"] or "[]")
+                h = hashlib.sha256(code.strip().lower().replace(" ", "").encode()).hexdigest()
+                if any(hmac.compare_digest(h, x) for x in rec):
+                    rec = [x for x in rec if not hmac.compare_digest(h, x)]
+                    c.execute("UPDATE officers SET recovery=? WHERE id=?", (json.dumps(rec), r["id"])); how = "recovery"
+            if how is None:
+                if ch["attempts"] + 1 >= 5:
+                    c.execute("DELETE FROM challenges WHERE token_hash=?", (th,))
+                else:
+                    c.execute("UPDATE challenges SET attempts=attempts+1 WHERE token_hash=?", (th,))
+                return None
+            c.execute("DELETE FROM challenges WHERE token_hash=?", (th,))
+        return self._finish(r), self._ident(r), how
+
+    def totp_begin(self, oid: str) -> str:
+        secret = totp.new_secret()
+        with self.db() as c:
+            c.execute("UPDATE officers SET totp_secret=?, totp_enabled=0, totp_last_step=0, recovery='[]' WHERE id=?", (secret, oid))
+        return secret
+
+    def totp_enable(self, oid: str, code: str) -> list[str] | None:
+        with self.db() as c:
+            r = c.execute("SELECT totp_secret, totp_enabled FROM officers WHERE id=?", (oid,)).fetchone()
+            if not r or not r["totp_secret"] or r["totp_enabled"]:
+                return None
+            step = totp.verify(r["totp_secret"], code)
+            if step is None:
+                return None
+            codes = [f"{secrets.token_hex(3)}-{secrets.token_hex(3)}" for _ in range(8)]
+            c.execute("UPDATE officers SET totp_enabled=1, totp_last_step=?, recovery=? WHERE id=?",
+                      (step, json.dumps([hashlib.sha256(x.encode()).hexdigest() for x in codes]), oid))
+        return codes
+
+    def totp_secret(self, oid: str) -> str:
+        with self.db() as c:
+            r = c.execute("SELECT totp_secret FROM officers WHERE id=?", (oid,)).fetchone()
+        return r["totp_secret"] if r else ""
+
+    def sign_out(self, oid: str) -> None:
+        with self.db() as c:
+            c.execute("DELETE FROM sessions WHERE officer_id=?", (oid,))
+
+    def totp_clear(self, oid: str) -> None:
+        with self.db() as c:
+            c.execute("UPDATE officers SET totp_secret='', totp_enabled=0, totp_last_step=0, recovery='[]' WHERE id=?", (oid,))
+
+    # ---- email and password reset
+    def set_email(self, oid: str, email: str) -> None:
+        email = email.strip().lower()
+        if email and not EMAIL_RE.fullmatch(email):
+            raise ValueError("That does not look like an email address.")
+        with self.db() as c:
+            c.execute("UPDATE officers SET email=? WHERE id=?", (email, oid))
+
+    def reset_begin(self, identifier: str) -> tuple[str, dict] | None:
+        """A single-use token (valid 30 minutes) for the active account with this username or email that has an email on file, else None."""
+        ident = identifier.strip().lower()
+        with self.db() as c:
+            r = c.execute("SELECT * FROM officers WHERE active=1 AND email != '' AND (username=? OR email=?)", (ident, ident)).fetchone()
+            if not r:
+                return None
+            token = secrets.token_urlsafe(32)
+            c.execute("DELETE FROM resets WHERE expires_at < ? OR officer_id=?", (iso(now()), r["id"]))
+            c.execute("INSERT INTO resets VALUES (?,?,?,0)", (hashlib.sha256(token.encode()).hexdigest(), r["id"], iso(now() + timedelta(minutes=30))))
+        return token, self._public(r)
+
+    def reset_finish(self, token: str, new_password: str) -> dict | None:
+        problem = password_problem(new_password)
+        if problem:
+            raise ValueError(problem)
+        th = hashlib.sha256(token.encode()).hexdigest()
+        with self.db() as c:
+            row = c.execute("SELECT * FROM resets WHERE token_hash=?", (th,)).fetchone()
+            if not row or row["used"] or row["expires_at"] < iso(now()):
+                return None
+            salt, h = hash_password(new_password)
+            c.execute("UPDATE officers SET pw_salt=?, pw_hash=? WHERE id=?", (salt, h, row["officer_id"]))
+            c.execute("UPDATE resets SET used=1 WHERE token_hash=?", (th,))
+            c.execute("DELETE FROM sessions WHERE officer_id=?", (row["officer_id"],))
+        return self.get(row["officer_id"])
+
+    def mail_add(self, recipient: str, subject: str, body: str, state: str) -> None:
+        with self.db() as c:
+            c.execute("INSERT INTO mail (at, recipient, subject, body, state) VALUES (?,?,?,?,?)", (iso(now()), recipient, subject, body, state))
+
+    def mail_list(self, limit: int = 100) -> list[dict]:
+        with self.db() as c:
+            return [dict(r) for r in c.execute("SELECT * FROM mail ORDER BY id DESC LIMIT ?", (limit,))]
+
+    # ---- live alerts
+    def alert(self, kind: str, title: str, detail: str = "", link: str | None = None, department: str | None = None) -> None:
+        with self.db() as c:
+            c.execute("INSERT INTO alerts (at, kind, title, detail, link, department) VALUES (?,?,?,?,?,?)", (iso(now()), kind, title[:200], detail[:400], link, department))
+            c.execute("DELETE FROM alerts WHERE id <= (SELECT MAX(id) FROM alerts) - 2000")
+
+    def alerts_since(self, since: int, agencies: list[str] | None, limit: int = 50) -> tuple[list[dict], int]:
+        q, args = "SELECT * FROM alerts WHERE id > ?", [since]
+        if agencies:
+            q += f" AND (department IS NULL OR department IN ({','.join('?' * len(agencies))}))"
+            args += list(agencies)
+        with self.db() as c:
+            rows = [dict(r) for r in c.execute(q + " ORDER BY id DESC LIMIT ?", (*args, limit))]
+            latest = c.execute("SELECT COALESCE(MAX(id), 0) FROM alerts").fetchone()[0]
+        return rows, latest
 
     def open_session(self, ident: dict) -> str:
         token = secrets.token_urlsafe(32)

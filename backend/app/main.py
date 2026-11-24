@@ -96,9 +96,26 @@ def analyze(file: UploadFile = File(...), department: str = Form("police")):
     result = analyze_video(dest, department, tracker, plate_detector, out_dir=DATA_DIR / "jobs", body_classifier=clip,
                            source_name=file.filename, second_reader=_second_reader())
     save_job(result)
+    _alert_watch_hits(result)
     # keep the original video with the rest of the case, so one folder holds everything about this analysis
     shutil.move(str(dest), str(DATA_DIR / "jobs" / result.job_id / f"source{ext}"))
     return result
+
+
+def _alert_watch_hits(result: AnalysisResult) -> None:
+    """Tell officers when a freshly analysed video contains a watch-listed plate. Never allowed to break the analysis."""
+    try:
+        from . import watchlist as wl
+
+        entries = _watch().entries()
+        for t in result.tracks:
+            for e in entries:
+                level = wl.hit_level(e["slots"], t.match.pattern) if t.match.fused.known_count else None
+                if level:
+                    _officers().alert("watchlist", f"Watch-list hit ({level}): {e['plate']}", f"Read as {t.match.fused.display} in a new analysis. Reason listed: {e['reason']}",
+                                      f"/console/?job={result.job_id}", result.department)
+    except Exception:  # noqa: BLE001
+        logging.getLogger("uvicorn.error").exception("watch-list alert failed")
 
 
 def save_job(result: AnalysisResult) -> None:
@@ -344,6 +361,7 @@ def submit_complaint(body: ComplaintIn, request: Request):
     except KeyError:
         raise HTTPException(status_code=404, detail="That photo was not found or was already submitted. Upload it again.")
     dept = get_department(cm.CATEGORIES[body.category][1])
+    _officers().alert("report", f"New report: {cm.CATEGORIES[body.category][0].split('(')[0].strip()}", f"Report {cid}, filed by a citizen", f"/officer/#/reports/{cid}", cm.CATEGORIES[body.category][1])
     _store().queue_message(cid, body.contact, f"ExLex: we received your report {cid}. Use this ID to check its status. It is a lead for an officer to review.")
     return {"complaint_id": cid, "status": "new", "department": dept.name,
             "message": "Your report was received. It is a lead for an officer to review, not a verdict on anyone."}
@@ -390,6 +408,7 @@ def flag_vehicle(job_id: str, track_id: int, body: FlagIn, request: Request):
                            track.match.pattern, track.colour, bool(crop))
     dept = get_department(cm.CATEGORIES[body.category][1])
     _officers().log({"username": "console", "role": "-"}, "report.flag", cid, f"{job_id}/{track_id}")
+    _officers().alert("report", f"Vehicle flagged: {cm.CATEGORIES[body.category][0].split('(')[0].strip()}", f"Report {cid}, plate {track.match.fused.display}", f"/officer/#/reports/{cid}", dept.id)
     return {"complaint_id": cid, "status": "new", "department": dept.name, "plate": track.match.fused.display}
 
 
@@ -704,16 +723,41 @@ def officer_login(body: LoginIn, request: Request):
         if got is None:
             store.log({"username": body.username.strip().lower()[:40], "role": "-"}, "login.failed")
             raise HTTPException(status_code=401, detail="Wrong username or password, or the account is switched off.")
-        token, ident = got
+        if "challenge" in got:
+            return {"needs_2fa": True, "challenge": got["challenge"], "message": "Enter the 6-digit code from your authenticator app, or a recovery code."}
+        token, ident = got["session"], got["officer"]
     else:
         raise HTTPException(status_code=422, detail="Give a username and password, or the officer key.")
     store.log(ident, "login")
     return {"token": token, "officer": ident, "expires_in_hours": of.SESSION_HOURS}
 
 
+class Login2fa(BaseModel):
+    challenge: str = Field(max_length=100)
+    code: str = Field(max_length=30)
+
+
+@app.post("/api/officer/login/2fa")
+def officer_login_2fa(body: Login2fa, request: Request):
+    """The second step: the code from the authenticator app, or one of the eight one-time recovery codes."""
+    if not limiter.allow(_client_id(request), "login2fa", 20, 900):
+        raise HTTPException(status_code=429, detail="Too many attempts. Wait a few minutes.")
+    store = _officers()
+    got = store.finish_challenge(body.challenge, body.code)
+    if got is None:
+        store.log({"username": "?", "role": "-"}, "login.2fa_failed")
+        raise HTTPException(status_code=401, detail="That code was not accepted, or the sign-in timed out. Start again.")
+    token, ident, how = got
+    store.log(ident, "login", None, "second step: recovery code" if how == "recovery" else "second step: authenticator")
+    return {"token": token, "officer": ident, "expires_in_hours": of.SESSION_HOURS}
+
+
 @app.get("/api/officer/me")
 def officer_me(who: dict = Depends(require_officer)):
-    return who
+    if who["id"] == "key":
+        return {**who, "two_factor": False, "email": ""}
+    o = _officers().get(who["id"]) or {}
+    return {**who, "two_factor": o.get("two_factor", False), "email": o.get("email", ""), "recovery_left": o.get("recovery_left", 0)}
 
 
 @app.post("/api/officer/logout")
@@ -735,8 +779,7 @@ def officer_password(body: PasswordIn, who: dict = Depends(require_officer)):
     if who["id"] == "key":
         raise HTTPException(status_code=409, detail="The master key has no password. Change it by setting EXLEX_OFFICER_KEY or editing data/officer_key.txt.")
     store = _officers()
-    got = store.login(who["username"], body.current)
-    if got is None:
+    if store.check_credentials(who["username"], body.current) is None:
         raise HTTPException(status_code=401, detail="The current password is wrong.")
     try:
         store.update(who["id"], password=body.new)
@@ -752,6 +795,7 @@ class NewOfficer(BaseModel):
     role: str = "officer"
     password: str = Field(max_length=200)
     agencies: list[str] = []
+    email: str = Field("", max_length=120)
 
 
 class OfficerPatch(BaseModel):
@@ -759,12 +803,148 @@ class OfficerPatch(BaseModel):
     active: bool | None = None
     password: str | None = Field(None, max_length=200)
     agencies: list[str] | None = None
+    email: str | None = Field(None, max_length=120)
+    reset_2fa: bool = False
 
 
 def _check_agencies(agencies: list[str] | None) -> None:
     bad = [a for a in (agencies or []) if a not in load_departments()]
     if bad:
         raise HTTPException(status_code=422, detail=f"Unknown agency: {', '.join(bad)}.")
+
+
+# ---- two-factor setup (Google Authenticator and any other TOTP app)
+class CodeIn(BaseModel):
+    code: str = Field(max_length=30)
+
+
+class DisableIn(BaseModel):
+    password: str = Field(max_length=200)
+    code: str = Field(max_length=30)
+
+
+def _own_account(who: dict) -> dict:
+    if who["id"] == "key":
+        raise HTTPException(status_code=409, detail="The master key is a break-glass sign-in and has no second step. Use your own administrator account.")
+    return _officers().get(who["id"])
+
+
+@app.post("/api/officer/2fa/setup")
+def twofa_setup(who: dict = Depends(require_officer)):
+    """Start enrolment: a new secret, as a QR code and as a key to type in. Nothing is switched on until a code from the app is confirmed."""
+    from . import totp
+
+    o = _own_account(who)
+    if o["two_factor"]:
+        raise HTTPException(status_code=409, detail="Two-factor sign-in is already on. Turn it off first to enrol a new phone.")
+    secret = _officers().totp_begin(who["id"])
+    uri = totp.otpauth_uri(secret, o["username"])
+    svg = totp.qr_svg(uri)
+    import base64 as _b64
+
+    return {"secret": " ".join(secret[i:i + 4] for i in range(0, len(secret), 4)), "uri": uri,
+            "qr": ("data:image/svg+xml;base64," + _b64.b64encode(svg.encode()).decode()) if svg else None}
+
+
+@app.post("/api/officer/2fa/enable")
+def twofa_enable(body: CodeIn, who: dict = Depends(require_officer)):
+    _own_account(who)
+    codes = _officers().totp_enable(who["id"], body.code)
+    if codes is None:
+        raise HTTPException(status_code=422, detail="That code did not match. Check the phone clock and try the next code.")
+    _officers().log(who, "account.2fa_on")
+    return {"recovery_codes": codes, "note": "Keep these 8 one-time codes somewhere safe. Each works once if you lose your phone. They are not shown again."}
+
+
+@app.post("/api/officer/2fa/disable")
+def twofa_disable(body: DisableIn, who: dict = Depends(require_officer)):
+    o = _own_account(who)
+    store = _officers()
+    if store.check_credentials(who["username"], body.password) is None:
+        raise HTTPException(status_code=401, detail="The password is wrong.")
+    from . import totp
+
+    row_secret = store.totp_secret(who["id"])
+    if not o["two_factor"] or not row_secret or totp.verify(row_secret, body.code) is None:
+        raise HTTPException(status_code=401, detail="That code was not accepted.")
+    store.totp_clear(who["id"])
+    store.log(who, "account.2fa_off")
+    return {"ok": True}
+
+
+class EmailIn(BaseModel):
+    email: str = Field(max_length=120)
+
+
+@app.post("/api/officer/email")
+def set_my_email(body: EmailIn, who: dict = Depends(require_officer)):
+    _own_account(who)
+    try:
+        _officers().set_email(who["id"], body.email)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    _officers().log(who, "account.email")
+    return {"email": body.email.strip().lower()}
+
+
+# ---- password reset by email (real sending only if SMTP is configured; otherwise queued for an administrator)
+class ForgotIn(BaseModel):
+    who: str = Field(max_length=120)
+
+
+class ResetIn(BaseModel):
+    token: str = Field(max_length=100)
+    new: str = Field(max_length=200)
+
+
+@app.post("/api/officer/password/forgot")
+def password_forgot(body: ForgotIn, request: Request):
+    """Always answers the same, so it cannot be used to find out which accounts exist."""
+    from . import mailer
+
+    if not limiter.allow(_client_id(request), "forgot", 5, 3600):
+        raise HTTPException(status_code=429, detail="Too many requests. Try again later.")
+    store = _officers()
+    got = store.reset_begin(body.who)
+    if got:
+        token, o = got
+        base = os.environ.get("EXLEX_PUBLIC_URL", "").rstrip("/") or str(request.base_url).rstrip("/")
+        text = (f"Hello {o['name']},\n\nSomeone asked to reset the ExLex officer password for '{o['username']}'. Open this link within 30 minutes to choose a new one:\n\n"
+                f"{base}/officer/#/reset/{token}\n\nIf this was not you, ignore this message: nothing changes until the link is used.")
+        state = mailer.send(o["email"], "ExLex password reset", text) if mailer.configured() else "queued (SMTP not configured: nothing was sent)"
+        store.mail_add(o["email"], "ExLex password reset", text, state)
+        store.log({"username": o["username"], "role": "-"}, "password.reset_requested", None, state.split(" ")[0])
+    return {"message": "If an account with an email address matches, a reset link has been sent. It works for 30 minutes."}
+
+
+@app.post("/api/officer/password/reset")
+def password_reset(body: ResetIn, request: Request):
+    if not limiter.allow(_client_id(request), "reset", 10, 3600):
+        raise HTTPException(status_code=429, detail="Too many attempts. Try again later.")
+    store = _officers()
+    try:
+        o = store.reset_finish(body.token, body.new)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    if o is None:
+        raise HTTPException(status_code=410, detail="This reset link is not valid any more. Ask for a new one.")
+    store.log({"username": o["username"], "role": "-"}, "password.reset_done")
+    return {"ok": True}
+
+
+@app.get("/api/officer/mail")
+def mail_queue(who: dict = Depends(require_admin)):
+    """Password-reset emails and whether they were sent. Without SMTP they are only queued here."""
+    from . import mailer
+
+    return {"smtp_configured": mailer.configured(), "messages": _officers().mail_list()}
+
+
+# ---- live alerts: the portal polls this every few seconds
+@app.get("/api/officer/alerts")
+def officer_alerts(since: int = 0, who: dict = Depends(require_officer)):
+    rows, latest = _officers().alerts_since(max(0, since), who.get("agencies") or None)
+    return {"alerts": rows, "latest": latest}
 
 
 @app.get("/api/officer/team", dependencies=[Depends(require_officer)])
@@ -782,7 +962,7 @@ def team_all():
 def team_create(body: NewOfficer, who: dict = Depends(require_admin)):
     _check_agencies(body.agencies)
     try:
-        o = _officers().create(body.username, body.name, body.role, body.password, body.agencies)
+        o = _officers().create(body.username, body.name, body.role, body.password, body.agencies, body.email)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
     _officers().log(who, "team.create", o["username"], o["role"])
@@ -802,9 +982,15 @@ def team_update(oid: str, body: OfficerPatch, who: dict = Depends(require_admin)
     _check_agencies(body.agencies)
     try:
         o = store.update(oid, role=body.role, active=body.active, password=body.password, agencies=body.agencies)
+        if body.email is not None:
+            store.set_email(oid, body.email)
+        if body.reset_2fa:
+            store.totp_clear(oid)
+            store.sign_out(oid)                                              # so the next sign-in starts clean
+        o = store.get(oid)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
-    what = ", ".join(k for k, v in (("role", body.role), ("active", body.active), ("password reset", body.password), ("agencies", body.agencies)) if v is not None)
+    what = ", ".join(k for k, v in (("role", body.role), ("active", body.active), ("password reset", body.password), ("agencies", body.agencies), ("email", body.email)) if v is not None) + (", two-factor reset" if body.reset_2fa else "")
     store.log(who, "team.update", target["username"], what)
     return o
 

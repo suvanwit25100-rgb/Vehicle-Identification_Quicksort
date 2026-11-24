@@ -36,6 +36,22 @@
       </div>
       <button class="btn primary" type="submit">Sign in</button>
     </form>
+    <form id="twofa-form" class="login-form" autocomplete="off" hidden>
+      <p class="muted" style="font-size:14px">Your password was right. Now enter the 6-digit code from your authenticator app (Google Authenticator, Microsoft Authenticator, Authy), or one of your recovery codes.</p>
+      <label class="f" for="code">Code<input id="code" inputmode="numeric" autocomplete="one-time-code" spellcheck="false" maxlength="14"></label>
+      <div class="row-btns" style="margin:0"><button class="btn primary" type="submit">Verify</button><button class="btn sm" type="button" id="twofa-back">Start again</button></div>
+    </form>
+    <form id="forgot-form" class="login-form" autocomplete="off" hidden>
+      <p class="muted" style="font-size:14px">Enter your username or the email address on your account. If it matches, a reset link that works for 30 minutes is sent to that address.</p>
+      <label class="f" for="forgot-who">Username or email<input id="forgot-who" autocomplete="username" spellcheck="false"></label>
+      <div class="row-btns" style="margin:0"><button class="btn primary" type="submit">Send reset link</button><button class="btn sm" type="button" id="forgot-back">Back to sign-in</button></div>
+    </form>
+    <form id="reset-form" class="login-form" autocomplete="off" hidden>
+      <p class="muted" style="font-size:14px">Choose a new password: at least 10 characters, mixed case, with a digit. Everything you were signed in to will end.</p>
+      <label class="f" for="reset-pw">New password<input id="reset-pw" type="password" autocomplete="new-password"></label>
+      <div class="row-btns" style="margin:0"><button class="btn primary" type="submit">Set new password</button></div>
+    </form>
+    <p class="hint-s" id="forgot-row"><a href="#/forgot" id="forgot-link">Forgot your password?</a></p>
     <p class="status-line" id="login-status" role="status" aria-live="polite" style="margin-top:12px"></p>
     <p class="hint-s">The master key signs you in as the administrator, who creates an account for each officer. The key is set with the EXLEX_OFFICER_KEY environment variable, or generated once and kept in data/officer_key.txt on the server.</p>
   </section>
@@ -47,6 +63,7 @@
       <button class="btn sm" id="signout" type="button">Sign out</button>
     </aside>
     <section class="op-main"><div id="view" tabindex="-1"></div></section>
+    <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
   </div>
 </main>
 <footer id="foot"></footer>

@@ -411,6 +411,15 @@ Not built, on purpose: live camera streams, helmet/rider checks, FASTag/permit c
 10. **API page** (`/developers/`): built live from `/openapi.json`.
 - 256 tests pass. Browser-checked on scratch data: map, demo panel, reports list with demo/related chips, API page, team/sessions.
 
+### Two-factor, password reset, live alerts (post-freeze, 2026-11-24)
+- **Why the master key said "Method Not Allowed":** the preview server on port 8000 had been started before the portal existed (it still reported 300 registry rows), so it had no `/api/officer/login` route and the static-file mount answered POST with 405. Fix: restart the server (preview `exlex`). After any code change the server must be restarted (it does not auto-reload).
+- **Two-factor** (`totp.py`, RFC 6238, Google Authenticator compatible; tested against the RFC reference values): `POST /api/officer/2fa/setup` (QR via `segno` plus a typed key), `/enable` (confirms a code, returns 8 one-time recovery codes), `/disable` (password plus code). With it on, `/api/officer/login` returns `needs_2fa` and a 5-minute challenge instead of a session; `/api/officer/login/2fa` takes the app code or a recovery code (5 tries per challenge, an already-used time step is refused, so no replay). Admins reset a lost phone with `reset_2fa` on the team PATCH. The master key has no second step (break-glass).
+  "Google auth" was read as Google Authenticator codes. Sign in with a Google account (OAuth) is NOT built: it needs a Google Cloud OAuth client that the owner creates.
+- **Password reset by email:** officers have an `email`; `POST /api/officer/password/forgot` always answers the same; the link is single use for 30 minutes and signs the officer out everywhere. Mail is sent only if `EXLEX_SMTP_HOST` and `EXLEX_SMTP_FROM` are set (optional `_PORT`, `_USER`, `_PASSWORD`); otherwise it is only queued in the admin "Mail queue" with the state "queued (SMTP not configured: nothing was sent)". Set `EXLEX_PUBLIC_URL` so the link uses the right address. Real SMTP sending was tested with a fake server, not with a live mail account.
+- **Live alerts:** `alerts` table; raised for new citizen reports, console flags and watch-list hits in a new analysis; `GET /api/officer/alerts?since=` (agency-filtered). The portal polls every 15 s, shows pop-ups and an unread count, optional desktop notifications. Not a push to a closed browser.
+- Per-agency permissions and the session list/revoke screen were already built earlier (the "not built" list pasted by the user was out of date).
+- 273 tests pass (17 new in `test_security_features.py`). Browser-checked on scratch data: enrol (QR, 8 codes), sign-in with and without the code, wrong code, forgot and reset flow, alert pop-up and unread count.
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

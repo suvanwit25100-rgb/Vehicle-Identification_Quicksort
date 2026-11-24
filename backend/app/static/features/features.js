@@ -129,7 +129,7 @@ const V = {
       cap("Live from the server. Search by a whole or partial plate to find the same vehicle in other videos.")];
   }),
 
-  notbuilt: () => h("div", {}, ["Live camera streams: analysis is of uploaded clips", "Real registry (VAHAN) or FASTag data: the registry is synthetic", "Make and model recognition, and cross-camera tracking", "Two-factor sign-in and citizen OTP sign-in", "Face blurring in stored images", "Helmet and rider checks, FASTag and permit checks, convoy detection", "Real email and SMS sending: citizen messages are queued as a demo"]
+  notbuilt: () => h("div", {}, ["Live camera streams: analysis is of uploaded clips", "Real registry (VAHAN) or FASTag data: the registry is synthetic", "Make and model recognition, and cross-camera tracking", "Citizen OTP sign-in, and 'Sign in with Google' (needs a Google Cloud client that you create)", "Face blurring in stored images", "Helmet and rider checks, FASTag and permit checks, convoy detection", "Real email and SMS sending: citizen messages are queued as a demo"]
     .map((t) => h("div", { class: "tick off" }, h("i", {}, "–"), t))),
 };
 
@@ -170,6 +170,12 @@ const GROUPS = [
       ["Built from analyses that are really stored, under made-up places and times", "Labelled demo everywhere and never counted by the monitor, which shows measured data only", "Removed in one click; real reports are not touched"], "monitor"],
     ["built", "API reference", "Every endpoint is listed live from the running server, with example calls.",
       ["Built from the server's own description, so it cannot drift from the code", "Officer endpoints are marked", "Links to the interactive docs and openapi.json"], "stack", ["/developers/", "Open the API page"]],
+    ["built", "Two-factor sign-in", "An officer can protect their account with the 6-digit code from Google Authenticator (or any authenticator app), so a stolen password is not enough.",
+      ["Standard time-based codes (RFC 6238), checked against the published test values", "A QR code to scan, plus a key to type; nothing turns on until a code is confirmed", "Eight one-time recovery codes; an administrator can reset a lost phone", "Each code works once, and five wrong tries end a sign-in"], "desk"],
+    ["built", "Password reset by email", "A forgotten password is reset with a link that works once, for 30 minutes.",
+      ["The request answers the same for every name, so it cannot be used to find accounts", "A reset signs the officer out everywhere", "Sends for real only if SMTP is configured; otherwise it is queued for an administrator and says nothing was sent"], "report"],
+    ["built", "Live alerts", "New reports and watch-list hits pop up for officers while the portal is open.",
+      ["Checked every 15 seconds, with an unread count and an Alerts list", "Respects agency permissions", "Optional desktop notifications. Honest limit: not a push to a closed browser or phone"], "monitor"],
     ["partial", "Track stitching", "Trackers sometimes split one vehicle into several tracks. Fragments that clearly carry the same plate are joined.",
       ["Merge only if the plates agree on 6 or more characters and clash on none", "A group grows only if every pair in it is compatible", "Honest gap: on one real clip nothing needed merging, and unreadable fragments stay separate"], "stitch"],
     ["built", "Too small to read", "A vehicle with a tiny plate is not forced into a read. It is listed with the reason.",
