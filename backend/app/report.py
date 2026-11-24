@@ -187,9 +187,9 @@ def render_report(result: AnalysisResult, job_dir: Path | None = None) -> str:
     if result.second_reader_used:
         meta2.append(f"Second reader: {escape(result.second_reader_used)}")
     return f"""<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>Netra report {escape(result.job_id)}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>ExLex report {escape(result.job_id)}</title>
 <style>{CSS}</style></head><body>
-<h1>Netra analysis report</h1>
+<h1>ExLex analysis report</h1>
 <p class="muted">{" - ".join(bits)}</p>
 <p class="muted">{" - ".join(meta2)}</p>
 <p class="muted">Input SHA-256: <span class="mono">{escape(result.source_sha256)}</span></p>

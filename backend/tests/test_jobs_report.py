@@ -89,7 +89,7 @@ def test_job_round_trip_and_report_endpoint(client):
     got = client.get(f"/api/jobs/{result.job_id}")
     assert got.status_code == 200 and got.json()["job_id"] == result.job_id
     rep = client.get(f"/api/jobs/{result.job_id}/report")
-    assert rep.status_code == 200 and "Netra analysis report" in rep.text
+    assert rep.status_code == 200 and "ExLex analysis report" in rep.text
 
 
 def test_crop_endpoint_serves_only_expected_names(client, tmp_path):
@@ -132,10 +132,10 @@ def test_every_page_loads_and_every_local_file_it_references_exists(client, page
         assert client.get(path).status_code == 200, f"{page} references missing {path}"
 
 
-def test_landing_does_not_show_the_project_name(client):
+def test_landing_shows_the_project_name_and_not_the_old_ones(client):
     text = client.get("/").text + client.get("/landing.js").text
+    assert "ExLex" in client.get("/").text and "AIML-01" in text
     assert "Netra" not in text and "PlateTrace" not in text
-    assert "AIML-01" in text
 
 
 def test_landing_data_files_are_served(client):

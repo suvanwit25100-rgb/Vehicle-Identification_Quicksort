@@ -1,4 +1,4 @@
-# Netra: read this first
+# ExLex: read this first
 
 You are joining mid-project with no earlier conversation. **Read `HANDOFF.md` (the full state of the project) before
 doing anything.** Do not ask the user to re-explain the project; ask which task below they want you to take, so two

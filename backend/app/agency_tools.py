@@ -139,5 +139,5 @@ def render_challan(result: AnalysisResult, track: TrackAnalysis, job_dir: Path |
 
     buf = BytesIO()
     SimpleDocTemplate(buf, pagesize=A4, leftMargin=15 * mm, rightMargin=15 * mm, topMargin=15 * mm, bottomMargin=16 * mm,
-                      title=f"Draft e-challan {ref}", author="Netra").build(story, onFirstPage=mark, onLaterPages=mark)
+                      title=f"Draft e-challan {ref}", author="ExLex").build(story, onFirstPage=mark, onLaterPages=mark)
     return buf.getvalue()

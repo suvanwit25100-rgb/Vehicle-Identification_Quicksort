@@ -94,7 +94,7 @@
     nav.addEventListener("click", (e) => { if (e.target.closest("a")) { nav.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); btn.textContent = "MENU"; } });
     bar.innerHTML = "";
     bar.append(h("div", { class: "wrap" },
-      h("a", { class: "glyph", href: "/", "aria-label": "Home" }, glyph(), h("span", {}, "AIML-01")), btn, nav));
+      h("a", { class: "glyph", href: "/", "aria-label": "Home" }, glyph(), h("span", {}, "ExLex")), btn, nav));
     const onScroll = () => bar.classList.toggle("solid", scrollY > 30);
     addEventListener("scroll", onScroll, { passive: true });
     onScroll();
@@ -115,7 +115,7 @@
     f.className = "foot";
     f.innerHTML = "";
     f.append(h("div", { class: "wrap" },
-      h("p", {}, "AIML-01 · Vehicle identification and traceability from CCTV footage. © 2026 Team Quicksort."),
+      h("p", {}, "ExLex · AIML-01 · Vehicle identification and traceability from CCTV footage. © 2026 Team Quicksort."),
       h("p", {}, "Confidence scores are uncalibrated estimates. Candidates are leads for an investigator to verify, not identifications. Characters that cannot be read are shown as ? and are never guessed.")));
   }
 

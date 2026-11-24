@@ -32,7 +32,7 @@ ALLOWED_EXT = {".mp4", ".avi", ".mov", ".mkv"}
 JOB_ID_RE = re.compile(r"[0-9a-f]{12}")
 CROP_RE = re.compile(r"track\d+_(?:plate\d+|vehicle|evidence)\.jpg")
 
-app = FastAPI(title="Netra API")
+app = FastAPI(title="ExLex API")
 
 
 @app.middleware("http")
@@ -227,11 +227,12 @@ def calibration():
 
 
 # ---------------------------------------------------------------- citizen complaints
-# The officer key gates every /api/desk route. There is no built-in default: set NETRA_OFFICER_KEY, or a random key
+# The officer key gates every /api/desk route. There is no built-in default: set EXLEX_OFFICER_KEY (NETRA_OFFICER_KEY still works), or a random key
 # is generated for this run and printed once in the server log at start-up.
-OFFICER_KEY = os.environ.get("NETRA_OFFICER_KEY") or secrets.token_urlsafe(9)
-if not os.environ.get("NETRA_OFFICER_KEY"):
-    logging.getLogger("uvicorn.error").warning("NETRA_OFFICER_KEY is not set. Officer key for this run: %s", OFFICER_KEY)
+_ENV_KEY = os.environ.get("EXLEX_OFFICER_KEY") or os.environ.get("NETRA_OFFICER_KEY")
+OFFICER_KEY = _ENV_KEY or secrets.token_urlsafe(9)
+if not _ENV_KEY:
+    logging.getLogger("uvicorn.error").warning("EXLEX_OFFICER_KEY is not set. Officer key for this run: %s", OFFICER_KEY)
 limiter = cm.RateLimiter()
 
 

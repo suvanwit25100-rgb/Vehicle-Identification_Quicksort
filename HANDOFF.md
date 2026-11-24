@@ -398,3 +398,6 @@ All use the existing pretrained models; nothing was trained.
 > We are using pretrained models only; our own training is parked (section 7). Ask me which open task from CLAUDE.md
 > you should take so we do not edit the same files. Do not claim an improvement before it is measured on real crops.
 > Final evaluation is the evening of 2026-11-24, so keep a working demo at every step.
+
+## Name (2026-11-24)
+The project is now called **ExLex** (earlier names: Netra, PlateTrace). It is shown on the landing hero, the nav bar, page titles, reports, PDFs and the API title. Left as they were on purpose so nothing breaks: the database file `data/netra.db` (existing reports live in it), and the old environment variable names `NETRA_OFFICER_KEY` / `NETRA_DEVICE`, which still work next to the new `EXLEX_OFFICER_KEY` / `EXLEX_DEVICE`.

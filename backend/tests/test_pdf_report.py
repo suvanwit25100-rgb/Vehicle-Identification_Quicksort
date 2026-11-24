@@ -21,7 +21,7 @@ def test_pdf_has_the_facts_of_the_report(client, tmp_path):
     r = client.get(f"/api/jobs/{result.job_id}/report.pdf")
     assert r.status_code == 200 and r.headers["content-type"] == "application/pdf" and r.content.startswith(b"%PDF")
     text = text_of(r.content)
-    for needle in ["Netra analysis report", result.job_id, "Recovered plate", "never guessed", "Second reader", "Ranked candidates", "CG04KA2819", "Models and settings", "not identifications"]:
+    for needle in ["ExLex analysis report", result.job_id, "Recovered plate", "never guessed", "Second reader", "Ranked candidates", "CG04KA2819", "Models and settings", "not identifications"]:
         assert needle in text, needle
     assert len(PdfReader(io.BytesIO(r.content)).pages) >= 1
 

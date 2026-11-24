@@ -106,8 +106,8 @@ def test_there_is_no_built_in_officer_key():
     from pathlib import Path
 
     # a fresh interpreter with the variable unset must generate a random key, and two runs must differ
-    code = "import os; os.environ.pop('NETRA_OFFICER_KEY', None); from app import main; print(main.OFFICER_KEY)"
-    env = {k: v for k, v in os.environ.items() if k != "NETRA_OFFICER_KEY"}
+    code = "import os; os.environ.pop('NETRA_OFFICER_KEY', None); os.environ.pop('EXLEX_OFFICER_KEY', None); from app import main; print(main.OFFICER_KEY)"
+    env = {k: v for k, v in os.environ.items() if k not in ("NETRA_OFFICER_KEY", "EXLEX_OFFICER_KEY")}
     keys = [subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, cwd=Path(main.__file__).parents[1], env=env).stdout.strip()
             for _ in range(2)]
     assert all(len(k) >= 12 for k in keys) and keys[0] != keys[1]

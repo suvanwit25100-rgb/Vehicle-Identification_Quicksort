@@ -88,7 +88,7 @@ def render_pdf(result: AnalysisResult, job_dir: Path | None = None) -> bytes:
         return t
 
     story = []
-    story.append(Paragraph("Netra analysis report", h1))
+    story.append(Paragraph("ExLex analysis report", h1))
     bits = [f"Job {_t(result.job_id)}", f"agency: {_t(result.department)}", f"{result.frames_sampled} frames sampled", f"{len(result.tracks)} vehicle track(s)"]
     if result.created_at:
         bits.append(f"analysed {_t(result.created_at)}")
@@ -202,6 +202,6 @@ def render_pdf(result: AnalysisResult, job_dir: Path | None = None) -> bytes:
 
     buf = BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=15 * mm, rightMargin=15 * mm, topMargin=14 * mm, bottomMargin=16 * mm,
-                            title=f"Analysis report {result.job_id}", author="Netra")
+                            title=f"Analysis report {result.job_id}", author="ExLex")
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
     return buf.getvalue()
