@@ -85,6 +85,7 @@
     const nav = h("nav", { class: "nav", id: "nav", "aria-label": "Main" },
       extra.map(([href, label]) => h("a", { href }, label)), extra.length ? h("span", { class: "nav-sep" }) : null,
       LINKS.map(([href, label, id]) => h("a", { href, "aria-current": id === page ? "page" : null }, label)));
+    if (window.I18N) nav.append(I18N.button());
     const btn = h("button", { class: "menu-btn", "aria-expanded": "false", "aria-controls": "nav" }, "MENU");
     btn.addEventListener("click", () => {
       const open = nav.classList.toggle("open");

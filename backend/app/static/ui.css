@@ -295,3 +295,9 @@ html.leaving::after { transform: scaleX(1); transform-origin: left; transition: 
 /* a position that is simply not there (a plate with one series letter), as opposed to one that could not be read */
 .slot.absent { border-style: dashed; opacity: .6; background: transparent; }
 .slot.absent b { color: var(--muted); font-weight: 400; }
+
+/* language switch, and Devanagari type when Hindi is chosen */
+.lang-btn { background: none; border: 1px solid var(--rule-2); border-radius: 999px; color: var(--muted); font: 600 12px var(--font); padding: 6px 12px; cursor: pointer; margin-left: 8px; }
+.lang-btn:hover { color: var(--fg); border-color: var(--red); }
+html[lang="hi"] body, html[lang="hi"] h1, html[lang="hi"] h2, html[lang="hi"] h3, html[lang="hi"] h4, html[lang="hi"] button, html[lang="hi"] input, html[lang="hi"] select, html[lang="hi"] textarea { font-family: "Noto Sans Devanagari", "Manrope", system-ui, sans-serif; }
+html[lang="hi"] * { letter-spacing: normal !important; }
