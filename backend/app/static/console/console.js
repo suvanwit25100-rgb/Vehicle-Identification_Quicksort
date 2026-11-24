@@ -131,14 +131,16 @@ function trackView(jobId, t, acts, flags, result) {
 
 const isReadable = (t) => t.match.fused.slots.some((s) => s.char && s.char !== "-");
 
-function unreadView(tracks) {
-  const rows = tracks.map((t) => h("tr", {}, h("td", { class: "mono" }, t.track_id), h("td", {}, t.vehicle_label), h("td", { class: "mono" }, t.frames_seen), h("td", { style: "white-space:normal;min-width:260px" }, t.plate_note || "No readable plate characters.")));
+function unreadView(tracks, advice = {}) {
+  const rows = tracks.map((t) => h("tr", {}, h("td", { class: "mono" }, t.track_id), h("td", {}, t.vehicle_label), h("td", { class: "mono" }, t.frames_seen),
+    h("td", { style: "white-space:normal;min-width:260px" }, t.plate_note || "No readable plate characters.", (advice[t.track_id] || []).slice(0, 1).map((x) => h("small", { style: "display:block;color:var(--muted);margin-top:4px" }, "What would help: " + x)))));
   return h("details", { class: "panel unread" }, h("summary", {}, `${tracks.length} vehicle${tracks.length === 1 ? "" : "s"} without a readable plate`),
     h("div", { class: "tablewrap", style: "margin-top:16px" }, h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Track"), h("th", {}, "Vehicle"), h("th", {}, "Frames"), h("th", {}, "Why no plate was read"))), h("tbody", {}, rows))));
 }
 
 async function render(result) {
-  let acts = {}, flags = {};
+  let acts = {}, flags = {}, advice = { tracks: {}, summary: [] };
+  try { advice = await api(`/api/jobs/${encodeURIComponent(result.job_id)}/advice`); } catch (e) { /* advice is optional */ }
   try { flags = await api(`/api/jobs/${encodeURIComponent(result.job_id)}/flags`); } catch (e) { /* flags are optional */ }
   try { acts = (await api(`/api/jobs/${encodeURIComponent(result.job_id)}/actions`)).actions || {}; } catch (e) { /* suggestions are optional */ }
   const box = $("#results");
@@ -163,9 +165,11 @@ async function render(result) {
       ].filter(Boolean).join(" · ")),
       h("p", { class: "attrs" }, "Everything about this video is stored on the server: the original, every image, and the data. The ZIP holds all of it."),
       h("p", { class: "hash" }, "Job ", h("span", { class: "mono" }, result.job_id), "  ·  SHA-256 ", h("span", { class: "mono" }, result.source_sha256))),
+    ...(advice.summary.length ? [h("section", { class: "panel advice" }, h("h4", {}, "How to get better reads"), advice.summary.map((x) => h("p", { class: "note-l" }, x)),
+      h("p", { class: "hint-s" }, "These restate what was measured for each vehicle. A plate that is too small or too blurry stays unknown; it is never guessed."))] : []),
     ...(!result.tracks.length ? [h("section", { class: "panel" }, "No vehicles were tracked in this clip.")]
       : [...(shown.length ? shown.map((t) => trackView(result.job_id, t, acts[t.track_id], flags, result)) : [h("section", { class: "panel" }, "No plate could be read for any vehicle in this clip.")]),
-         ...(unread.length ? [unreadView(unread)] : [])]));
+         ...(unread.length ? [unreadView(unread, advice.tracks)] : [])]));
   box.hidden = false;
   history.replaceState(null, "", `?job=${result.job_id}`);
   box.scrollIntoView({ behavior: "smooth", block: "start" });

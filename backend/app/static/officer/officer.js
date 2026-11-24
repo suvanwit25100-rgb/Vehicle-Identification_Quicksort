@@ -155,14 +155,14 @@ async function viewReports(view, openId) {
     const rows = await call("/api/desk/complaints?" + p);
     list.replaceChildren(table(["Plate", "Report", "Assigned", "Status"], rows.map((r) => h("tr", { class: "click" + (r.id === selected ? " sel" : ""), tabindex: 0, onclick: () => open(r.id), onkeydown: (e) => { if (e.key === "Enter") open(r.id); } },
       h("td", { class: "mono" }, r.plate_confirmed || r.plate_read || "?", h("small", {}, r.plate_confirmed ? "typed by citizen" : r.source === "console" ? "fused from video" : "system read")),
-      h("td", {}, r.source === "console" ? h("span", { class: "chip built", style: "margin-right:6px" }, "console") : null, r.category_label.split("(")[0].trim(), h("small", { style: "display:block;color:var(--muted);font-size:11px" }, `${AGENCY[r.department]} · ${when(r.created_at)}`)),
+      h("td", {}, r.source === "console" ? h("span", { class: "chip built", style: "margin-right:6px" }, "console") : null, r.related ? h("span", { class: "chip partial", style: "margin-right:6px", title: "Other reports about the same plate within 24 hours" }, `+${r.related} related`) : null, r.category_label.split("(")[0].trim(), h("small", { style: "display:block;color:var(--muted);font-size:11px" }, `${AGENCY[r.department]} · ${when(r.created_at)}`)),
       h("td", {}, r.assigned_to || h("span", { class: "muted" }, "none")), h("td", {}, chip(r.status)))), "No reports match these filters."));
   }
   async function open(id) {
     selected = id; history.replaceState(null, "", `#/reports/${id}`);
     blobs.splice(0).forEach(URL.revokeObjectURL);
     detail.replaceChildren(h("p", { class: "empty" }, h("span", { class: "spinner" }), "Loading…"));
-    const [d, tl] = await Promise.all([call(`/api/desk/complaints/${id}`), call(`/api/desk/complaints/${id}/timeline`)]);
+    const [d, tl, rel] = await Promise.all([call(`/api/desk/complaints/${id}`), call(`/api/desk/complaints/${id}/timeline`), call(`/api/desk/complaints/${id}/related`)]);
     const [photo, crop] = await Promise.all([blobUrl(`/api/desk/complaints/${id}/photo`), d.plate_found ? blobUrl(`/api/desk/complaints/${id}/plate`) : null]);
     const m = d.match;
     const status = h("select", { "aria-label": "Status" }, d.statuses.map((s) => h("option", { value: s, selected: s === d.status }, STATUS_LABEL[s])));
@@ -184,6 +184,8 @@ async function viewReports(view, openId) {
       h("dl", { class: "dl" }, h("dt", {}, "Description"), h("dd", {}, d.description), h("dt", {}, "Location"), h("dd", {}, d.location_text, d.lat != null ? ` (${d.lat}, ${d.lon}) ` : "", map),
         h("dt", {}, "Observed"), h("dd", {}, d.observed_at ? when(d.observed_at) : "not given"), h("dt", {}, "Contact"), h("dd", {}, d.contact || "none given"),
         h("dt", {}, "Photo SHA-256"), h("dd", { class: "mono", style: "word-break:break-all;font-size:12px" }, d.image_sha256)),
+      rel.length ? h("div", { class: "related" }, h("h4", { style: "margin-top:24px" }, `Same vehicle, ${rel.length} other report${rel.length > 1 ? "s" : ""} within 24 hours`),
+        h("div", { class: "platechips" }, rel.map((x) => h("a", { class: "hit", href: `#/reports/${x.id}`, title: `${x.category_label} · ${when(x.created_at)}` }, `${x.id.slice(0, 6)} · ${x.status.replace("_", " ")}`)))) : null,
       h("h4", { style: "margin-top:24px" }, "Handling"),
       h("div", { class: "inline-form" }, field("Assigned to", who), h("button", { class: "btn sm", type: "button", onclick: () => act(() => call(`/api/desk/complaints/${id}/assign`, json("POST", { to: who.value || null })), "Assignment saved.") }, "Assign"),
         field("Status", status), h("button", { class: "btn sm", type: "button", onclick: () => act(() => call(`/api/desk/complaints/${id}`, json("PATCH", { status: status.value })), "Status saved.") }, "Update status"),
@@ -224,8 +226,20 @@ async function viewWatchlist(view) {
   const msg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
   const list = h("div", {}), hits = h("div", {});
   const form = h("form", { class: "inline-form" }, field("Plate", plate), h("label", { class: "f", style: "flex:2 1 260px" }, "Reason", reason), h("button", { class: "btn primary sm", type: "submit" }, "Add to watch-list"));
+  const csvText = h("textarea", { rows: 4, placeholder: "plate,reason  (one per line; a header line is fine)\nUP14CA0914,Stolen, FIR 12\nDL8C??4767,Seen at border", "aria-label": "CSV rows" });
+  const csvFile = h("input", { type: "file", accept: ".csv,text/csv,text/plain", "aria-label": "CSV file" });
+  const csvReason = h("input", { maxlength: 200, placeholder: "Reason for rows that have none", "aria-label": "Default reason" });
+  const csvMsg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+  csvFile.addEventListener("change", async () => { if (csvFile.files[0]) csvText.value = await csvFile.files[0].text(); });
+  const importBox = h("section", { class: "panel" }, h("h3", {}, "Import a list"), h("div", { class: "inline-form" }, field("CSV file", csvFile), h("label", { class: "f", style: "flex:2 1 260px" }, "Default reason", csvReason)), csvText,
+    h("div", { class: "row-btns" }, h("button", { class: "btn sm", type: "button", onclick: async () => {
+      if (!csvText.value.trim()) return say(csvMsg, "Paste rows or choose a file first.", true);
+      say(csvMsg, "Importing…");
+      try { const r = await call("/api/desk/watchlist/import", json("POST", { csv: csvText.value, default_reason: csvReason.value })); csvText.value = ""; load(); refreshBadges();
+        say(csvMsg, `${r.added} added${r.skipped.length ? `, ${r.skipped.length} skipped: ` + r.skipped.slice(0, 5).map((s) => `row ${s.row} (${s.plate || "empty"}): ${s.error}`).join(" · ") : ""}.`, r.skipped.length > 0 && r.added === 0); }
+      catch (e) { say(csvMsg, e.message, true); } } }, "Import"), csvMsg));
   view.replaceChildren(head("Watch-list", "Plates to flag when they appear in any stored video. A hit is a lead to check against the video; “possible” means what was read agrees but some characters were unreadable. A character that was not read never creates a hit."),
-    h("section", { class: "panel" }, form, msg), h("section", { class: "panel" }, h("h3", {}, "Listed plates"), list), h("section", { class: "panel" }, h("h3", {}, "Hits in stored videos"), hits));
+    h("section", { class: "panel" }, form, msg), importBox, h("section", { class: "panel" }, h("h3", {}, "Listed plates"), list), h("section", { class: "panel" }, h("h3", {}, "Hits in stored videos"), hits));
   async function load() {
     const d = await call("/api/desk/watchlist");
     list.replaceChildren(table(["Plate", "Reason", "Listed", ""], d.entries.map((e) => h("tr", {}, h("td", { class: "mono" }, e.plate), h("td", {}, e.reason), h("td", {}, when(e.created_at)),

@@ -167,3 +167,5 @@ tr.sel td { background: var(--red-soft); }
 .flagform select, .flagform textarea, .flagform input { width: 100%; }
 .flagged { padding: 10px 14px; border-left: 3px solid #3fb27f; background: var(--panel-2); border-radius: 8px; font-size: 14px; }
 .from-console { margin: -8px 0 14px; font-size: 13.5px; }
+
+.advice .note-l { font-size: 15px; margin: 6px 0; }

@@ -348,6 +348,15 @@ def submit_complaint(body: ComplaintIn, request: Request):
             "message": "Your report was received. It is a lead for an officer to review, not a verdict on anyone."}
 
 
+@app.get("/api/jobs/{job_id}/advice")
+def job_advice(job_id: str):
+    """Why plates could not be read (fully) in this analysis, and what would help. Restates what was measured; guesses nothing."""
+    from .advisor import advise_job
+
+    d = _job_dir(job_id)
+    return advise_job(AnalysisResult.model_validate_json((d / "result.json").read_text()))
+
+
 @app.get("/api/jobs/{job_id}/flags")
 def job_flags(job_id: str):
     """Which vehicles of this analysis were already flagged, and the report each one became."""
@@ -446,7 +455,11 @@ def desk_list(status: str | None = None, department: str | None = None, assigned
         assigned = who["username"]
     if department and not allowed(who, department):
         return []
-    return [_summary(r) for r in _store().list(status, department, assigned=assigned, q_text=(q or "")[:60] or None, departments=who.get("agencies") or None)]
+    from .dedupe import related_map
+
+    rows = _store().list(status, department, assigned=assigned, q_text=(q or "")[:60] or None, departments=who.get("agencies") or None)
+    rel = related_map(_store().list(limit=5000, departments=who.get("agencies") or None))      # related across all visible reports, not just this filter
+    return [{**_summary(r), "related": len(rel.get(r["id"], []))} for r in rows]
 
 
 @app.get("/api/desk/complaints/{cid}")
@@ -510,6 +523,17 @@ def desk_note(cid: str, body: NoteIn, who: dict = Depends(require_officer)):
     store.add_event(cid, who["username"], "note", body.text.strip())
     _officers().log(who, "report.note", cid)
     return {"ok": True}
+
+
+@app.get("/api/desk/complaints/{cid}/related")
+def desk_related(cid: str, who: dict = Depends(require_officer)):
+    """Other reports about the same vehicle filed within 24 hours of this one."""
+    from .dedupe import related_map
+
+    _case(who, cid)
+    rows = _store().list(limit=5000, departments=who.get("agencies") or None)
+    ids = set(related_map(rows).get(cid, []))
+    return [_summary(r) for r in rows if r["id"] in ids]
 
 
 @app.get("/api/desk/complaints/{cid}/timeline")
@@ -579,6 +603,34 @@ def desk_watch_add(body: WatchIn, who: dict = Depends(require_officer)):
         raise HTTPException(status_code=422, detail=str(e))
     _officers().log(who, "watchlist.add", entry["id"], entry["plate"])
     return entry
+
+
+class ImportIn(BaseModel):
+    csv: str = Field(max_length=200_000)
+    default_reason: str = Field("", max_length=200)
+
+
+@app.post("/api/desk/watchlist/import")
+def desk_watch_import(body: ImportIn, who: dict = Depends(require_officer)):
+    """Add many plates at once from CSV text: plate,reason per line (a header line is fine). Each row follows the same rules as one added by hand."""
+    import csv as _csv
+    import io
+
+    rows = [r for r in _csv.reader(io.StringIO(body.csv)) if r and any(c.strip() for c in r)]
+    if rows and rows[0][0].strip().lower() in ("plate", "plates", "number"):
+        rows = rows[1:]
+    if len(rows) > 500:
+        raise HTTPException(status_code=422, detail="At most 500 rows at a time.")
+    added, skipped = 0, []
+    for n, r in enumerate(rows, 1):
+        plate, reason = r[0].strip(), (r[1].strip() if len(r) > 1 else "") or body.default_reason.strip()
+        try:
+            _watch().add(plate, reason)
+            added += 1
+        except ValueError as e:
+            skipped.append({"row": n, "plate": plate[:20], "error": str(e)})
+    _officers().log(who, "watchlist.import", None, f"{added} added, {len(skipped)} skipped")
+    return {"added": added, "skipped": skipped}
 
 
 @app.delete("/api/desk/watchlist/{wid}", dependencies=[Depends(require_officer)])
