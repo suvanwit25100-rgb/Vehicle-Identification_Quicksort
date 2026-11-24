@@ -101,6 +101,26 @@ function actionsView(jobId, t, acts) {
       return h("div", { class: `act ${ACTION_TONE[a.kind] || ""}` }, h("b", {}, a.title), h("p", { class: "muted", style: "margin:4px 0 8px;font-size:13.5px" }, a.detail), btn, btn ? h("div", {}, out) : null); }));
 }
 
+function compareView(jobId, t) {
+  const input = h("input", { type: "text", maxlength: "10", placeholder: "e.g. WB06A8292 or WB06??8292", "aria-label": "A plate to compare with", class: "mono", style: "text-transform:uppercase;max-width:220px" });
+  const out = h("div", { class: "cmp-out" });
+  const btn = h("button", { class: "btn sm", type: "button" }, "Compare");
+  const go = async () => {
+    btn.disabled = true; out.replaceChildren();
+    try {
+      const r = await api(`/api/jobs/${encodeURIComponent(jobId)}/tracks/${t.track_id}/compare`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plate: input.value }) });
+      out.append(r.score === null ? h("p", { class: "muted" }, r.message) : h("div", {},
+        h("div", { class: "cmp-score" }, h("span", { class: "num" }, r.score.toFixed(2)), h("span", { class: "lab" }, `Fit with ${r.typed}`)),
+        h("p", { class: "muted", style: "font-size:13px" }, r.message)));
+    } catch (e) { out.append(h("p", { class: "err" }, e.message)); } finally { btn.disabled = false; }
+  };
+  btn.addEventListener("click", go);
+  input.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); go(); } });
+  return h("div", { class: "cmp" }, h("h4", { style: "margin-top:22px" }, "Compare with a plate you have"),
+    h("p", { class: "muted", style: "font-size:13px;margin:0 0 8px" }, "Type a plate from a witness or a suspect (? for unknown characters). Scores how well the plate we recovered fits it. Plate evidence only, not a registry search."),
+    h("div", { style: "display:flex;gap:8px;flex-wrap:wrap" }, input, btn), out);
+}
+
 function trackView(jobId, t, acts, flags, result) {
   const m = t.match;
   const merged = (t.merged_from || []).length;
@@ -122,7 +142,7 @@ function trackView(jobId, t, acts, flags, result) {
         (t.evidence_frame || t.vehicle_crop) ? h("div", { class: "media" },
           t.evidence_frame ? h("a", { href: `/api/jobs/${jobId}/crops/${t.evidence_frame}`, target: "_blank", rel: "noopener", title: "Open the full frame" }, h("img", { class: "evimg", src: `/api/jobs/${jobId}/crops/${t.evidence_frame}`, alt: `Frame the plate of vehicle ${t.track_id} was read from`, loading: "lazy" })) : null,
           t.vehicle_crop ? h("img", { class: "vehimg", src: `/api/jobs/${jobId}/crops/${t.vehicle_crop}`, alt: `Vehicle ${t.track_id}`, loading: "lazy" }) : null) : null),
-      h("div", {}, banner(m),
+      h("div", {}, banner(m), compareView(jobId, t),
         m.candidates.length ? h("h4", { style: "margin-top:22px" }, "Ranked candidates") : null,
         m.candidates.map((c, i) => candidateView(c, i + 1)), actionsView(jobId, t, acts),
         h("h4", { style: "margin-top:22px" }, "Flag"), flagView(jobId, t, flags, result))),

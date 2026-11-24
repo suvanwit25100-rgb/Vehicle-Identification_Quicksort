@@ -447,6 +447,45 @@ def job_advice(job_id: str):
     return advise_job(AnalysisResult.model_validate_json((d / "result.json").read_text()))
 
 
+class CompareIn(BaseModel):
+    plate: str = Field(min_length=3, max_length=14)
+
+
+@app.post("/api/jobs/{job_id}/tracks/{track_id}/compare")
+def compare_plate(job_id: str, track_id: int, body: CompareIn):
+    """How well the plate we recovered fits a plate the investigator types (a suspect, a witness, a partial). Plate evidence only:
+    no registry, no colour or body. Score = confidence-weighted share of the compared characters that agree. Type ? for a character you do not know;
+    it is not compared. It scores what is there; it does not search anything."""
+    from .schemas import PLATE_LEN, to_slots
+
+    typed = "".join(body.plate.upper().split())
+    if not re.fullmatch(r"[A-Z0-9?]{9,10}", typed) or typed.count("?") > 7:
+        raise HTTPException(status_code=422, detail="Type the plate with 10 characters (9 if it has one series letter), letters and digits, and ? for any you do not know. For example CG04KA2819 or CG04??2819.")
+    result = AnalysisResult.model_validate_json((_job_dir(job_id) / "result.json").read_text())
+    track = next((t for t in result.tracks if t.track_id == track_id), None)
+    if track is None or track.match is None:
+        raise HTTPException(status_code=404, detail="vehicle not found")
+    slots = to_slots(typed)
+    if len(slots) != PLATE_LEN:
+        raise HTTPException(status_code=422, detail="A 9-character plate needs its single series letter in the usual place, for example DL1LR2711; otherwise use 10 characters with ? for unknowns.")
+    fused = track.match.fused
+    known = [s for s in fused.slots if s.char]
+    if not known:
+        return {"typed": typed, "score": None, "message": "No character of this plate could be read, so there is nothing to compare."}
+    wild = [i for i, ch in enumerate(slots) if ch == "?"]
+    agree = [s.index for s in known if s.index not in wild and slots[s.index] == s.char]
+    clash = [s.index for s in known if s.index not in wild and slots[s.index] != s.char]
+    compared = len(agree) + len(clash)
+    weight = lambda idx: next(x.confidence for x in known if x.index == idx)
+    total = sum(weight(i) for i in agree + clash)
+    score = round(sum(weight(i) for i in agree) / total, 4) if total else None   # confidence-weighted share of compared characters that agree
+    return {"typed": typed, "score": score, "agree": agree, "clash": clash, "not_compared": wild,
+            "compared": compared, "known": len(known), "typed_slots": slots,
+            "message": (f"{len(agree)} of {compared} compared characters agree"
+                        + (f"; they clash at position(s) {', '.join(str(i + 1) for i in clash)}" if clash else "")
+                        + ". Plate evidence only, not a registry match.")}
+
+
 @app.get("/api/jobs/{job_id}/flags")
 def job_flags(job_id: str):
     """Which vehicles of this analysis were already flagged, and the report each one became."""

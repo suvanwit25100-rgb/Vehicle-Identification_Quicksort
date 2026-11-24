@@ -434,7 +434,7 @@ Not built, on purpose: live camera streams, helmet/rider checks, FASTag/permit c
 5. **Night-light boost: measured and NOT shipped.** Code written, tested, then removed. Generated plates darkened and noised (300 per level): very dark 51.7% exact reads without it, 53.0% with it at selection margin 1.0 (0 readings made worse) or 54.3% at margin 0.5 (1 made worse); dim and bright within 0.6 points. That is inside the noise for 300 plates. On the real clip, 4 of 20 unique crops of the five known vehicles were dark and the boost changed none. No evidence it helps, so it is not in the product. (The evaluation script was a scratch file, not kept.)
 6. **Hindi and English** (`static/i18n.js`): swaps text that matches a dictionary entry (also text added later), covering the menu, landing hero, report-a-problem pages, track page, categories, agency names, statuses. Untranslated text stays English. `tests/test_i18n.py` fails if a translated phrase no longer exists in the pages or server text. Dates stay in English format. **The Hindi has not been reviewed by a native speaker.**
 7. **Installable app** (`manifest.webmanifest`, `sw.js`, `pwa.js`, `offline.html`, icons in `static/img`): the service worker caches only the citizen page shell, never `/api`, `/officer`, `/desk`, writes or other sites. Offline notice on the pages; a report still needs a connection. The in-app browser pane refuses to register service workers, so registration was not seen live there; the worker's logic is tested in Node with a fake cache and network (`tests/sw_harness.js`). Install on a real phone is unverified.
-- 315 tests pass.
+- 316 tests pass.
 
 ## 9. Ground rules, preferences and history
 
@@ -482,3 +482,9 @@ The project is now called **ExLex** (earlier names: Netra, PlateTrace). It is sh
 - **No scraping of third-party plate-lookup sites** (owner data, no authorisation, and their number would not be our confidence). Real data needs
   an agency that is authorised to supply its own feed or file.
 - Stored jobs keep their old "no confident match"; re-uploading the clip gives matches (re-matching the stored plates gave 41 matches, 12 none, 127 too little evidence).
+
+### 8e. Compare with a typed plate (2026-11-24)
+- Every vehicle panel has "Compare with a plate you have": the investigator types a plate (witness, suspect, partial with `?`) and gets a score =
+  confidence-weighted share of the compared characters that agree, plus which positions clash (`POST /api/jobs/{id}/tracks/{tid}/compare`).
+  Plate evidence only; not a registry result. We decided **not** to invent a registry match score when no registry entry fits.
+- Result panel always shows "Plate read confidence" (average over readable characters) beside "Best registry fit" (none when no candidate).

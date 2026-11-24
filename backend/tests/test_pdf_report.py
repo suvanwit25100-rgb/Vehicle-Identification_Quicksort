@@ -70,3 +70,19 @@ def test_pdf_shows_a_confidence_for_each_character_in_each_frame(client, tmp_pat
     first = next(c for c in track.frame_reads[0].chars if c)
     assert f"{first.conf:.2f}" in text
     assert "Score parts:" in text
+
+
+def test_compare_scores_a_typed_plate_against_the_recovered_one(client, tmp_path):
+    result = stored_case(tmp_path)
+    track = next(t for t in result.tracks if t.match)
+    plate = "".join((s.char if s.char and s.char != "-" else "0") for s in track.match.fused.slots)
+    url = f"/api/jobs/{result.job_id}/tracks/{track.track_id}/compare"
+    full = client.post(url, json={"plate": plate}).json()
+    assert full["score"] == 1.0 and not full["clash"]
+    off = client.post(url, json={"plate": plate[:3] + ("1" if plate[3] != "1" else "2") + plate[4:]}).json()
+    assert 0 < off["score"] < 1 and off["clash"] == [3]
+    wild = client.post(url, json={"plate": plate[:3] + "?" + plate[4:]}).json()
+    assert wild["score"] == 1.0 and 3 in wild["not_compared"]
+    assert client.post(url, json={"plate": "AB"}).status_code == 422
+    assert client.post(url, json={"plate": "bad plate!!"}).status_code == 422
+    assert client.post(f"/api/jobs/{result.job_id}/tracks/9999/compare", json={"plate": plate}).status_code == 404

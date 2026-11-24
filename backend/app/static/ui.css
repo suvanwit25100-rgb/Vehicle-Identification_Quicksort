@@ -308,3 +308,7 @@ html[lang="hi"] * { letter-spacing: normal !important; }
 .banner .stat { display: flex; flex-direction: column; gap: 2px; max-width: 260px; }
 .banner .stat .num { font-family: "Unbounded", sans-serif; font-weight: 300; font-size: 34px; line-height: 1.1; color: var(--ink, #eef1f8); }
 .banner .stat .lab { font-size: 12px; letter-spacing: .04em; color: var(--soft, #aab3c6); }
+
+.cmp-score { display: flex; flex-direction: column; gap: 2px; margin: 10px 0 4px; }
+.cmp-score .num { font-family: "Unbounded", sans-serif; font-weight: 300; font-size: 34px; line-height: 1.1; }
+.cmp-score .lab { font-size: 12px; letter-spacing: .04em; color: var(--soft, #aab3c6); }
