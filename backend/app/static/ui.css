@@ -303,3 +303,8 @@ html[lang="hi"] body, html[lang="hi"] h1, html[lang="hi"] h2, html[lang="hi"] h3
 html[lang="hi"] * { letter-spacing: normal !important; }
 
 #offline-banner { position: sticky; top: 0; z-index: 60; padding: 10px 16px; text-align: center; font: 600 13px var(--font); background: #8a5a00; color: #fff; }
+
+.banner .scores { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.12); }
+.banner .stat { display: flex; flex-direction: column; gap: 2px; max-width: 260px; }
+.banner .stat .num { font-family: "Unbounded", sans-serif; font-weight: 300; font-size: 34px; line-height: 1.1; color: var(--ink, #eef1f8); }
+.banner .stat .lab { font-size: 12px; letter-spacing: .04em; color: var(--soft, #aab3c6); }

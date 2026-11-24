@@ -71,7 +71,20 @@
     // the engine's message often starts with the same words as the label; say them once
     let msg = result.message.replace(new RegExp("^" + label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[.:,]?\\s*", "i"), "");
     msg = msg.charAt(0).toUpperCase() + msg.slice(1);
-    return h("div", { class: `banner ${result.status}` }, h("b", {}, label + "."), msg);
+    return h("div", { class: `banner ${result.status}` }, h("b", {}, label + "."), msg, scoreRow(result));
+  }
+
+  // Two numbers, kept apart: how sure we are of the plate we read (always shown), and how well the best registry entry fits (only if there is one).
+  function scoreRow(result) {
+    const slots = (result.fused && result.fused.slots) || [];
+    const expected = slots.filter((s) => s.char !== "-");
+    const known = expected.filter((s) => s.char);
+    const read = known.length ? known.reduce((a, s) => a + s.confidence, 0) / known.length : null;
+    const best = (result.candidates || [])[0];
+    const stat = (value, label) => h("div", { class: "stat" }, h("span", { class: "num" }, value), h("span", { class: "lab" }, label));
+    return h("div", { class: "scores" },
+      stat(read === null ? "n/a" : read.toFixed(2), `Plate read confidence · average of ${known.length} readable of ${expected.length} characters`),
+      stat(best ? best.confidence.toFixed(2) : "none", best ? "Best registry fit (match confidence)" : "Best registry fit · no registry entry close enough"));
   }
 
   /* ---------- nav + footer ---------- */
