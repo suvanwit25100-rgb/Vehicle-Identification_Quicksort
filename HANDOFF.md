@@ -507,3 +507,13 @@ The project is now called **ExLex** (earlier names: Netra, PlateTrace). It is sh
   reads, so matching them shows the matching and reasons work, not accuracy. Re-matching the stored plates: 60 match, 32 no confident match, 221 insufficient evidence.
 - Vehicle 44 (read `??08A-8292`; the crop looks like WB06A8292) still gets no match: the 6 was read as 8, one known-character clash, and the police setting allows none.
   That is the gate working. The matcher was not loosened.
+
+### 8h. 500,000-row synthetic registry from Kaggle statistics (2026-11-24)
+- `backend/scripts/make_registry_from_kaggle.py` builds `backend/data/registry_500k.csv` (39 MB, **not committed**, regenerate with the script) from the Kaggle set
+  "Indian Vehicle Registration Data (2020-25)" (CC BY 4.0, attribution in `backend/data/source/ATTRIBUTION.md`; the 78 MB source CSV is in `data/source/`, also not committed).
+  That set holds aggregated counts only (no plates, no owners). **Real:** the mix of state, RTO, maker, model and vehicle class (drawn in proportion to vehicleCount). **Made up:**
+  every plate, every colour, the flags (about 3% "stolen" at random). The demo and clip rows come first. 14,817 source rows (construction vehicles, harvesters, trailers) had no body-type mapping and were dropped.
+  Body mix: 74% two-wheelers, 8% SUV, 8% car, 4% tractor, 3% auto-rickshaw, 3% tempo, under 1% truck/bus. SUV vs car is by model-name keywords, a rough guess.
+- It is the default when the file exists; a fresh clone without it falls back to the 334-row demo registry. Matching uses a numpy prefilter (`matcher.py`, identical answers, tested).
+  Measured: load 2.3 s, about 930 MB RAM, 22 vehicles matched in 0.17 s, registry search 0.3 s. Stored plates re-matched: 60 match, 32 no confident match, 221 insufficient evidence (unchanged: random plates almost never collide with a real read).
+- Hosting note: 930 MB of RAM for this registry is too much for a small free tier.
