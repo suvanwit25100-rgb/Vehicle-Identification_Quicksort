@@ -386,6 +386,17 @@ All use the existing pretrained models; nothing was trained.
 - **Gap:** the console has no sign-in, so anyone who can reach it can flag (a flag is only a lead in the officer queue). Add the officer key here if that is a concern. Real UI check was done on a scratch copy of one job so no real report was created.
 - 218 tests pass (6 new in `test_flag_vehicle.py`).
 
+### Officer portal and officer backend (post-freeze, 2026-11-24)
+- **Portal:** `/officer/` (the old `/desk/` redirects there). Sections: Dashboard (open, unassigned, mine, over 48 h, watch-list hits, repeat plates, 7-day chart, status and agency breakdown), Reports (filters, search, detail with
+  evidence and registry match, assign / take it, status, notes, full file history, CSV export), Analyses, Watch-list, Repeat sightings, and for admins Audit trail and Team. Front end: `static/officer/`.
+- **Access:** sign in with username and password, or with the **master key** (administrator). The key is `EXLEX_OFFICER_KEY` (or old `NETRA_OFFICER_KEY`), else generated once and kept in `backend/data/officer_key.txt` (gitignored, mode 600). It is never in the source.
+  The admin creates one account per officer (`/api/officer/team`); passwords are scrypt-hashed (10+ characters, mixed case, a digit); sessions are random 12-hour tokens, only their hash is stored; sign-in is rate limited; disabling an account or resetting its password signs it out;
+  the last active admin and your own account are protected. The old `X-Officer-Key` header still works on every `/api/desk/*` route, so nothing built earlier broke.
+- **Audit trail:** every sign-in (and failure, without the secret), status change, assignment, note, watch-list change, challan draft, export, account change and console flag is logged with who did it (`audit` table, read by admins at `/api/officer/audit`).
+- **Data:** the complaints table gained `assigned_to` and a `case_events` table (history of status, assignment and notes); existing databases are upgraded in place.
+- **Not built:** two-factor sign-in, password reset by email, live push alerts, per-agency permissions (all officers see all agencies), session list/revoke screen.
+- 234 tests pass (16 new in `test_officer_portal.py`); the portal was driven in a real browser against a scratch copy of the data (sign-in as officer and admin, take a report, add a note, team and audit pages).
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

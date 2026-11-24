@@ -39,13 +39,13 @@ function wholeReads(t) {
 
 const ACTION_TONE = { alert: "bad", refer: "warn", document: "warn", verify: "warn", note: "", clear: "" };
 async function draftChallan(jobId, trackId, btn, out) {
-  let key = "";
-  try { key = sessionStorage.getItem("officerKey") || ""; } catch (e) { /* storage blocked */ }
-  if (!key) { out.textContent = "Sign in on the Officer desk first: a draft challan needs the officer key."; return; }
+  let token = "";
+  try { token = sessionStorage.getItem("officerToken") || ""; } catch (e) { /* storage blocked */ }
+  if (!token) { out.textContent = "Sign in on the Officer portal first: a draft challan needs an officer sign-in."; return; }
   btn.disabled = true; out.textContent = "Preparing the draft…";
   try {
-    const r = await fetch(`/api/desk/jobs/${jobId}/tracks/${trackId}/challan.pdf`, { headers: { "X-Officer-Key": key } });
-    if (!r.ok) throw new Error(r.status === 401 ? "The officer key was not accepted. Sign in again on the Officer desk." : ((await r.json().catch(() => ({}))).detail || `Failed (${r.status})`));
+    const r = await fetch(`/api/desk/jobs/${jobId}/tracks/${trackId}/challan.pdf`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) throw new Error(r.status === 401 ? "Your officer session ended. Sign in again on the Officer portal." : ((await r.json().catch(() => ({}))).detail || `Failed (${r.status})`));
     window.open(URL.createObjectURL(await r.blob()), "_blank", "noopener");
     out.textContent = "Draft opened in a new tab. It is a draft for an officer to check; nothing was sent.";
   } catch (e) { out.textContent = e.message; } finally { btn.disabled = false; }
@@ -58,7 +58,7 @@ async function categories() {
 function flagView(jobId, t, flags, result) {
   const box = h("div", { class: "flagbox" });
   const done = (id) => box.replaceChildren(h("p", { class: "flagged" }, h("b", {}, "Flagged. "), `Filed as report `, h("span", { class: "mono" }, id),
-    ". It is now in the reporting section for an officer to review: ", h("a", { href: "/desk/" }, "open the officer desk"), "."));
+    ". It is now in the reporting section for an officer to review: ", h("a", { href: "/officer/#/reports/" + id }, "open it in the officer portal"), "."));
   if (flags[t.track_id]) { done(flags[t.track_id]); return box; }
   const open = h("button", { class: "btn sm", type: "button" }, "Flag this vehicle");
   open.addEventListener("click", async () => {

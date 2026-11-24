@@ -225,7 +225,7 @@ const BOARD = [
   ["built", "Multi-frame plate recovery", "Frames vote per position, weighted by confidence, sharpness and plate size. Three plates on a real Indian street clip were read exactly."],
   ["built", "Unknown, never invented", "Doubtful characters stay as ?. On footage where plates were only 20 to 30 px wide, every position stayed unknown instead of being guessed."],
   ["built", "Registry ranking with reasons, and refusal", "Top five candidates with plain-English reasons. Plates missing from the registry were refused in every real-footage test."],
-  ["built", "Citizen reports, officer desk and monitor", "Photo to plate read to department queue, with owner data visible only to officers. The monitor reads from saved jobs and reports, not sample data."],
+  ["built", "Citizen reports, officer portal and monitor", "Photo to plate read to department queue, with owner data visible only to signed-in officers. The monitor reads from saved jobs and reports, not sample data."],
   ["built", "Second-reader cross-check", "A second, unrelated pretrained reader checks every plate. On the real Indian clip it agreed on all five readable vehicles. It marks a plate for review if it disagrees, and never changes the plate. Plate-reading accuracy overall is still unmeasured on a labelled set."],
   ["weak", "Colour and body type", "Weak signals. Zero-shot body type was close to a coin flip on one real clip, so it carries a low weight."],
   ["built", "Plate grammar", "Plates are fitted to ten positions, and a 9-character plate with one series letter is now read as it is. Three series letters and short numbers are not handled."],

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>try{if(sessionStorage.getItem('nav')){document.documentElement.classList.add('arrived');sessionStorage.removeItem('nav')}}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Officer portal · ExLex</title>
+<meta name="theme-color" content="#030612">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/pages.css">
+<link rel="stylesheet" href="/officer/officer.css">
+</head>
+<body data-page="officer">
+<header class="bar" id="bar"></header>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap">
+  <section class="panel login" id="login">
+    <span class="eyebrow">Officer portal</span>
+    <h1 class="h2" style="margin:14px 0 8px">Sign in to work the queue.</h1>
+    <p class="lede" style="margin-bottom:22px">Reports, watch-list, repeat sightings and the audit trail, in one place. Everything you do here is recorded under your name.</p>
+    <div class="tabs" role="tablist" aria-label="Sign-in method" id="login-tabs">
+      <button type="button" role="tab" aria-selected="true" data-mode="user">Username and password</button>
+      <button type="button" role="tab" aria-selected="false" data-mode="key">Master key</button>
+    </div>
+    <form id="login-form" class="login-form" autocomplete="off">
+      <div id="f-user" class="login-fields">
+        <label class="f" for="username">Username<input id="username" autocomplete="username" spellcheck="false"></label>
+        <label class="f" for="password">Password<input id="password" type="password" autocomplete="current-password"></label>
+      </div>
+      <div id="f-key" class="login-fields" hidden>
+        <label class="f" for="key">Master key<input id="key" type="password" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <button class="btn primary" type="submit">Sign in</button>
+    </form>
+    <p class="status-line" id="login-status" role="status" aria-live="polite" style="margin-top:12px"></p>
+    <p class="hint-s">The master key signs you in as the administrator, who creates an account for each officer. The key is set with the EXLEX_OFFICER_KEY environment variable, or generated once and kept in data/officer_key.txt on the server.</p>
+  </section>
+
+  <div class="op" id="op" hidden>
+    <aside class="op-side" aria-label="Officer navigation">
+      <div class="op-who"><b id="who-name"></b><span id="who-role"></span></div>
+      <nav id="op-nav"></nav>
+      <button class="btn sm" id="signout" type="button">Sign out</button>
+    </aside>
+    <section class="op-main"><div id="view" tabindex="-1"></div></section>
+  </div>
+</main>
+<footer id="foot"></footer>
+<script src="/ui.js"></script>
+<script src="/officer/officer.js"></script>
+</body>
+</html>

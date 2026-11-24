@@ -763,7 +763,7 @@ def officer_dashboard(who: dict = Depends(require_officer)):
                     "unassigned_open": sum(1 for r in rows if r["assigned_to"] is None and r["status"] in open_states),
                     "mine_open": mine, "aging_new_over_48h": aging, "from_console": sum(1 for r in rows if r["source"] == "console"),
                     "per_day": [{"date": d, "count": per_day.get(d, 0)} for d in days]},
-        "analyses": {"stored": jobs["stored_videos"], "distinct_videos": jobs["distinct_videos"], "vehicles": jobs.get("vehicles"), "readable": jobs.get("readable")},
+        "analyses": {"stored": jobs["total"], "distinct_videos": jobs["distinct_videos"], "vehicles": jobs["tracks"], "readable": jobs["tracks_readable"]},
         "watchlist": {"entries": len(entries), "hits_exact": sum(a["level"] == "exact" for a in alerts), "hits_possible": sum(a["level"] == "possible" for a in alerts)},
         "repeat_plates": len(wl.repeat_groups(wl.all_sightings(DATA_DIR))),
         "recent_activity": _officers().audit(8) if who["role"] == "admin" else [],

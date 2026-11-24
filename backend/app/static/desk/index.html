@@ -2,68 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<script>try{if(sessionStorage.getItem('nav')){document.documentElement.classList.add('arrived');sessionStorage.removeItem('nav')}}catch(e){}</script>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Officer desk · ExLex</title>
-<meta name="theme-color" content="#030612">
+<meta http-equiv="refresh" content="0; url=/officer/">
+<title>Officer portal · ExLex</title>
 <meta name="robots" content="noindex">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/ui.css">
-<link rel="stylesheet" href="/pages.css">
 </head>
-<body data-page="desk">
-<header class="bar" id="bar"></header>
-<div class="glow" aria-hidden="true"></div>
-<main class="wrap">
-  <div class="page-head">
-    <span class="eyebrow">Officer desk</span>
-    <h1 class="h2">Triage citizen reports.<br><em>Evidence first, owner data second.</em></h1>
-    <p class="lede">Each report shows the photo, the plate the system read, the plate the citizen typed, and a registry match with reasons. A match is a lead to verify, never a conclusion.</p>
-  </div>
-
-  <section class="panel login" id="login">
-    <h3>Officer sign-in</h3>
-    <form id="login-form" class="lookup" style="max-width:520px">
-      <label class="sr" for="key">Officer key</label>
-      <input id="key" type="password" placeholder="Officer key" autocomplete="off">
-      <button class="btn primary sm" type="submit">Sign in</button>
-    </form>
-    <p class="status-line" id="login-status" role="status" aria-live="polite" style="margin-top:12px"></p>
-    <p class="hint-s">Demo build: access is one shared key. Set it with the EXLEX_OFFICER_KEY environment variable before starting the server; if it is not set, a random key is printed once in the server log. A real deployment would use individual officer accounts.</p>
-  </section>
-
-  <div id="desk" hidden>
-    <div class="desk-bar">
-      <label class="f" for="f-status">Status<select id="f-status"></select></label>
-      <label class="f" for="f-dept">Agency<select id="f-dept"></select></label>
-      <button class="btn sm" id="refresh" type="button">Refresh</button>
-      <button class="btn sm" id="signout" type="button">Sign out</button>
-      <span class="status-line" id="desk-status" role="status" aria-live="polite"></span>
-    </div>
-    <div class="desk-grid">
-      <section class="panel list-panel"><div id="list"></div></section>
-      <section class="panel detail-panel" id="detail"><p class="empty">Choose a report from the list.</p></section>
-    </div>
-
-    <section class="panel" id="watch" style="margin-top:22px">
-      <h3 style="margin:0 0 6px">Watch-list</h3>
-      <p class="hint-s" style="margin:0 0 14px">Plates you want flagged when they appear in any stored video. Officers only. A hit is a lead to check against the video: “possible” means what was read agrees but some characters could not be read. A plate is never flagged on a character that was not read.</p>
-      <form id="watch-form" class="watch-form">
-        <label class="f" for="w-plate">Plate<input id="w-plate" class="plate-input" maxlength="12" placeholder="UP14CA0914  or  DL8C??4767" autocomplete="off" spellcheck="false"></label>
-        <label class="f grow" for="w-reason">Reason<input id="w-reason" maxlength="200" placeholder="Why is it listed? (shown to officers only)" autocomplete="off"></label>
-        <button class="btn primary sm" type="submit">Add</button>
-      </form>
-      <p class="status-line" id="watch-status" role="status" aria-live="polite"></p>
-      <div id="watch-list"></div>
-      <h4 style="margin-top:22px">Hits in stored videos</h4>
-      <div id="watch-alerts"></div>
-    </section>
-  </div>
+<body data-page="officer">
+<main style="padding:48px 24px;max-width:560px;margin:0 auto">
+  <p>The officer desk has moved into the officer portal. <a href="/officer/">Open the officer portal</a>.</p>
 </main>
-<footer id="foot"></footer>
 <script src="/ui.js"></script>
-<script src="/desk/desk.js"></script>
 </body>
 </html>

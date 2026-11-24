@@ -1,0 +1,53 @@
+/* Officer portal layout. Colours and type come from ui.css. */
+.login { max-width: 640px; margin: clamp(90px, 14vh, 140px) auto 0; }
+.login-form { display: grid; gap: 16px; margin-top: 22px; }
+.login-fields { display: grid; gap: 14px; }
+.login-form .btn { justify-self: start; }
+
+.op { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 22px; align-items: start; padding-top: clamp(84px, 12vh, 120px); }
+@media (max-width: 900px) { .op { grid-template-columns: 1fr; } }
+.op-side { position: sticky; top: 84px; display: grid; gap: 16px; padding: 18px; border: 1px solid var(--rule); border-radius: var(--r); background: var(--panel); backdrop-filter: blur(10px); }
+@media (max-width: 900px) { .op-side { position: static; } }
+.op-who { display: grid; gap: 2px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.op-who b { font-weight: 600; }
+.op-who span { font: 600 10.5px var(--font); letter-spacing: .2em; text-transform: uppercase; color: var(--red); }
+#op-nav { display: grid; gap: 4px; }
+@media (max-width: 900px) { #op-nav { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); } }
+#op-nav a { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 10px; color: var(--muted); font: 500 14px var(--font); border: 1px solid transparent; text-decoration: none; transition: background .2s, color .2s, border-color .2s; }
+#op-nav a:hover { color: var(--fg); background: var(--panel-2); }
+#op-nav a[aria-current="page"] { color: var(--fg); background: var(--red-soft); border-color: rgba(255, 42, 63, .45); }
+#op-nav .count { font: 600 11px var(--mono); padding: 2px 7px; border-radius: 999px; background: var(--red); color: #fff; }
+
+.op-main { min-width: 0; display: grid; gap: 20px; }
+.op-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 14px; }
+.op-head h2 { font: 300 clamp(26px, 3vw, 38px)/1.1 var(--display); margin: 0; }
+.op-head p { color: var(--muted); font-size: 14px; margin: 6px 0 0; max-width: 62ch; }
+.op-tools { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin-bottom: 18px; }
+.op-tools .f { min-width: 150px; }
+.op-tools .grow { flex: 1 1 220px; }
+
+.bars { display: flex; align-items: flex-end; gap: 8px; height: 150px; padding-top: 18px; }
+.bars .col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; }
+.bars i { display: block; width: 100%; min-height: 3px; border-radius: 4px 4px 0 0; background: linear-gradient(0deg, var(--red-deep), var(--red)); }
+.bars .n { font: 500 11px var(--mono); color: var(--muted); height: 14px; }
+.bars .l { font: 500 11px var(--mono); color: var(--dim); }
+.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.brk { display: grid; gap: 10px; }
+.brk .row { display: grid; grid-template-columns: 130px 1fr auto; align-items: center; gap: 12px; font-size: 13.5px; }
+.brk .track { height: 8px; border-radius: 99px; background: var(--panel-2); overflow: hidden; }
+.brk .track i { display: block; height: 100%; background: linear-gradient(90deg, var(--red-deep), var(--red)); border-radius: 99px; }
+.kpi.warn .n { color: var(--amber); }
+.kpi.bad .n { color: var(--red); }
+a.kpi { text-decoration: none; color: inherit; display: block; transition: border-color .2s, transform .2s; }
+a.kpi:hover { border-color: var(--red); transform: translateY(-2px); }
+
+.thread { display: grid; gap: 12px; margin: 6px 0 16px; }
+.ev { padding: 10px 14px; border-left: 2px solid var(--rule-2); background: var(--panel-2); border-radius: 0 10px 10px 0; font-size: 13.5px; }
+.ev.note { border-left-color: var(--red); }
+.ev.status, .ev.assign { border-left-color: var(--amber); }
+.ev small { display: block; color: var(--dim); font: 500 11.5px var(--mono); margin-bottom: 3px; }
+.inline-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.inline-form .f { flex: 1 1 180px; }
+.act-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.mono-s { font: 500 12px var(--mono); }
+tr.off td { opacity: .5; }

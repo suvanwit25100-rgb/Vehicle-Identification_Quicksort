@@ -178,8 +178,8 @@ const GROUPS = [
   ["people", "Citizens and officers", [
     ["built", "Citizen reports", "Anyone can photograph a vehicle. The plate is read, the citizen checks it, and the report goes to the department that handles it.",
       ["Four steps: photo, check the plate, details, done", "A single photo has no fusion, so more characters stay unknown and the citizen can correct them", "Each category routes to an agency", "A status checker lets the citizen follow their report"], "report", ["/report-issue/", "Report an issue"]],
-    ["built", "Officer desk", "Officers triage reports with the evidence in front of them.",
-      ["Photo, plate crop, system read and the plate the citizen typed side by side", "A registry match with reasons, labelled as unverified", "Status and notes, filterable by status and agency"], "desk", ["/desk/", "Open the desk"]],
+    ["built", "Officer portal", "A sign-in portal where officers work the queue with the evidence in front of them, and every action is recorded under their name.",
+      ["Dashboard: open, unassigned, mine, and reports waiting over 48 hours", "Reports: photo, plate crop, fused read and registry match with reasons, assign to an officer, change status, add notes, full file history, CSV export", "Watch-list, repeat sightings and stored analyses in the same place", "Administrator pages: one account per officer, and an audit trail of who did what", "Honest limits: no two-factor sign-in, and no live alerts yet"], "desk", ["/officer/", "Open the portal"]],
     ["built", "Privacy by design", "A report is a lead, not a verdict, and the person reporting must not become a way to look up owners.",
       ["Citizens never receive registry data, owner data or officer notes", "Consent is required, photos are limited to 10 MB, and each device is rate-limited", "Honest gap: one shared officer key and no face blurring yet"], "privacy"],
   ]],
