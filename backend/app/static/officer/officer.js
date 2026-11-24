@@ -79,7 +79,7 @@ $("#signout").addEventListener("click", async () => { try { await call("/api/off
 
 /* ---------- router ---------- */
 const ROUTES = {
-  dashboard: ["Dashboard", viewDashboard], reports: ["Reports", viewReports], analyses: ["Analyses", viewAnalyses], watchlist: ["Watch-list", viewWatchlist],
+  dashboard: ["Dashboard", viewDashboard], reports: ["Reports", viewReports], map: ["Map", viewMap], analyses: ["Analyses", viewAnalyses], watchlist: ["Watch-list", viewWatchlist],
   sightings: ["Repeat sightings", viewSightings], outbox: ["Citizen messages", viewOutbox], audit: ["Audit trail", viewAudit, true], team: ["Team", viewTeam, true],
   retention: ["Retention", viewRetention, true], account: ["My account", viewAccount],
 };
@@ -128,9 +128,56 @@ async function viewDashboard(view) {
       h("section", { class: "panel" }, h("h3", {}, "Reports filed, last 7 days"), h("div", { class: "bars" }, r.per_day.map((x) => h("div", { class: "col" }, h("span", { class: "n" }, x.count || ""), h("i", { style: `height:${(x.count / max) * 100}%` }), h("span", { class: "l" }, x.date.slice(5)))))),
       h("section", { class: "panel" }, h("h3", {}, "By status"), brk(r.by_status, (k) => STATUS_LABEL[k] || pretty(k))),
       h("section", { class: "panel" }, h("h3", {}, "By agency"), brk(r.by_agency, (k) => AGENCY[k] || k))),
+    me.role === "admin" ? demoPanel() : null,
     me.role === "admin" ? h("section", { class: "panel" }, h("h3", {}, "Recent activity"),
       table(["When", "Who", "What", "On"], d.recent_activity.map((a) => h("tr", {}, h("td", {}, when(a.at)), h("td", {}, a.actor), h("td", { class: "mono-s" }, a.action), h("td", { class: "mono-s" }, a.target || ""))), "No activity yet."),
       h("p", { class: "hint-s" }, h("a", { href: "#/audit" }, "Open the full audit trail"))) : null);
+}
+
+function demoPanel() {
+  const box = h("section", { class: "panel" }, h("h3", {}, "Demo data"));
+  const msg = h("p", { class: "status-line", role: "status", "aria-live": "polite" });
+  const body = h("div", {});
+  async function refresh() {
+    const s = await call("/api/officer/demo");
+    const load = h("button", { class: "btn sm", type: "button", disabled: s.loaded > 0 }, "Load demo reports");
+    const rm = h("button", { class: "btn sm", type: "button", disabled: !s.loaded }, "Remove demo reports");
+    load.addEventListener("click", async () => { say(msg, "Building…"); try { const r = await call("/api/officer/demo/seed", { method: "POST" }); say(msg, `${r.created} demo reports added.`); refresh(); refreshBadges(); } catch (e) { say(msg, e.message, true); } });
+    rm.addEventListener("click", async () => { if (!confirm("Remove all demo reports? Real reports are not touched.")) return; try { const r = await call("/api/officer/demo", { method: "DELETE" }); say(msg, `${r.removed} demo reports removed.`); refresh(); refreshBadges(); } catch (e) { say(msg, e.message, true); } });
+    body.replaceChildren(h("p", { class: "muted", style: "font-size:14px" }, s.loaded ? `${s.loaded} demo reports are loaded. They are labelled “demo”, built from your stored analyses, and the monitor does not count them.` :
+      "Fill the queue with about ten labelled demo reports, built from analyses you have already stored, so the portal is not empty when shown. The monitor never counts them."), h("div", { class: "row-btns" }, load, rm), msg);
+  }
+  refresh().catch(() => {});
+  box.append(body);
+  return box;
+}
+
+/* ---------- map ---------- */
+let leafletReady;
+function loadLeaflet() {
+  if (window.L) return Promise.resolve();
+  leafletReady ??= new Promise((ok, fail) => {
+    const css = h("link", { rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" });
+    const js = h("script", { src: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" });
+    js.onload = ok; js.onerror = () => fail(new Error("The map library could not be loaded (offline?)."));
+    document.head.append(css, js);
+  });
+  return leafletReady;
+}
+const PIN = { new: "#ffb454", under_review: "#ffb454", verified: "#3ddc97", forwarded: "#7aa7ff", closed: "#8b95ad", rejected: "#8b95ad" };
+async function viewMap(view) {
+  const pins = await call("/api/desk/map");
+  const box = h("div", { id: "map", class: "map", role: "img", "aria-label": "Map of reports that have a location" });
+  view.replaceChildren(head("Map", "Reports that carry a location: a citizen photo with GPS, or a demo report. Console flags have no location. Colour shows status."),
+    h("section", { class: "panel" }, pins.length ? box : h("p", { class: "empty" }, "No report has a location yet. Citizen photos that carry GPS appear here, or load demo reports from the dashboard.")),
+    pins.length ? h("section", { class: "panel" }, table(["Place", "Plate", "Status", "Agency", "When"], pins.map((p) => h("tr", {}, h("td", {}, p.place), h("td", { class: "mono" }, h("a", { href: `#/reports/${p.id}` }, p.plate)), h("td", {}, chip(p.status)), h("td", {}, AGENCY[p.department]), h("td", {}, when(p.when)))), "")) : null);
+  if (!pins.length) return;
+  try { await loadLeaflet(); } catch (e) { box.replaceChildren(h("p", { class: "err" }, e.message + " The table below still lists every report with its place.")); return; }
+  const map = L.map(box, { scrollWheelZoom: false });
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(map);
+  const group = L.featureGroup(pins.map((p) => L.circleMarker([p.lat, p.lon], { radius: 9, color: "#fff", weight: 2, fillColor: PIN[p.status] || "#ffb454", fillOpacity: .95 })
+    .bindPopup(h("div", {}, h("b", {}, p.plate), h("br"), p.category, h("br"), p.place, h("br"), h("a", { href: `#/reports/${p.id}` }, "Open report"))))).addTo(map);
+  map.fitBounds(group.getBounds().pad(0.2));
 }
 
 /* ---------- reports ---------- */
@@ -155,8 +202,8 @@ async function viewReports(view, openId) {
     const p = new URLSearchParams(Object.entries(rf).filter(([, v]) => v));
     const rows = await call("/api/desk/complaints?" + p);
     list.replaceChildren(table(["Plate", "Report", "Assigned", "Status"], rows.map((r) => h("tr", { class: "click" + (r.id === selected ? " sel" : ""), tabindex: 0, onclick: () => open(r.id), onkeydown: (e) => { if (e.key === "Enter") open(r.id); } },
-      h("td", { class: "mono" }, r.plate_confirmed || r.plate_read || "?", h("small", {}, r.plate_confirmed ? "typed by citizen" : r.source === "console" ? "fused from video" : "system read")),
-      h("td", {}, r.source === "console" ? h("span", { class: "chip built", style: "margin-right:6px" }, "console") : null, r.related ? h("span", { class: "chip partial", style: "margin-right:6px", title: "Other reports about the same plate within 24 hours" }, `+${r.related} related`) : null, r.category_label.split("(")[0].trim(), h("small", { style: "display:block;color:var(--muted);font-size:11px" }, `${AGENCY[r.department]} · ${when(r.created_at)}`)),
+      h("td", { class: "mono" }, r.plate_confirmed || r.plate_read || "?", h("small", {}, r.plate_confirmed ? "typed by citizen" : r.source !== "citizen" ? "fused from video" : "system read")),
+      h("td", {}, r.source === "console" ? h("span", { class: "chip built", style: "margin-right:6px" }, "console") : null, r.source === "demo" ? h("span", { class: "chip planned", style: "margin-right:6px" }, "demo") : null, r.related ? h("span", { class: "chip partial", style: "margin-right:6px", title: "Other reports about the same plate within 24 hours" }, `+${r.related} related`) : null, r.category_label.split("(")[0].trim(), h("small", { style: "display:block;color:var(--muted);font-size:11px" }, `${AGENCY[r.department]} · ${when(r.created_at)}`)),
       h("td", {}, r.assigned_to || h("span", { class: "muted" }, "none")), h("td", {}, chip(r.status)))), "No reports match these filters."));
   }
   async function open(id) {
@@ -176,9 +223,10 @@ async function viewReports(view, openId) {
     detail.replaceChildren(
       h("div", { class: "d-head" }, h("h3", { style: "margin:0" }, `Report ${d.id}`), chip(d.status)),
       h("p", { class: "muted", style: "font-size:13.5px;margin:6px 0 14px" }, `${d.category_label} · ${d.department_name} · filed ${when(d.created_at)}`),
+      d.source === "demo" ? h("p", { class: "from-console" }, h("span", { class: "chip planned" }, "demo report"), " Built from a stored analysis for demonstration. It is not a real citizen report.") : null,
       d.source === "console" ? h("p", { class: "from-console" }, h("span", { class: "chip built" }, "flagged from the console"), " ", h("a", { href: `/console/?job=${d.job_id}` }, `open analysis ${d.job_id}, vehicle ${d.track_id}`)) : null,
       h("div", { class: "d-imgs" }, photo ? h("img", { src: photo, alt: "Evidence photo", class: "preview" }) : h("p", { class: "empty" }, "Photo unavailable."), crop ? h("img", { src: crop, alt: "Plate crop", class: "crop-img" }) : null),
-      h("h4", {}, d.source === "console" ? "Plate fused across the video's frames" : "System read of the photo"), slotsView(d.read_slots),
+      h("h4", {}, d.source !== "citizen" ? "Plate fused across the video's frames" : "System read of the photo"), slotsView(d.read_slots),
       d.plate_confirmed ? h("p", { class: "typed" }, "Citizen typed: ", h("span", { class: "mono" }, d.plate_confirmed)) : null,
       h("h4", { style: "margin-top:24px" }, "Registry match"), h("p", { class: "muted", style: "font-size:13px;margin-bottom:10px" }, `Basis: ${d.match_basis}.`), banner(m), m.candidates.map((c, i) => candidateView(c, i + 1)),
       h("h4", { style: "margin-top:24px" }, "Report details"),

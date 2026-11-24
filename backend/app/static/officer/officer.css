@@ -18,7 +18,7 @@
 #op-nav a[aria-current="page"] { color: var(--fg); background: var(--red-soft); border-color: rgba(255, 42, 63, .45); }
 #op-nav .count { font: 600 11px var(--mono); padding: 2px 7px; border-radius: 999px; background: var(--red); color: #fff; }
 
-.op-main { min-width: 0; display: grid; gap: 20px; }
+.op-main { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .op-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 14px; }
 .op-head h2 { font: 300 clamp(26px, 3vw, 38px)/1.1 var(--display); margin: 0; }
 .op-head p { color: var(--muted); font-size: 14px; margin: 6px 0 0; max-width: 62ch; }
@@ -55,3 +55,6 @@ tr.off td { opacity: .5; }
 fieldset.agencies { border: 1px solid var(--rule); border-radius: 12px; padding: 8px 14px 12px; flex: 2 1 320px; }
 fieldset.agencies legend { font-size: 12px; color: var(--muted); padding: 0 6px; }
 .chk { display: inline-flex; align-items: center; gap: 6px; margin: 4px 14px 0 0; font-size: 13.5px; }
+
+.map { width: 100%; max-width: 100%; height: 460px; border-radius: 12px; overflow: hidden; border: 1px solid var(--rule); }
+.leaflet-popup-content a { color: #c0182b; }

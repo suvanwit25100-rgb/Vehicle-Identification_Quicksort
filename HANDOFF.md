@@ -397,6 +397,20 @@ All use the existing pretrained models; nothing was trained.
 - **Not built:** two-factor sign-in, password reset by email, live push alerts, per-agency permissions (all officers see all agencies), session list/revoke screen.
 - 234 tests pass (16 new in `test_officer_portal.py`); the portal was driven in a real browser against a scratch copy of the data (sign-in as officer and admin, take a report, add a note, team and audit pages).
 
+### Ten more features (post-freeze, 2026-11-24, built from the Features-tab suggestions)
+Not built, on purpose: live camera streams, helmet/rider checks, FASTag/permit checks and a stronger second reader (new models or real data sources; the model stack is frozen), and two-factor sign-in.
+1. **Per-agency permissions** (`agencies` on officer accounts; `_case()` / `allowed()` in `main.py`): an officer limited to some agencies sees only those reports in lists, detail, photos, notes, CSV, dashboard, outbox and map; others read as "not found". The key and admins see all.
+2. **Sessions list and revoke** (admin): `GET/DELETE /api/officer/sessions`; ids are a 12-character hash prefix, never a credential. Changing an officer's role, agencies, password or active flag signs them out.
+3. **Related reports** (`dedupe.py`): same plate (no clash, 7+ characters agree), filed within 24 h. `related` count in the list, `/api/desk/complaints/{id}/related`.
+4. **Plate-quality advisor** (`advisor.py`, `/api/jobs/{id}/advice`): restates measured width, frames and characters; shown in the console.
+5. **Watch-list CSV import** (`POST /api/desk/watchlist/import`, up to 500 rows, per-row reasons for failures).
+6. **Retention** (admin): preview then apply (`/api/officer/retention/*`), refused unless `confirm` and the previewed count still match; only closed/rejected reports or analyses older than N days; audited. `DELETE /api/officer/analyses/{id}?confirm=true`.
+7. **Citizen messages, demo** (`outbox` table): queued when a report is filed or its status changes, if a contact was given; masked destination, no plate or owner data in the text. Nothing is sent.
+8. **Demo data** (`demo_data.py`): ten labelled reports (`source='demo'`) built from stored analyses; `ComplaintStore.counts()` excludes them so the monitor stays measured-only. Admin buttons on the dashboard.
+9. **Map** (`/api/desk/map`, Leaflet 1.9.4 from cdnjs + OpenStreetMap tiles, popups built from DOM nodes so place text cannot inject HTML). Needs internet; the table below always works.
+10. **API page** (`/developers/`): built live from `/openapi.json`.
+- 256 tests pass. Browser-checked on scratch data: map, demo panel, reports list with demo/related chips, API page, team/sessions.
+
 ## 9. Ground rules, preferences and history
 
 - **Never invent characters; refuse when evidence is thin; show the evidence.** This is the project's identity.

@@ -475,7 +475,7 @@ def desk_detail(cid: str, who: dict = Depends(require_officer)):
             "contact": row["contact"], "image_sha256": row["image_sha256"], "officer_note": row["officer_note"],
             "updated_at": row["updated_at"], "read_slots": [s.model_dump() for s in read.slots],
             "match_basis": ("plate typed by the citizen (unverified)" if typed else
-                            f"fused read of the video (analysis {row['job_id']}, vehicle {row['track_id']})" if row["source"] == "console"
+                            f"fused read of the video (analysis {row['job_id']}, vehicle {row['track_id']})" if row["source"] in ("console", "demo")
                             else "system read of one photo (unverified)"),
             "match": match.model_dump(), "statuses": cm.STATUSES}
 
@@ -894,6 +894,40 @@ def delete_analysis(job_id: str, confirm: bool = False, who: dict = Depends(requ
     _sh.rmtree(d, ignore_errors=True)
     _officers().log(who, "analysis.delete", job_id)
     return {"deleted": job_id}
+
+
+@app.get("/api/officer/demo")
+def demo_status(who: dict = Depends(require_admin)):
+    return {"loaded": _store().demo_count()}
+
+
+@app.post("/api/officer/demo/seed")
+def demo_seed(who: dict = Depends(require_admin)):
+    """Load about ten demo reports built from stored analyses. They are labelled demo and never counted by the monitor."""
+    from . import demo_data
+
+    try:
+        n = demo_data.seed(DATA_DIR, _store())
+    except ValueError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    _officers().log(who, "demo.seed", None, f"{n} demo reports")
+    return {"created": n}
+
+
+@app.delete("/api/officer/demo")
+def demo_remove(who: dict = Depends(require_admin)):
+    n = _store().delete_demo()
+    _officers().log(who, "demo.remove", None, f"{n} demo reports")
+    return {"removed": n}
+
+
+@app.get("/api/desk/map")
+def desk_map(who: dict = Depends(require_officer)):
+    """Reports that carry a location, as pins. Citizen photos with GPS and demo reports have one; console flags do not."""
+    rows = [r for r in _store().list(limit=5000, departments=who.get("agencies") or None) if r["lat"] is not None and r["lon"] is not None]
+    return [{"id": r["id"], "lat": r["lat"], "lon": r["lon"], "plate": r["plate_confirmed"] or r["plate_read"].replace("-", ""), "status": r["status"],
+             "category": cm.CATEGORIES[r["category"]][0].split("(")[0].strip(), "department": r["department"], "when": r["created_at"], "place": r["location_text"],
+             "source": r["source"]} for r in rows]
 
 
 @app.get("/api/officer/audit", dependencies=[Depends(require_admin)])

@@ -1,0 +1,9 @@
+.examples { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 14px; }
+.ex { padding: 14px 16px; border: 1px solid var(--rule); border-radius: 12px; background: var(--panel-2); min-width: 0; }
+.ex b { font-size: 13.5px; }
+.ex pre { margin: 8px 0 0; overflow-x: auto; font: 500 12px/1.5 var(--mono); color: #c4cadb; white-space: pre; }
+.grp { margin-top: 18px; }
+.grp h4 { margin-bottom: 8px; }
+.verb { font: 600 11px var(--mono); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--rule-2); }
+.verb.GET { color: #3ddc97; } .verb.POST { color: #ffb454; } .verb.PATCH, .verb.PUT { color: #7aa7ff; } .verb.DELETE { color: #ff7d8a; }
+.ep { font-size: 13px; word-break: break-all; }

@@ -232,22 +232,32 @@ class ComplaintStore:
         return cid
 
     def flag_track(self, job_id: str, track_id: int, f: dict, photo: bytes, crop: bytes | None, fused_json: str, pattern: str,
-                   colour: dict | None, plate_found: bool) -> str:
+                   colour: dict | None, plate_found: bool, source: str = "console", lat: float | None = None, lon: float | None = None,
+                   created_at: str | None = None, status: str = "new") -> str:
         """File a report straight from an analysed vehicle. The video's evidence frame is the photo; the fused plate is the read."""
         cid = uuid.uuid4().hex[:12]
         (self.dir / f"{cid}.jpg").write_bytes(photo)
         if crop:
             (self.dir / f"{cid}_plate.jpg").write_bytes(crop)
-        ts = now_iso()
+        ts = created_at or now_iso()
         with self.db() as c:
             c.execute(
                 """INSERT INTO complaints (id, created_at, category, department, description, location_text, lat, lon,
                    observed_at, plate_read, fused_json, plate_confirmed, contact, colour_json, vehicle_found,
                    plate_found, image_sha256, status, officer_note, updated_at, source, job_id, track_id)
-                   VALUES (?,?,?,?,?,?,NULL,NULL,?,?,?,NULL,NULL,?,1,?,?,'new','',?,'console',?,?)""",
-                (cid, ts, f["category"], CATEGORIES[f["category"]][1], f["description"], f["location_text"], f.get("observed_at"),
-                 pattern, fused_json, json.dumps(colour), int(plate_found), sha256_bytes(photo), ts, job_id, track_id))
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,NULL,NULL,?,1,?,?,?,'',?,?,?,?)""",
+                (cid, ts, f["category"], CATEGORIES[f["category"]][1], f["description"], f["location_text"], lat, lon, f.get("observed_at"),
+                 pattern, fused_json, json.dumps(colour), int(plate_found), sha256_bytes(photo), status, ts, source, job_id, track_id))
         return cid
+
+    def demo_count(self) -> int:
+        with self.db() as c:
+            return c.execute("SELECT COUNT(*) FROM complaints WHERE source='demo'").fetchone()[0]
+
+    def delete_demo(self) -> int:
+        with self.db() as c:
+            ids = [r[0] for r in c.execute("SELECT id FROM complaints WHERE source='demo'")]
+        return sum(self.delete_report(i) for i in ids)
 
     def flagged_for(self, job_id: str) -> dict[int, str]:
         """track id -> report id, for every vehicle of this analysis that has already been flagged."""
@@ -357,10 +367,11 @@ class ComplaintStore:
             return cur.rowcount > 0
 
     def counts(self) -> dict:
+        """Measured counts for the monitor: demo reports are left out, they are not real activity."""
         with self.db() as c:
             def group(col):
-                return {r[0]: r[1] for r in c.execute(f"SELECT {col}, COUNT(*) FROM complaints GROUP BY {col}")}
-            return {"total": c.execute("SELECT COUNT(*) FROM complaints").fetchone()[0],
+                return {r[0]: r[1] for r in c.execute(f"SELECT {col}, COUNT(*) FROM complaints WHERE source != 'demo' GROUP BY {col}")}
+            return {"total": c.execute("SELECT COUNT(*) FROM complaints WHERE source != 'demo'").fetchone()[0],
                     "by_status": group("status"), "by_category": group("category"), "by_department": group("department")}
 
 

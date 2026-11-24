@@ -76,7 +76,7 @@
 
   /* ---------- nav + footer ---------- */
   const LINKS = [["/", "Overview", "home"], ["/features/", "Features", "features"], ["/console/", "Console", "console"], ["/monitor/", "Monitor", "monitor"], ["/archive/", "Archive", "archive"],
-    ["/report-issue/", "Report an issue", "report"], ["/officer/", "Officer portal", "officer"]];
+    ["/report-issue/", "Report an issue", "report"], ["/officer/", "Officer portal", "officer"], ["/developers/", "API", "developers"]];
 
   function initBar(extra = []) {
     const bar = $("#bar");

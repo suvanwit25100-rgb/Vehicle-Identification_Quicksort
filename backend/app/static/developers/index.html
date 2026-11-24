@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>try{if(sessionStorage.getItem('nav')){document.documentElement.classList.add('arrived');sessionStorage.removeItem('nav')}}catch(e){}</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API · ExLex</title>
+<meta name="description" content="Every ExLex endpoint, read live from the running server, with example calls.">
+<meta name="theme-color" content="#030612">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@300;400;500;600;700&family=Unbounded:wght@200;300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/pages.css">
+<link rel="stylesheet" href="/developers/developers.css">
+</head>
+<body data-page="developers">
+<header class="bar" id="bar"></header>
+<div class="glow" aria-hidden="true"></div>
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">API</span>
+    <h1 class="h2">Every endpoint,<br><em>read live from the server.</em></h1>
+    <p class="lede">This list is built from the running server's own description of itself, so it cannot drift from the code. Public endpoints work without sign-in. Endpoints marked <b>officer</b> need a sign-in token or the officer key.</p>
+  </div>
+
+  <section class="panel">
+    <h3>Try it</h3>
+    <div class="examples" id="examples"></div>
+  </section>
+
+  <section class="panel">
+    <div class="search-row">
+      <label class="f" for="q">Find an endpoint<input id="q" type="search" placeholder="e.g. jobs, watchlist, report" autocomplete="off"></label>
+      <a class="btn sm" href="/docs" target="_blank" rel="noopener">Interactive docs</a>
+      <a class="btn sm" href="/openapi.json" target="_blank" rel="noopener">openapi.json</a>
+    </div>
+    <div class="totals" id="totals" role="status" aria-live="polite"></div>
+    <div id="list"><p class="empty">Loading…</p></div>
+  </section>
+</main>
+<footer id="foot"></footer>
+<script src="/ui.js"></script>
+<script src="/developers/developers.js"></script>
+</body>
+</html>

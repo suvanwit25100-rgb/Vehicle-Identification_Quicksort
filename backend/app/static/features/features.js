@@ -129,7 +129,7 @@ const V = {
       cap("Live from the server. Search by a whole or partial plate to find the same vehicle in other videos.")];
   }),
 
-  notbuilt: () => h("div", {}, ["Live camera streams: analysis is of uploaded clips", "Real registry (VAHAN) or FASTag data: the registry is synthetic", "Make and model recognition, and cross-camera tracking", "Individual officer accounts and citizen OTP sign-in", "Face blurring, retention and deletion rules", "Linking several citizens' reports of one vehicle", "Deleting stored analyses: videos stay until removed by hand"]
+  notbuilt: () => h("div", {}, ["Live camera streams: analysis is of uploaded clips", "Real registry (VAHAN) or FASTag data: the registry is synthetic", "Make and model recognition, and cross-camera tracking", "Two-factor sign-in and citizen OTP sign-in", "Face blurring in stored images", "Helmet and rider checks, FASTag and permit checks, convoy detection", "Real email and SMS sending: citizen messages are queued as a demo"]
     .map((t) => h("div", { class: "tick off" }, h("i", {}, "–"), t))),
 };
 
@@ -152,6 +152,24 @@ const GROUPS = [
       ["Routed to the right agency by what is flagged, like a citizen report", "One flag per vehicle per analysis; the console shows it as already flagged", "Filing is rate limited, and a flag is a lead for an officer, not an accusation", "Honest gap: the console has no sign-in, so anyone using it can flag"], "desk"],
     ["built", "PDF report", "Every analysis can be downloaded as a PDF as well as a web page, and the PDF is also inside the case-file ZIP.",
       ["Same content: plate, confidence per slot, second reader, images, candidates, reasons, models", "Unknown characters stay ?", "Images are reduced for size; the ZIP keeps the originals"], "report"],
+    ["built", "Related reports", "Several citizens reporting the same vehicle show up as one case instead of separate rows.",
+      ["Same plate, filed within 24 hours, no character clashing", "An unreadable character never links or splits reports", "The officer sees a '+N related' chip and the others in the report"], "stitch"],
+    ["built", "Plate-quality advisor", "When a plate cannot be read, the console says why and what would help, using only what was measured.",
+      ["Plate width against the 80 px needed, frames the plate was found in, characters read", "No cause is guessed that was not seen", "A summary for the whole video, and a hint per unreadable vehicle"], "small"],
+    ["built", "Watch-list import", "Load a hot-list from a CSV instead of typing plates one by one.",
+      ["Same rules as one added by hand: at least 4 known characters and a reason", "Rows that fail are listed with the reason, the rest are added", "Up to 500 rows at a time, written to the audit trail"], "unknown"],
+    ["built", "Agency permissions and sessions", "An officer can be limited to their own agencies, and an admin can see and end sign-ins.",
+      ["A report outside your agencies is reported as not found, in every view and export", "Changing an officer's agencies, role or password signs them out", "Session list shows who is signed in; ending one takes effect at once"], "desk"],
+    ["built", "Retention and deletion", "Old data can be deleted on purpose, with a preview and a confirmation.",
+      ["Only closed or rejected reports, and analyses older than the days you choose", "The delete is refused if the preview count has changed", "Flagged reports keep their own copy of the evidence; every deletion is audited"], "audit"],
+    ["built", "Citizen messages (demo)", "When a report is filed or its status changes, a message is queued for the citizen.",
+      ["Email or phone only if the citizen left one; shown masked", "The text carries the report ID and the status, never a plate or owner data", "Honest limit: queued and listed for officers, nothing is actually sent"], "report"],
+    ["built", "Map of reports", "Reports that carry a location appear as pins coloured by status.",
+      ["Citizen photos with GPS, and demo reports; console flags have no location", "Respects agency permissions", "Honest limit: the map uses OpenStreetMap tiles, so it needs internet; the table below always works"], "desk"],
+    ["built", "Demo data", "An admin can fill the queue with about ten labelled demo reports so the portal is not empty when shown.",
+      ["Built from analyses that are really stored, under made-up places and times", "Labelled demo everywhere and never counted by the monitor, which shows measured data only", "Removed in one click; real reports are not touched"], "monitor"],
+    ["built", "API reference", "Every endpoint is listed live from the running server, with example calls.",
+      ["Built from the server's own description, so it cannot drift from the code", "Officer endpoints are marked", "Links to the interactive docs and openapi.json"], "stack", ["/developers/", "Open the API page"]],
     ["partial", "Track stitching", "Trackers sometimes split one vehicle into several tracks. Fragments that clearly carry the same plate are joined.",
       ["Merge only if the plates agree on 6 or more characters and clash on none", "A group grows only if every pair in it is compatible", "Honest gap: on one real clip nothing needed merging, and unreadable fragments stay separate"], "stitch"],
     ["built", "Too small to read", "A vehicle with a tiny plate is not forced into a read. It is listed with the reason.",
